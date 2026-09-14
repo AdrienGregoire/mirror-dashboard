@@ -31,8 +31,9 @@ jobs:
           fetch-depth: 0
 
       - name: Mirroring step
-        shell: bash
-        run: |
-          git remote add epitech ${{ secrets.GIT_DASHBOARD_REPO }}
-          git push epitech --all
-          git push epitech --tags
+        uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          target_repo_url:
+            ${{ secrets.GIT_DASHBOARD_REPO }}
+          ssh_private_key:                              # <-- use 'secrets' to pass credential information.
+            ${{ secrets.GIT_DASHBOARD_SECRET }}
