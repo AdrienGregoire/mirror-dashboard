@@ -1,0 +1,58 @@
+name: Dashboard CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  gitflow-check:
+    name: Vérification du GitFlow
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Vérification du GitFlow
+        if: github.base_ref == 'main'
+        shell: bash
+        run: |
+          if [ "${{ github.head_ref }}" != "develop" ]; then
+            echo "Erreur: '${{ github.head_ref }}' n'a pas le droit d'être fusionnée dans 'main'."
+            echo "La branche 'main' n'accepte que des Pull Requests provenant de la branche 'develop'."
+            exit 1
+          fi
+          echo "Succès: Fusion de develop vers main autorisée."
+
+  build-test:
+    name: Test de Compilation
+    needs: gitflow-check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Installation Elixir/Erlang
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: "1.17"
+          otp-version: "27"
+
+      - name: Cache des dépendances
+        uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ runner.os }}-mix-
+
+      - name: Installation des dépendances
+        run: mix deps.get
+
+      - name: Compilation
+        run: mix compile --warnings-as-errors

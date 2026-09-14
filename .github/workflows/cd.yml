@@ -1,0 +1,38 @@
+name: Dashboard CD
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mirror-to-epitech:
+    name: Déploiement du Code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Vérification des secrets
+        shell: bash
+        run: |
+          if [ -z "${{ secrets.GIT_DASHBOARD_REPO }}" ]; then
+            echo "Erreur: le secret GIT_DASHBOARD_REPO est vide ou introuvable."
+            exit 1
+          fi
+          echo "Succès: le secret existe."
+
+      - name: Git checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Mirroring step
+        shell: bash
+        run: |
+          git remote add epitech ${{ secrets.GIT_DASHBOARD_REPO }}
+          git push epitech --all
+          git push epitech --tags
