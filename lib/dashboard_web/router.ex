@@ -1,3 +1,10 @@
+#
+## EPITECH PROJECT, 2026
+## router.ex
+## File description:
+## maps each URL to the correct controller
+#
+
 defmodule DashboardWeb.Router do
   use DashboardWeb, :router
 
@@ -20,10 +27,11 @@ defmodule DashboardWeb.Router do
     get "/", PageController, :home
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", DashboardWeb do
-  #   pipe_through :api
-  # end
+  scope "/", DashboardWeb do
+    pipe_through :api
+
+    get "/about.json", AboutController, :show
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:dashboard, :dev_routes) do
