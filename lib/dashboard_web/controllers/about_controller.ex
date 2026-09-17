@@ -11,14 +11,15 @@ defmodule DashboardWeb.AboutController do
   def show(conn, _params) do
     client_ip = format_ip(conn.remote_ip)
     current_time = System.system_time(:second)
+
     json(conn, %{
       client: %{
         host: client_ip
-    },
-    server: %{
-      current_time: current_time,
-      services: []
-    }
+      },
+      server: %{
+        current_time: current_time,
+        services: []
+      }
     })
   end
 
@@ -26,5 +27,6 @@ defmodule DashboardWeb.AboutController do
     ip
     |> :inet.ntoa()
     |> to_string()
+    |> String.replace_prefix("::ffff:", "")
   end
 end
