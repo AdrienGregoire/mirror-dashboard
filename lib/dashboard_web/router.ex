@@ -25,6 +25,9 @@ defmodule DashboardWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/register", UserRegistrationController, :new
+    post "/register", UserRegistrationController, :create
+    get "/users/confirm/:token", UserConfirmationController, :confirm
   end
 
   scope "/", DashboardWeb do
