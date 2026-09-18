@@ -10,7 +10,7 @@ defmodule Dashboard.Accounts do
   alias Dashboard.Accounts.User
   @confirmation_token_bytes 32
 
-  def register_user(attrs) do
+  def register_user(attrs, confirmation_url_fun) do
     token = generate_token()
 
     %User{}
@@ -21,6 +21,18 @@ defmodule Dashboard.Accounts do
       DateTime.utc_now() |> DateTime.truncate(:second)
     )
     |> Repo.insert()
+    |> case do
+      {:ok, user} ->
+        Dashboard.Accounts.UserNotifier.deliver_confirmation_instructions(
+          user,
+          confirmation_url_fun.(token)
+        )
+
+        {:ok, user}
+
+      error ->
+        error
+    end
   end
 
   def get_user_by_confirmation_token(token) when is_binary(token) do

@@ -1,0 +1,23 @@
+<Layouts.app flash={@flash}>
+  <div class="mx-auto max-w-md mt-16 px-6">
+    <h1 class="text-2xl font-bold mb-8 text-gray-900">Create your account</h1>
+
+    <.form
+      for={@form}
+      id="registration-form"
+      phx-submit="save"
+      action={~p"/register"}
+      method="post"
+    >
+      <.input field={@form[:email]} type="email" label="Email" required />
+      <.input field={@form[:password]} type="password" label="Password" required />
+
+      <button
+        type="submit"
+        class="mt-6 w-full rounded-lg bg-indigo-600 px-4 py-2 text-white font-semibold hover:bg-indigo-500 transition-colors"
+      >
+        Create account
+      </button>
+    </.form>
+  </div>
+</Layouts.app>
