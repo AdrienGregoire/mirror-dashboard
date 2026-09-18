@@ -7,10 +7,12 @@
 
 defmodule DashboardWeb.AboutController do
   use DashboardWeb, :controller
+  alias Dashboard.Services
 
   def show(conn, _params) do
     client_ip = format_ip(conn.remote_ip)
     current_time = System.system_time(:second)
+    services = Services.list_services()
 
     json(conn, %{
       client: %{
@@ -18,7 +20,7 @@ defmodule DashboardWeb.AboutController do
       },
       server: %{
         current_time: current_time,
-        services: []
+        services: services
       }
     })
   end

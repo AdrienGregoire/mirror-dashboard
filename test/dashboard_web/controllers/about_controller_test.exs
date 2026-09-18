@@ -25,5 +25,23 @@ defmodule DashboardWeb.AboutControllerTest do
     assert is_integer(current_time)
     assert current_time > 0
     assert is_list(services)
+    assert length(services) > 0
+
+    for service <- services do
+      assert is_binary(service["name"])
+      assert is_list(service["widgets"])
+      assert length(service["widgets"]) > 0
+
+      for widget <- service["widgets"] do
+        assert is_binary(widget["name"])
+        assert is_binary(widget["description"])
+        assert is_list(widget["params"])
+
+        for param <- widget["params"] do
+          assert is_binary(param["name"])
+          assert param["type"] in ["string", "integer"]
+        end
+      end
+    end
   end
 end
