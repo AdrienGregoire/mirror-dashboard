@@ -43,6 +43,7 @@ defmodule DashboardWeb do
       use Gettext, backend: DashboardWeb.Gettext
 
       import Plug.Conn
+      import Phoenix.Component, only: [to_form: 1, to_form: 2]
 
       unquote(verified_routes())
     end
