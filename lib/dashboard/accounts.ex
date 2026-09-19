@@ -9,6 +9,7 @@ defmodule Dashboard.Accounts do
   alias Dashboard.Repo
   alias Dashboard.Accounts.User
   @confirmation_token_bytes 32
+  @dummy_hashed_password "#{Base.encode64(:binary.copy(<<0>>, 16))}$#{Base.encode64(:binary.copy(<<0>>, 32))}"
 
   def register_user(attrs, confirmation_url_fun) do
     token = generate_token()
@@ -47,6 +48,24 @@ defmodule Dashboard.Accounts do
 
   def get_user_by_email(email) when is_binary(email) do
     Repo.get_by(User, email: String.downcase(String.trim(email)))
+  end
+
+  def get_user(id), do: Repo.get(User, id)
+
+  def get_user_by_email_and_password(email, password)
+      when is_binary(email) and is_binary(password) do
+    case get_user_by_email(email) do
+      nil ->
+        User.valid_password?(%User{hashed_password: @dummy_hashed_password}, password)
+        nil
+
+      %User{confirmed_at: nil} = user ->
+        User.valid_password?(user, password)
+        nil
+
+      %User{} = user ->
+        if User.valid_password?(user, password), do: user, else: nil
+    end
   end
 
   defp generate_token do
