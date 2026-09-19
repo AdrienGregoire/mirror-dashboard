@@ -64,10 +64,13 @@ defmodule Dashboard.Accounts.User do
 
   defp validate_email(changeset) do
     changeset
+    |> update_change(:email, fn
+      email when is_binary(email) -> email |> String.trim() |> String.downcase()
+      other -> other
+    end)
     |> validate_required([:email])
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must have the @ sign and no spaces")
     |> validate_length(:email, max: 160)
-    |> update_change(:email, &String.downcase(String.trim(&1)))
     |> unique_constraint(:email)
   end
 
