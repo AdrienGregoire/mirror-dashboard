@@ -1,4 +1,3 @@
-
 defmodule Dashboard.SwooshLocalStorage do
   @moduledoc """
   Ensures the process backing `Swoosh.Adapters.Local` (used to fake email

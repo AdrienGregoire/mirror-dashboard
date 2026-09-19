@@ -7,10 +7,8 @@
 
 defmodule Dashboard.AccountsTest do
   use Dashboard.DataCase, async: true
-
   alias Dashboard.Accounts
   alias Dashboard.Accounts.User
-
   import Swoosh.TestAssertions
 
   @valid_attrs %{email: "adrien.gregoire@epitech.eu", password: "supersecret123"}
@@ -102,11 +100,52 @@ defmodule Dashboard.AccountsTest do
     end
   end
 
+  describe "get_user_by_email_and_password/2" do
+    test "returns the user for a confirmed account with the right password" do
+      {:ok, user} = Accounts.register_user(@valid_attrs, confirmation_url_fun())
+      {:ok, confirmed_user} = Accounts.confirm_user(user)
+
+      assert %User{id: id} =
+               Accounts.get_user_by_email_and_password(user.email, @valid_attrs.password)
+
+      assert id == confirmed_user.id
+    end
+
+    test "returns nil for the right password on an unconfirmed account" do
+      {:ok, user} = Accounts.register_user(@valid_attrs, confirmation_url_fun())
+
+      assert Accounts.get_user_by_email_and_password(user.email, @valid_attrs.password) == nil
+    end
+
+    test "returns nil for a wrong password" do
+      {:ok, user} = Accounts.register_user(@valid_attrs, confirmation_url_fun())
+      {:ok, _confirmed_user} = Accounts.confirm_user(user)
+
+      assert Accounts.get_user_by_email_and_password(user.email, "wrong-password") == nil
+    end
+
+    test "returns nil for an unknown email" do
+      assert Accounts.get_user_by_email_and_password("nobody@epitech.eu", "whatever123") == nil
+    end
+  end
+
+  describe "get_user/1" do
+    test "returns the user by id" do
+      {:ok, user} = Accounts.register_user(@valid_attrs, confirmation_url_fun())
+      assert %User{id: id} = Accounts.get_user(user.id)
+      assert id == user.id
+    end
+
+    test "returns nil for an unknown id" do
+      assert Accounts.get_user(-1) == nil
+    end
+  end
+
   describe "get_user_by_email/1" do
     test "finds the user regardless of case" do
       {:ok, user} = Accounts.register_user(@valid_attrs, confirmation_url_fun())
 
-      assert %User{id: id} = Accounts.get_user_by_email("Adrien.gregoire@epitech.eu")
+      assert %User{id: id} = Accounts.get_user_by_email("ADRIEN.gregoire@epitech.eu")
       assert id == user.id
     end
 
