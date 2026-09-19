@@ -7,6 +7,7 @@
 
 defmodule DashboardWeb.Router do
   use DashboardWeb, :router
+  import DashboardWeb.UserAuth
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -15,19 +16,32 @@ defmodule DashboardWeb.Router do
     plug :put_root_layout, html: {DashboardWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :fetch_current_user
   end
 
   pipeline :api do
     plug :accepts, ["json"]
   end
 
+  pipeline :guest_only do
+    plug :redirect_if_user_is_authenticated
+  end
+
   scope "/", DashboardWeb do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/users/confirm/:token", UserConfirmationController, :confirm
+    delete "/logout", SessionController, :delete
+  end
+
+  scope "/", DashboardWeb do
+    pipe_through [:browser, :guest_only]
+
     get "/register", UserRegistrationController, :new
     post "/register", UserRegistrationController, :create
-    get "/users/confirm/:token", UserConfirmationController, :confirm
+    get "/login", SessionController, :new
+    post "/login", SessionController, :create
   end
 
   scope "/", DashboardWeb do
