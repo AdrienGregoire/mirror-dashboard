@@ -42,6 +42,8 @@ defmodule DashboardWeb.Router do
     post "/register", UserRegistrationController, :create
     get "/login", SessionController, :new
     post "/login", SessionController, :create
+    get "/auth/:provider", AuthController, :request
+    get "/auth/:provider/callback", AuthController, :callback
   end
 
   scope "/", DashboardWeb do

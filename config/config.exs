@@ -11,6 +11,16 @@ config :dashboard,
   ecto_repos: [Dashboard.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+# Ueberauth providers: this list is what makes OAuth "generic" here — the
+# AuthController (step 4) never hardcodes "github", it just reads
+# `params["provider"]` and Ueberauth dispatches to whichever strategy
+# matches. Adding a 2nd provider later is just one more line here + its
+# dep in mix.exs, no controller change needed.
+config :ueberauth, Ueberauth,
+  providers: [
+    github: {Ueberauth.Strategy.Github, [default_scope: "user:email"]}
+  ]
+
 # Configure the endpoint
 config :dashboard, DashboardWeb.Endpoint,
   url: [host: "localhost"],
