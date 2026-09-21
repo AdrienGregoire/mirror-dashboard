@@ -22,6 +22,7 @@ defmodule Dashboard.Accounts.User do
     field :confirmed_at, :utc_datetime
     field :confirmation_token, :string
     field :confirmation_sent_at, :utc_datetime
+    has_many :identities, Dashboard.Accounts.UserIdentity
     timestamps(type: :utc_datetime)
   end
 
