@@ -1,3 +1,10 @@
+#
+## EPITECH PROJECT, 2026
+## test.exs
+## File description:
+## Test environment configuration
+#
+
 import Config
 
 # Configure your database

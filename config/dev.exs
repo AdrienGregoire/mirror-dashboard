@@ -1,3 +1,10 @@
+#
+## EPITECH PROJECT, 2026
+## dev.exs
+## File description:
+## Development environment configuration
+#
+
 import Config
 
 # Configure your database
