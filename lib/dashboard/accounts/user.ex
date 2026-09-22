@@ -2,7 +2,7 @@
 ## EPITECH PROJECT, 2026
 ## user.ex
 ## File description:
-## Ecto Schema
+## Ecto Schema and changesets for user account management
 #
 
 defmodule Dashboard.Accounts.User do

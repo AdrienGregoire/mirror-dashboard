@@ -2,7 +2,7 @@
 ## EPITECH PROJECT, 2026
 ## user_identity.ex
 ## File description:
-## Ecto Schema linking a third-party OAuth account#
+## Ecto Schema linking a third-party OAuth account
 
 defmodule Dashboard.Accounts.UserIdentity do
   use Ecto.Schema
