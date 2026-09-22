@@ -2,7 +2,7 @@
 ## EPITECH PROJECT, 2026
 ## accounts.ex
 ## File description:
-## Handle accounts creation
+## Context module for user account management and authentication
 #
 
 defmodule Dashboard.Accounts do

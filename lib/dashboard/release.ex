@@ -1,3 +1,10 @@
+#
+## EPITECH PROJECT, 2026
+## release.ex
+## File description:
+## Release tasks for database migrations and deployment
+#
+
 defmodule Dashboard.Release do
   @moduledoc """
   Used for executing DB release tasks when run in production without Mix

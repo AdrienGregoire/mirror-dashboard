@@ -1,6 +1,12 @@
+#
+## EPITECH PROJECT, 2026
+## user_notifier.ex
+## File description:
+## Email delivery module for account notifications
+#
+
 defmodule Dashboard.Accounts.UserNotifier do
   import Swoosh.Email
-
   alias Dashboard.Mailer
 
   defp deliver(recipient, subject, body) do

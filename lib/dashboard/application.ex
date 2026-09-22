@@ -1,3 +1,10 @@
+#
+## EPITECH PROJECT, 2026
+## application.ex
+## File description:
+## Application entry point and supervision tree specification
+#
+
 defmodule Dashboard.Application do
   use Application
   @impl true
