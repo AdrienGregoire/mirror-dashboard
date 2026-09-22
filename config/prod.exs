@@ -1,3 +1,10 @@
+#
+## EPITECH PROJECT, 2026
+## prod.exs
+## File description:
+## Production environment configuration
+#
+
 import Config
 
 # Note we also include the path to a cache manifest

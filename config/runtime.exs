@@ -1,3 +1,10 @@
+#
+## EPITECH PROJECT, 2026
+## runtime.exs
+## File description:
+## Dynamic runtime configuration for production execution
+#
+
 import Config
 
 # config/runtime.exs is executed for all environments, including

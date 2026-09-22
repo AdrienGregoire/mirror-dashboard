@@ -33,6 +33,13 @@ defmodule Dashboard.Accounts.User do
     |> validate_password()
   end
 
+  def oauth_registration_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:email])
+    |> validate_email()
+    |> put_change(:confirmed_at, DateTime.utc_now() |> DateTime.truncate(:second))
+  end
+
   def confirm_changeset(user) do
     now =
       DateTime.utc_now()
