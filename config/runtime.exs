@@ -1,3 +1,10 @@
+#
+## EPITECH PROJECT, 2026
+## runtime.exs
+## File description:
+## Dynamic runtime configuration for production execution
+#
+
 import Config
 
 # config/runtime.exs is executed for all environments, including
@@ -22,6 +29,11 @@ end
 
 config :dashboard, DashboardWeb.Endpoint,
   http: [port: String.to_integer(System.get_env("PORT", "4000"))]
+
+# GitHub OAuth App credentials
+config :ueberauth, Ueberauth.Strategy.Github.OAuth,
+  client_id: System.get_env("GITHUB_CLIENT_ID"),
+  client_secret: System.get_env("GITHUB_CLIENT_SECRET")
 
 if config_env() == :dev do
   # Reload browser tabs when matching files change.
@@ -72,10 +84,18 @@ if config_env() == :prod do
 
   host = System.get_env("PHX_HOST") || "example.com"
 
+  # The scheme/port Phoenix uses to build *absolute* URLs (OAuth
+  # callback URLs, confirmation links, ...)
+  url_scheme = System.get_env("URL_SCHEME", "https")
+
+  url_port =
+    System.get_env("URL_PORT", System.get_env("PORT", "4000"))
+    |> String.to_integer()
+
   config :dashboard, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
   config :dashboard, DashboardWeb.Endpoint,
-    url: [host: host, port: 443, scheme: "https"],
+    url: [host: host, port: url_port, scheme: url_scheme],
     http: [
       # Enable IPv6 and bind on all interfaces.
       # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.

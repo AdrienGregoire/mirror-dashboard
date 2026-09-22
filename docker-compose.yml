@@ -28,8 +28,11 @@ services:
       PHX_SERVER: "true"
       PORT: "8080"
       PHX_HOST: "localhost"
+      URL_SCHEME: "http"
       DATABASE_URL: "ecto://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}"
       SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
 
 volumes:
   db_data:
