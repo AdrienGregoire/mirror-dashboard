@@ -2,7 +2,7 @@
 ## EPITECH PROJECT, 2026
 ## user.ex
 ## File description:
-## Ecto Schema
+## Ecto Schema and changesets for user account management
 #
 
 defmodule Dashboard.Accounts.User do
@@ -22,6 +22,7 @@ defmodule Dashboard.Accounts.User do
     field :confirmed_at, :utc_datetime
     field :confirmation_token, :string
     field :confirmation_sent_at, :utc_datetime
+    has_many :identities, Dashboard.Accounts.UserIdentity
     timestamps(type: :utc_datetime)
   end
 
@@ -30,6 +31,13 @@ defmodule Dashboard.Accounts.User do
     |> cast(attrs, [:email, :password])
     |> validate_email()
     |> validate_password()
+  end
+
+  def oauth_registration_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:email])
+    |> validate_email()
+    |> put_change(:confirmed_at, DateTime.utc_now() |> DateTime.truncate(:second))
   end
 
   def confirm_changeset(user) do

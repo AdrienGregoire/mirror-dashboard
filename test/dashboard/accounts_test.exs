@@ -153,4 +153,49 @@ defmodule Dashboard.AccountsTest do
       assert Accounts.get_user_by_email("nobody@epitech.eu") == nil
     end
   end
+
+  describe "get_or_create_user_from_oauth/1" do
+    defp oauth_auth(uid, email), do: %{provider: :github, uid: uid, info: %{email: email}}
+
+    test "creates a new, pre-confirmed user with no password on first login" do
+      assert {:ok, user} =
+               Accounts.get_or_create_user_from_oauth(oauth_auth("111", "new@epitech.eu"))
+
+      assert user.email == "new@epitech.eu"
+      assert user.confirmed_at != nil
+      assert user.hashed_password == nil
+    end
+
+    test "links the identity to an existing account with the same email" do
+      {:ok, existing_user} = Accounts.register_user(@valid_attrs, confirmation_url_fun())
+
+      assert {:ok, user} =
+               Accounts.get_or_create_user_from_oauth(oauth_auth("222", existing_user.email))
+
+      assert user.id == existing_user.id
+      # still a single account for that email — no duplicate created
+      assert Accounts.get_user_by_email(existing_user.email).id == existing_user.id
+    end
+
+    test "returns the same user on a second login with the same identity" do
+      {:ok, first_user} =
+        Accounts.get_or_create_user_from_oauth(oauth_auth("333", "again@epitech.eu"))
+
+      assert {:ok, second_user} =
+               Accounts.get_or_create_user_from_oauth(oauth_auth("333", "again@epitech.eu"))
+
+      assert second_user.id == first_user.id
+    end
+
+    test "returns an error when the provider gives no email" do
+      assert Accounts.get_or_create_user_from_oauth(oauth_auth("444", nil)) ==
+               {:error, :no_email_from_provider}
+    end
+
+    test "an OAuth-only account cannot log in with a password" do
+      {:ok, user} = Accounts.get_or_create_user_from_oauth(oauth_auth("555", "nopass@epitech.eu"))
+
+      assert Accounts.get_user_by_email_and_password(user.email, "whatever123") == nil
+    end
+  end
 end

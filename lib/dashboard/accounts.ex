@@ -2,12 +2,13 @@
 ## EPITECH PROJECT, 2026
 ## accounts.ex
 ## File description:
-## Handle accounts creation
+## Context module for user account management and authentication
 #
 
 defmodule Dashboard.Accounts do
   alias Dashboard.Repo
   alias Dashboard.Accounts.User
+  alias Dashboard.Accounts.UserIdentity
   @confirmation_token_bytes 32
   @dummy_hashed_password "#{Base.encode64(:binary.copy(<<0>>, 16))}$#{Base.encode64(:binary.copy(<<0>>, 32))}"
 
@@ -66,6 +67,59 @@ defmodule Dashboard.Accounts do
       %User{} = user ->
         if User.valid_password?(user, password), do: user, else: nil
     end
+  end
+
+  def get_or_create_user_from_oauth(auth) do
+    provider = to_string(auth.provider)
+    uid = to_string(auth.uid)
+    email = auth.info.email && auth.info.email |> String.trim() |> String.downcase()
+
+    case get_user_identity(provider, uid) do
+      %UserIdentity{user: user} ->
+        {:ok, user}
+
+      nil ->
+        create_or_link_user(provider, uid, email)
+    end
+  end
+
+  defp get_user_identity(provider, uid) do
+    UserIdentity
+    |> Repo.get_by(provider: provider, uid: uid)
+    |> case do
+      nil -> nil
+      identity -> Repo.preload(identity, :user)
+    end
+  end
+
+  defp create_or_link_user(_provider, _uid, nil), do: {:error, :no_email_from_provider}
+
+  defp create_or_link_user(provider, uid, email) do
+    Repo.transaction(fn ->
+      user =
+        case get_user_by_email(email) do
+          %User{} = existing_user -> existing_user
+          nil -> insert_oauth_user!(email)
+        end
+
+      case link_identity(user, provider, uid) do
+        {:ok, _identity} -> user
+        {:error, changeset} -> Repo.rollback(changeset)
+      end
+    end)
+  end
+
+  defp insert_oauth_user!(email) do
+    case %User{} |> User.oauth_registration_changeset(%{email: email}) |> Repo.insert() do
+      {:ok, user} -> user
+      {:error, changeset} -> Repo.rollback(changeset)
+    end
+  end
+
+  defp link_identity(user, provider, uid) do
+    %UserIdentity{}
+    |> UserIdentity.changeset(%{provider: provider, uid: uid, user_id: user.id})
+    |> Repo.insert()
   end
 
   defp generate_token do
