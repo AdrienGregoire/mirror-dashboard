@@ -89,8 +89,8 @@ defmodule Dashboard.Accounts do
 
   def update_user_role(%User{} = user, attrs) do
     user
-      |> User.role_changeset(attrs)
-      |> Repo.update()
+    |> User.role_changeset(attrs)
+    |> Repo.update()
   end
 
   def delete_user(%User{} = user) do

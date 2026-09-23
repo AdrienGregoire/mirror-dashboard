@@ -53,9 +53,9 @@ defmodule Dashboard.Accounts.User do
 
   def role_changeset(user, attrs) do
     user
-      |> cast(attrs, [:role])
-      |> validate_required([:role])
-      |> validate_inclusion(:role, ["user", "admin"])
+    |> cast(attrs, [:role])
+    |> validate_required([:role])
+    |> validate_inclusion(:role, ["user", "admin"])
   end
 
   def valid_password?(%__MODULE__{hashed_password: hashed_password}, password)
