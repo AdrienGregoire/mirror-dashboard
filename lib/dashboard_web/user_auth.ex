@@ -48,6 +48,19 @@ defmodule DashboardWeb.UserAuth do
     end
   end
 
+  def require_admin(conn, _opts) do
+    user = conn.assigns[:current_user]
+
+    if user && user.role == "admin" do
+      conn
+    else
+      conn
+      |> put_flash(:error, "You do not have permission to access this page.")
+      |> redirect(to: ~p"/")
+      |> halt()
+    end
+  end
+
   def redirect_if_user_is_authenticated(conn, _opts) do
     if conn.assigns[:current_user] do
       conn

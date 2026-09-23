@@ -51,6 +51,13 @@ defmodule Dashboard.Accounts.User do
     })
   end
 
+  def role_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:role])
+    |> validate_required([:role])
+    |> validate_inclusion(:role, ["user", "admin"])
+  end
+
   def valid_password?(%__MODULE__{hashed_password: hashed_password}, password)
       when is_binary(hashed_password) and is_binary(password) do
     case String.split(hashed_password, "$") do
