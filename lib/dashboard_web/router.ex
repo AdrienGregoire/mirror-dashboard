@@ -52,6 +52,14 @@ defmodule DashboardWeb.Router do
     get "/about.json", AboutController, :show
   end
 
+  scope "/admin", DashboardWeb do
+    pipe_through [:browser, :require_authenticated_user, :require_admin]
+
+    get "/users", AdminUserController, :index
+    delete "/users/:id", AdminUserController, :delete
+    patch "/users/:id/promote", AdminUserController, :promote
+  end
+
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:dashboard, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
