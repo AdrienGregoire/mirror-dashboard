@@ -82,6 +82,16 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
+  encryption_key =
+    System.get_env("ENCRYPTION_KEY") ||
+      raise """
+      environment variable ENCRYPTION_KEY is missing.
+      It encrypts the service credentials stored in database.
+      You can generate one by calling: openssl rand -base64 32
+      """
+
+  config :dashboard, Dashboard.Vault, key: encryption_key
+
   host = System.get_env("PHX_HOST") || "example.com"
 
   # The scheme/port Phoenix uses to build *absolute* URLs (OAuth

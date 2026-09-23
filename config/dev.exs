@@ -59,6 +59,9 @@ config :dashboard, DashboardWeb.Endpoint,
 # configured to run both http and https servers on
 # different ports.
 
+# Key used to encrypt service credentials, dev only
+config :dashboard, Dashboard.Vault, key: "rUyzeFoSiyaoIG31EqJVs5FJztBlXadNsJQ0jJJobW8="
+
 # Enable dev routes for dashboard and mailbox
 config :dashboard, dev_routes: true
 
