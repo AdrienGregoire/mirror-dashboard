@@ -83,6 +83,20 @@ defmodule Dashboard.Accounts do
     end
   end
 
+  def list_users do
+    Repo.all(User)
+  end
+
+  def update_user_role(%User{} = user, attrs) do
+    user
+      |> User.role_changeset(attrs)
+      |> Repo.update()
+  end
+
+  def delete_user(%User{} = user) do
+    Repo.delete(user)
+  end
+
   defp get_user_identity(provider, uid) do
     UserIdentity
     |> Repo.get_by(provider: provider, uid: uid)
