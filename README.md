@@ -24,6 +24,12 @@ Then edit `.env` and replace `SECRET_KEY_BASE` with a real value generated using
 openssl rand -base64 48
 ```
 
+and `ENCRYPTION_KEY` (used to encrypt the credentials and tokens of the services users subscribe to) with:
+
+```bash
+openssl rand -base64 32
+```
+
 (`POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB` can be left as is locally, or customized.)
 
 ### 2. Building the image

@@ -27,6 +27,9 @@ config :dashboard, DashboardWeb.Endpoint,
   secret_key_base: "OL4Iav40SAkfsvYm2F2K59DyU7TVv/J+GXGEUCMPt36GqgGcpvNdNgaZpuzG5DKS",
   server: false
 
+# Key used to encrypt service credentials, test only
+config :dashboard, Dashboard.Vault, key: "cHqnCVVlJNnyzwDJlbO6wi/F76NT3nx9W2XYp/P2E+c="
+
 # In test we don't send emails
 config :dashboard, Dashboard.Mailer, adapter: Swoosh.Adapters.Test
 

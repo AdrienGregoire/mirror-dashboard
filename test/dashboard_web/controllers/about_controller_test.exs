@@ -28,6 +28,7 @@ defmodule DashboardWeb.AboutControllerTest do
     assert length(services) > 0
 
     for service <- services do
+      assert Map.keys(service) |> Enum.sort() == ["name", "widgets"]
       assert is_binary(service["name"])
       assert is_list(service["widgets"])
       assert length(service["widgets"]) > 0
