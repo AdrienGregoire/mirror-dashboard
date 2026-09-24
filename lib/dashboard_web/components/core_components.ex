@@ -67,17 +67,20 @@ defmodule DashboardWeb.CoreComponents do
       {@rest}
     >
       <div class={[
-        "alert w-80 sm:w-96 max-w-80 sm:max-w-96 text-wrap",
-        @kind == :info && "alert-info",
-        @kind == :error && "alert-error"
+        "glass-toast w-80 sm:w-96 max-w-80 sm:max-w-96 text-wrap flex items-start gap-3",
+        @kind == :info && "glass-toast-info",
+        @kind == :error && "glass-toast-error"
       ]}>
-        <.icon :if={@kind == :info} name="hero-information-circle" class="size-5 shrink-0" />
-        <.icon :if={@kind == :error} name="hero-exclamation-circle" class="size-5 shrink-0" />
-        <div>
+        <.icon :if={@kind == :info} name="hero-information-circle" class="size-5 shrink-0 text-info" />
+        <.icon
+          :if={@kind == :error}
+          name="hero-exclamation-circle"
+          class="size-5 shrink-0 text-error"
+        />
+        <div class="flex-1">
           <p :if={@title} class="font-semibold">{@title}</p>
           <p>{msg}</p>
         </div>
-        <div class="flex-1" />
         <button type="button" class="group self-start cursor-pointer" aria-label={gettext("close")}>
           <.icon name="hero-x-mark" class="size-5 opacity-40 group-hover:opacity-70" />
         </button>
@@ -501,5 +504,26 @@ defmodule DashboardWeb.CoreComponents do
   """
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
+  end
+
+  attr :flash, :map, default: %{}
+  attr :max_w, :string, default: "max-w-lg", doc: "classe Tailwind de largeur max"
+  slot :inner_block, required: true
+
+  def glass_page(assigns) do
+    ~H"""
+    <div class="relative min-h-screen overflow-hidden flex items-center justify-center p-4 sm:p-8 bg-(color:--glass-bg-page)">
+      <div class="glass-blob top-10 -left-10 bg-(color:--glass-blob-1)"></div>
+      <div class="glass-blob top-20 -right-10 bg-(color:--glass-blob-2)"></div>
+      <div class="glass-blob -bottom-10 left-1/3 bg-(color:--glass-blob-3)"></div>
+
+      <div class={["relative z-10 w-full", @max_w]}>
+        {render_slot(@inner_block)}
+      </div>
+
+      <.flash kind={:info} flash={@flash} />
+      <.flash kind={:error} flash={@flash} />
+    </div>
+    """
   end
 end

@@ -1,31 +1,55 @@
-<Layouts.app flash={@flash}>
-  <div class="mx-auto max-w-md mt-16 px-6">
-    <h1 class="text-2xl font-bold mb-8 text-gray-900">Log in</h1>
+<%!--
+## EPITECH PROJECT, 2026
+## new.html.heex
+## File description:
+## Login page
+--%>
 
-    <.form for={@form} id="login-form" action={~p"/login"} method="post">
-      <.input field={@form[:email]} type="email" label="Email" required />
-      <.input field={@form[:password]} type="password" label="Password" required />
+<.glass_page flash={@flash}>
+  <div class="glass-card p-10 sm:p-12 space-y-8">
+    <div class="text-center space-y-2">
+      <h1 class="glass-title text-4xl">Log in</h1>
+      <p class="glass-muted font-medium text-base">Dashboard Sport</p>
+    </div>
 
+    <.form for={@form} id="login-form" action={~p"/login"} method="post" class="space-y-6">
+      <div class="space-y-2 text-left">
+        <label for={@form[:email].id} class="glass-muted block text-sm font-medium">Email</label>
+        <.input
+          field={@form[:email]}
+          type="email"
+          required
+          placeholder="nom@exemple.com"
+          class="glass-input"
+        />
+      </div>
+      <div class="space-y-2 text-left">
+        <label for={@form[:password].id} class="glass-muted block text-sm font-medium">Password</label>
+        <.input
+          field={@form[:password]}
+          type="password"
+          required
+          placeholder="••••••••"
+          class="glass-input"
+        />
+      </div>
       <button
         type="submit"
-        class="mt-6 w-full rounded-lg bg-indigo-600 px-4 py-2 text-white font-semibold hover:bg-indigo-500 transition-colors"
+        class="glass-button w-full text-primary font-semibold text-lg py-3 mt-4"
       >
-        Log in
+        <.icon name="hero-arrow-right-on-rectangle" class="w-5 h-5 mr-2" /> Log in
       </button>
     </.form>
 
-    <p class="mt-4 text-sm text-gray-600">
+    <p class="glass-muted text-center text-sm">
       No account yet?
-      <.link href={~p"/register"} class="text-indigo-600 font-semibold">Sign up</.link>
+      <.link href={~p"/register"} class="text-primary font-semibold hover:underline ml-1">Sign up</.link>
     </p>
 
-    <div class="mt-6 pt-6 border-t border-gray-200">
-      <.link
-        href={~p"/auth/github"}
-        class="flex items-center justify-center gap-2 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-700 font-semibold hover:bg-gray-50 transition-colors"
-      >
+    <div class="pt-6 border-t border-(color:--glass-border)">
+      <.link href={~p"/auth/github"} class="glass-button w-full text-lg font-semibold">
         Continue with GitHub
       </.link>
     </div>
   </div>
-</Layouts.app>
+</.glass_page>

@@ -1,6 +1,15 @@
-<Layouts.app flash={@flash}>
-  <div class="mx-auto max-w-md mt-16 px-6">
-    <h1 class="text-2xl font-bold mb-8 text-gray-900">Create your account</h1>
+<%!--
+## EPITECH PROJECT, 2026
+## new.html.heex
+## File description:
+## Login page
+--%>
+
+<.glass_page flash={@flash}>
+  <div class="glass-card p-10 sm:p-12 space-y-8">
+    <div class="text-center">
+      <h1 class="glass-title text-4xl">Create your account</h1>
+    </div>
 
     <.form
       for={@form}
@@ -8,16 +17,22 @@
       phx-submit="save"
       action={~p"/register"}
       method="post"
+      class="space-y-6"
     >
-      <.input field={@form[:email]} type="email" label="Email" required />
-      <.input field={@form[:password]} type="password" label="Password" required />
-
+      <div class="space-y-2 text-left">
+        <label for={@form[:email].id} class="glass-muted block text-sm font-medium">Email</label>
+        <.input field={@form[:email]} type="email" required class="glass-input" />
+      </div>
+      <div class="space-y-2 text-left">
+        <label for={@form[:password].id} class="glass-muted block text-sm font-medium">Password</label>
+        <.input field={@form[:password]} type="password" required class="glass-input" />
+      </div>
       <button
         type="submit"
-        class="mt-6 w-full rounded-lg bg-indigo-600 px-4 py-2 text-white font-semibold hover:bg-indigo-500 transition-colors"
+        class="glass-button w-full text-primary font-semibold text-lg py-3 mt-4"
       >
-        Create account
+        <.icon name="hero-user-plus" class="w-5 h-5 mr-2" /> Create account
       </button>
     </.form>
   </div>
-</Layouts.app>
+</.glass_page>
