@@ -24,6 +24,7 @@ defmodule Dashboard.Accounts.User do
     field :confirmation_sent_at, :utc_datetime
     has_many :identities, Dashboard.Accounts.UserIdentity
     has_many :subscriptions, Dashboard.Services.Subscription
+    has_many :widgets, Dashboard.Widgets.WidgetInstance
     timestamps(type: :utc_datetime)
   end
 
