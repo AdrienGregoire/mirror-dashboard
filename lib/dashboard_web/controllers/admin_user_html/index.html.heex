@@ -5,57 +5,74 @@
 ## Admin template for listing and managing user accounts and roles
 --%>
 
-<Layouts.app flash={@flash}>
-  <div class="mx-auto max-w-4xl mt-16 px-6">
-    <h1 class="text-2xl font-bold mb-8 text-gray-900">Admin - Gestion des Utilisateurs</h1>
+<div class="relative min-h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden flex items-center justify-center p-4 sm:p-8">
+  <div class="absolute top-10 -left-10 w-96 h-96 bg-purple-300 dark:bg-purple-900 rounded-full mix-blend-multiply filter blur-3xl opacity-70">
+  </div>
+  <div class="absolute top-20 -right-10 w-96 h-96 bg-blue-300 dark:bg-blue-900 rounded-full mix-blend-multiply filter blur-3xl opacity-70">
+  </div>
+  <div class="absolute -bottom-10 left-1/3 w-96 h-96 bg-pink-300 dark:bg-pink-900 rounded-full mix-blend-multiply filter blur-3xl opacity-70">
+  </div>
 
-    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
-      <table class="min-w-full divide-y divide-gray-300">
-        <thead class="bg-gray-50">
-          <tr>
-            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
-              Email
-            </th>
-            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-              Rôle
-            </th>
-            <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-              <span class="sr-only">Actions</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200 bg-white">
-          <tr :for={user <- @users}>
-            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-700">
-              {user.email}
-            </td>
-            <td class="whitespace-nowrap px-3 py-4 text-sm">
-              <span class={[
-                "inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset",
-                (user.role == "admin" && "bg-purple-50 text-purple-700 ring-purple-700/10") ||
-                  "bg-blue-50 text-blue-700 ring-blue-700/10"
-              ]}>
-                {user.role}
-              </span>
-            </td>
-            <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 space-x-3">
-              <span :if={user.role != "admin"}>
+  <div class="relative z-10 w-full max-w-4xl">
+    <div class="glass-card p-8 sm:p-10 space-y-8">
+      <div class="text-center">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-glass-gradient tracking-tight">
+          Admin - Gestion des Utilisateurs
+        </h1>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-white/20 dark:border-white/10 text-gray-800 dark:text-gray-200">
+              <th scope="col" class="py-4 px-4 text-sm font-semibold">
+                Email
+              </th>
+              <th scope="col" class="py-4 px-4 text-sm font-semibold">
+                Rôle
+              </th>
+              <th scope="col" class="py-4 px-4 text-right text-sm font-semibold">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/10 dark:divide-white/5">
+            <tr
+              :for={user <- @users}
+              class="transition-colors hover:bg-white/10 dark:hover:bg-white/5"
+            >
+              <td class="whitespace-nowrap py-4 px-4 text-sm text-gray-900 dark:text-gray-100 font-medium">
+                {user.email}
+              </td>
+              <td class="whitespace-nowrap py-4 px-4 text-sm">
+                <span class={[
+                  "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold backdrop-blur-md border",
+                  (user.role == "admin" &&
+                     "bg-purple-500/20 text-purple-700 dark:text-purple-300 border-purple-500/30") ||
+                    "bg-blue-500/20 text-blue-700 dark:text-blue-300 border-blue-500/30"
+                ]}>
+                  {user.role}
+                </span>
+              </td>
+              <td class="whitespace-nowrap py-4 px-4 text-right text-sm font-medium space-x-2">
+                <span :if={user.role != "admin"}>
+                  <.link
+                    href={~p"/admin/users/#{user.id}/promote"}
+                    method="patch"
+                    class="glass-button text-xs py-1.5 px-3 text-primary"
+                  >Promouvoir</.link>
+                </span>
                 <.link
-                  href={~p"/admin/users/#{user.id}/promote"}
-                  method="patch"
-                  class="text-indigo-600 hover:text-indigo-900"
-                >Promouvoir</.link>
-              </span>
-              <.link
-                href={~p"/admin/users/#{user.id}"}
-                method="delete"
-                data-confirm="Es-tu sûr de vouloir supprimer cet utilisateur ?"
-                class="text-red-600 hover:text-red-900"
-              >Supprimer</.link>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                  href={~p"/admin/users/#{user.id}"}
+                  method="delete"
+                  data-confirm="Es-tu sûr de vouloir supprimer cet utilisateur ?"
+                  class="glass-button text-xs py-1.5 px-3 text-error hover:bg-error/20"
+                >Supprimer</.link>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-</Layouts.app>
+</div>

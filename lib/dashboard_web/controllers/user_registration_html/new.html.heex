@@ -1,23 +1,51 @@
-<Layouts.app flash={@flash}>
-  <div class="mx-auto max-w-md mt-16 px-6">
-    <h1 class="text-2xl font-bold mb-8 text-gray-900">Create your account</h1>
+<%!--
+## EPITECH PROJECT, 2026
+## new.html.heex
+## File description:
+## Login page
+--%>
 
-    <.form
-      for={@form}
-      id="registration-form"
-      phx-submit="save"
-      action={~p"/register"}
-      method="post"
-    >
-      <.input field={@form[:email]} type="email" label="Email" required />
-      <.input field={@form[:password]} type="password" label="Password" required />
-
-      <button
-        type="submit"
-        class="mt-6 w-full rounded-lg bg-indigo-600 px-4 py-2 text-white font-semibold hover:bg-indigo-500 transition-colors"
-      >
-        Create account
-      </button>
-    </.form>
+<div class="relative min-h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden flex items-center justify-center p-4 sm:p-8">
+  <div class="absolute top-10 -left-10 w-96 h-96 bg-purple-300 dark:bg-purple-900 rounded-full mix-blend-multiply filter blur-3xl opacity-70">
   </div>
-</Layouts.app>
+  <div class="absolute top-20 -right-10 w-96 h-96 bg-blue-300 dark:bg-blue-900 rounded-full mix-blend-multiply filter blur-3xl opacity-70">
+  </div>
+  <div class="absolute -bottom-10 left-1/3 w-96 h-96 bg-pink-300 dark:bg-pink-900 rounded-full mix-blend-multiply filter blur-3xl opacity-70">
+  </div>
+
+  <div class="relative z-10 w-full max-w-lg">
+    <div class="glass-card p-10 sm:p-12 space-y-8">
+      <div class="text-center">
+        <h1 class="text-4xl font-extrabold text-glass-gradient tracking-tight">
+          Create your account
+        </h1>
+      </div>
+
+      <.form
+        for={@form}
+        id="registration-form"
+        phx-submit="save"
+        action={~p"/register"}
+        method="post"
+        class="space-y-6"
+      >
+        <div class="space-y-2 text-left">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Email</label>
+          <.input field={@form[:email]} type="email" required class="glass-input" />
+        </div>
+
+        <div class="space-y-2 text-left">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Password</label>
+          <.input field={@form[:password]} type="password" required class="glass-input" />
+        </div>
+
+        <button
+          type="submit"
+          class="glass-button w-full text-primary font-semibold text-lg py-3 mt-4"
+        >
+          <.icon name="hero-user-plus" class="w-5 h-5 mr-2" /> Create account
+        </button>
+      </.form>
+    </div>
+  </div>
+</div>
