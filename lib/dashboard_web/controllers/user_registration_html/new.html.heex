@@ -5,47 +5,34 @@
 ## Login page
 --%>
 
-<div class="relative min-h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden flex items-center justify-center p-4 sm:p-8">
-  <div class="absolute top-10 -left-10 w-96 h-96 bg-purple-300 dark:bg-purple-900 rounded-full mix-blend-multiply filter blur-3xl opacity-70">
-  </div>
-  <div class="absolute top-20 -right-10 w-96 h-96 bg-blue-300 dark:bg-blue-900 rounded-full mix-blend-multiply filter blur-3xl opacity-70">
-  </div>
-  <div class="absolute -bottom-10 left-1/3 w-96 h-96 bg-pink-300 dark:bg-pink-900 rounded-full mix-blend-multiply filter blur-3xl opacity-70">
-  </div>
-
-  <div class="relative z-10 w-full max-w-lg">
-    <div class="glass-card p-10 sm:p-12 space-y-8">
-      <div class="text-center">
-        <h1 class="text-4xl font-extrabold text-glass-gradient tracking-tight">
-          Create your account
-        </h1>
-      </div>
-
-      <.form
-        for={@form}
-        id="registration-form"
-        phx-submit="save"
-        action={~p"/register"}
-        method="post"
-        class="space-y-6"
-      >
-        <div class="space-y-2 text-left">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Email</label>
-          <.input field={@form[:email]} type="email" required class="glass-input" />
-        </div>
-
-        <div class="space-y-2 text-left">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Password</label>
-          <.input field={@form[:password]} type="password" required class="glass-input" />
-        </div>
-
-        <button
-          type="submit"
-          class="glass-button w-full text-primary font-semibold text-lg py-3 mt-4"
-        >
-          <.icon name="hero-user-plus" class="w-5 h-5 mr-2" /> Create account
-        </button>
-      </.form>
+<.glass_page flash={@flash}>
+  <div class="glass-card p-10 sm:p-12 space-y-8">
+    <div class="text-center">
+      <h1 class="glass-title text-4xl">Create your account</h1>
     </div>
+
+    <.form
+      for={@form}
+      id="registration-form"
+      phx-submit="save"
+      action={~p"/register"}
+      method="post"
+      class="space-y-6"
+    >
+      <div class="space-y-2 text-left">
+        <label for={@form[:email].id} class="glass-muted block text-sm font-medium">Email</label>
+        <.input field={@form[:email]} type="email" required class="glass-input" />
+      </div>
+      <div class="space-y-2 text-left">
+        <label for={@form[:password].id} class="glass-muted block text-sm font-medium">Password</label>
+        <.input field={@form[:password]} type="password" required class="glass-input" />
+      </div>
+      <button
+        type="submit"
+        class="glass-button w-full text-primary font-semibold text-lg py-3 mt-4"
+      >
+        <.icon name="hero-user-plus" class="w-5 h-5 mr-2" /> Create account
+      </button>
+    </.form>
   </div>
-</div>
+</.glass_page>
