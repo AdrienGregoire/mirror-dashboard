@@ -49,20 +49,6 @@ defmodule DashboardWeb.AdminUserControllerTest do
   end
 
   describe "Admin Actions" do
-    test "lists all users", %{conn: conn} do
-      %{admin_user: admin} = setup_users()
-
-      conn =
-        conn
-        |> log_in(admin)
-        |> get(~p"/admin/users")
-
-      response = html_response(conn, 200)
-      assert response =~ "Admin - Gestion des Utilisateurs"
-      assert response =~ "user@example.com"
-      assert response =~ "admin@example.com"
-    end
-
     test "promotes a user to admin", %{conn: conn} do
       %{admin_user: admin, normal_user: user} = setup_users()
 

@@ -30,11 +30,11 @@
   --color-base-200: oklch(25.26% 0.014 253.1);
   --color-base-300: oklch(20.15% 0.012 254.09);
   --color-base-content: oklch(97.807% 0.029 256.847);
-  --color-primary: oklch(58% 0.233 277.117);
+  --color-primary: oklch(72% 0.17 285);
   --color-primary-content: oklch(96% 0.018 272.314);
   --color-secondary: oklch(58% 0.233 277.117);
   --color-secondary-content: oklch(96% 0.018 272.314);
-  --color-accent: oklch(60% 0.25 292.717);
+  --color-accent: oklch(70% 0.2 330);
   --color-accent-content: oklch(96% 0.016 293.756);
   --color-neutral: oklch(37% 0.044 257.287);
   --color-neutral-content: oklch(98% 0.003 247.858);
@@ -65,11 +65,11 @@
   --color-base-200: oklch(96% 0.001 286.375);
   --color-base-300: oklch(92% 0.004 286.32);
   --color-base-content: oklch(21% 0.006 285.885);
-  --color-primary: oklch(70% 0.213 47.604);
+  --color-primary: oklch(55% 0.22 285);
   --color-primary-content: oklch(98% 0.016 73.684);
   --color-secondary: oklch(55% 0.027 264.364);
   --color-secondary-content: oklch(98% 0.002 247.839);
-  --color-accent: oklch(0% 0 0);
+  --color-accent: oklch(65% 0.22 330);
   --color-accent-content: oklch(100% 0 0);
   --color-neutral: oklch(44% 0.017 285.786);
   --color-neutral-content: oklch(98% 0 0);
@@ -91,6 +91,61 @@
   --noise: 0;
 }
 
+@theme {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", system-ui,
+    "Segoe UI", Roboto, sans-serif;
+}
+
+@layer base {
+  :root {
+    --glass-blur-panel: 40px;
+    --glass-blur-control: 16px;
+    --glass-blur-field: 12px;
+    --glass-blur-blob: 64px;
+    --glass-blob-opacity: 0.7;
+  }
+
+  :root,
+  [data-theme="light"] {
+    --glass-bg-page: oklch(98.4% 0.003 247.858);
+    --glass-blob-1: oklch(82.7% 0.119 306.383);
+    --glass-blob-2: oklch(80.9% 0.105 251.813);
+    --glass-blob-3: oklch(82.3% 0.12 346.018);
+    --glass-surface: rgb(255 255 255 / 0.6);
+    --glass-surface-soft: rgb(255 255 255 / 0.4);
+    --glass-surface-hover: rgb(255 255 255 / 0.7);
+    --glass-field: rgb(0 0 0 / 0.05);
+    --glass-field-focus: rgb(255 255 255 / 0.6);
+    --glass-border: rgb(255 255 255 / 0.5);
+    --glass-border-strong: rgb(255 255 255 / 0.6);
+    --glass-shadow: 0 8px 32px rgb(0 0 0 / 0.08);
+    --glass-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.05);
+    --glass-text: oklch(21% 0.034 264.665);
+    --glass-text-muted: oklch(44.6% 0.03 256.802);
+    --glass-gradient-from: oklch(21% 0.034 264.665);
+    --glass-gradient-to: oklch(55.1% 0.027 264.363);
+  }
+
+  [data-theme="dark"] {
+    --glass-bg-page: oklch(20.8% 0.042 265.755);
+    --glass-blob-1: oklch(38.1% 0.176 304.987);
+    --glass-blob-2: oklch(37.9% 0.146 265.522);
+    --glass-blob-3: oklch(40.8% 0.153 2.432);
+    --glass-surface: rgb(0 0 0 / 0.4);
+    --glass-surface-soft: rgb(255 255 255 / 0.1);
+    --glass-surface-hover: rgb(255 255 255 / 0.2);
+    --glass-field: rgb(0 0 0 / 0.3);
+    --glass-field-focus: rgb(0 0 0 / 0.5);
+    --glass-border: rgb(255 255 255 / 0.1);
+    --glass-border-strong: rgb(255 255 255 / 0.1);
+    --glass-shadow: 0 8px 32px rgb(0 0 0 / 0.3);
+    --glass-text: oklch(96.7% 0.003 264.542);
+    --glass-text-muted: oklch(87.2% 0.01 258.338);
+    --glass-gradient-from: #fff;
+    --glass-gradient-to: oklch(70.7% 0.022 261.325);
+  }
+}
+
 /* Add variants based on LiveView classes */
 @custom-variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);
 @custom-variant phx-submit-loading (.phx-submit-loading&, .phx-submit-loading &);
@@ -103,44 +158,78 @@
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
 @utility glass-panel {
-  @apply bg-white/60 dark:bg-black/40;
-  @apply backdrop-blur-2xl;
-  @apply border border-white/50 dark:border-white/10;
-  @apply shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)];
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--glass-blur-panel));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  color: var(--glass-text);
 }
 
 @utility glass-card {
-  @apply glass-panel;
-  @apply rounded-3xl;
-  @apply overflow-hidden;
+  @apply glass-panel rounded-3xl overflow-hidden;
 }
 
 @utility glass-button {
-  @apply inline-flex items-center justify-center px-4 py-2;
-  @apply bg-white/40 dark:bg-white/10;
-  @apply backdrop-blur-lg;
-  @apply border border-white/60 dark:border-white/10;
-  @apply shadow-sm;
-  @apply rounded-xl font-medium text-gray-900 dark:text-gray-100;
+  @apply inline-flex items-center justify-center px-4 py-2 rounded-xl font-medium;
   @apply transition-all duration-300 ease-out;
-  @apply hover:bg-white/70 dark:hover:bg-white/20;
-  @apply hover:shadow-md hover:-translate-y-0.5;
-  @apply active:scale-95;
+  @apply hover:-translate-y-0.5 active:scale-95;
+  background: var(--glass-surface-soft);
+  backdrop-filter: blur(var(--glass-blur-control));
+  border: 1px solid var(--glass-border-strong);
+  box-shadow: var(--glass-shadow-sm);
+
+  &:hover {
+    background: var(--glass-surface-hover);
+    box-shadow: var(--glass-shadow);
+  }
+}
+
+@utility glass-input {
+  @apply w-full px-4 py-3 rounded-2xl transition-all duration-300;
+  @apply focus:outline-none focus:ring-2 focus:ring-primary/50;
+  background: var(--glass-field);
+  backdrop-filter: blur(var(--glass-blur-field));
+  border: 1px solid var(--glass-border);
+  color: var(--glass-text);
+
+  &::placeholder { color: var(--glass-text-muted); }
+  &:focus { background: var(--glass-field-focus); }
 }
 
 @utility text-glass-gradient {
   @apply bg-clip-text text-transparent;
-  @apply bg-gradient-to-br from-gray-900 to-gray-500;
-  @apply dark:from-white dark:to-gray-400;
+  background-image: linear-gradient(
+    to bottom right,
+    var(--glass-gradient-from),
+    var(--glass-gradient-to)
+  );
 }
 
-@utility glass-input {
-  @apply w-full px-4 py-3;
-  @apply bg-black/5 dark:bg-black/30;
-  @apply backdrop-blur-md;
-  @apply border border-white/40 dark:border-white/10;
-  @apply rounded-2xl text-gray-900 dark:text-white;
-  @apply placeholder-gray-500 dark:placeholder-gray-400;
-  @apply transition-all duration-300;
-  @apply focus:outline-none focus:ring-2 focus:ring-primary/50 focus:bg-white/60 dark:focus:bg-black/50;
+@utility glass-title { @apply font-extrabold tracking-tight text-glass-gradient; }
+@utility glass-muted { color: var(--glass-text-muted); }
+
+@utility glass-blob {
+  position: absolute;
+  width: 24rem;
+  height: 24rem;
+  border-radius: 9999px;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  filter: blur(var(--glass-blur-blob));
+  opacity: var(--glass-blob-opacity);
+}
+
+@utility glass-toast {
+  @apply px-4 py-3 rounded-2xl text-sm;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--glass-blur-panel));
+  border: 1px solid var(--glass-border);
+  color: var(--glass-text);
+  box-shadow: var(--glass-shadow);
+}
+@utility glass-toast-info {
+  box-shadow: var(--glass-shadow), inset 4px 0 0 var(--color-info);
+}
+@utility glass-toast-error {
+  box-shadow: var(--glass-shadow), inset 4px 0 0 var(--color-error);
 }
