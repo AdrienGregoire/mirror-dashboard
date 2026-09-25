@@ -7,7 +7,7 @@
 
 defmodule Dashboard.WidgetsTest do
   use Dashboard.DataCase, async: true
-  alias Dashboard.{Accounts, Services, Widgets}
+  alias Dashboard.{Accounts, Services, Timer, Widgets}
   alias Dashboard.Widgets.WidgetInstance
 
   @rss %{
@@ -48,6 +48,7 @@ defmodule Dashboard.WidgetsTest do
       assert first.user_id == user.id
       assert first.config == %{"link" => "https://example.com/rss", "number" => 5}
       assert first.refresh_rate == 60
+      assert Timer.get_refresh_rate(first.id) == 60
 
       assert {:ok, second} = Widgets.add_widget(user, @rss)
       assert second.position == 1
@@ -140,6 +141,7 @@ defmodule Dashboard.WidgetsTest do
 
       assert updated.config == %{"link" => "https://b.com", "number" => 8}
       assert updated.refresh_rate == 120
+      assert Timer.get_refresh_rate(updated.id) == 120
     end
 
     test "cannot change the widget type nor the position", %{user: user} do
@@ -197,7 +199,8 @@ defmodule Dashboard.WidgetsTest do
     test "deletes the widget and closes the gap", %{user: user} do
       [_, second, _] = Enum.map(1..3, &add_rss!(user, &1))
 
-      assert {:ok, _} = Widgets.delete_widget(second)
+      assert {:ok, deleted} = Widgets.delete_widget(second)
+      assert Timer.get_refresh_rate(deleted.id) == nil
       assert numbers(user) == [1, 3]
       assert positions(user) == [0, 1]
     end
