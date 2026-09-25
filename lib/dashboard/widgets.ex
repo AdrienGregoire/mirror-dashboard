@@ -18,12 +18,22 @@ defmodule Dashboard.Widgets do
   alias Dashboard.Repo
   alias Dashboard.Accounts.User
   alias Dashboard.Services
+  alias Dashboard.Timer
   alias Dashboard.Widgets.WidgetInstance
 
   def list_widgets(%User{id: user_id}) do
     WidgetInstance
     |> where(user_id: ^user_id)
     |> order_by([:position, :id])
+    |> Repo.all()
+  end
+
+  @doc """
+  Returns every widget instance. Used by the timer when the application boots.
+  """
+  def list_all do
+    WidgetInstance
+    |> order_by(:id)
     |> Repo.all()
   end
 
@@ -61,15 +71,24 @@ defmodule Dashboard.Widgets do
       |> Repo.insert()
       |> unwrap_or_rollback()
     end)
+    |> track_refresh()
   end
 
   @doc """
   Updates the config and / or the refresh rate of a widget.
   """
-  def reconfigure_widget(%WidgetInstance{} = widget_instance, attrs) do
+  def reconfigure_widget(%WidgetInstance{refresh_rate: previous} = widget_instance, attrs) do
     widget_instance
     |> WidgetInstance.update_changeset(attrs)
     |> Repo.update()
+    |> case do
+      {:ok, updated} = result ->
+        if updated.refresh_rate != previous, do: Timer.register(updated)
+        result
+
+      error ->
+        error
+    end
   end
 
   @doc """
@@ -129,6 +148,14 @@ defmodule Dashboard.Widgets do
         {:error, changeset} -> Repo.rollback(changeset)
       end
     end)
+    |> case do
+      {:ok, deleted} = result ->
+        Timer.unregister(deleted.id)
+        result
+
+      error ->
+        error
+    end
   end
 
   defp lock_positions(user_id) do
@@ -148,6 +175,13 @@ defmodule Dashboard.Widgets do
       changeset
     end
   end
+
+  defp track_refresh({:ok, widget} = result) do
+    Timer.register(widget)
+    result
+  end
+
+  defp track_refresh(error), do: error
 
   defp unwrap_or_rollback({:ok, result}), do: result
   defp unwrap_or_rollback({:error, reason}), do: Repo.rollback(reason)

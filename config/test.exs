@@ -30,6 +30,9 @@ config :dashboard, DashboardWeb.Endpoint,
 # Key used to encrypt service credentials, test only
 config :dashboard, Dashboard.Vault, key: "cHqnCVVlJNnyzwDJlbO6wi/F76NT3nx9W2XYp/P2E+c="
 
+# The boot load queries every widget. Tests register instances themselves.
+config :dashboard, Dashboard.Timer, load_instances: false
+
 # In test we don't send emails
 config :dashboard, Dashboard.Mailer, adapter: Swoosh.Adapters.Test
 
