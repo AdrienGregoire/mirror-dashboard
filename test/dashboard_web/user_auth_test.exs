@@ -118,4 +118,15 @@ defmodule DashboardWeb.UserAuthTest do
       refute conn.halted
     end
   end
+
+  describe "post_login_path/1" do
+    test "sends a user with no preferred service to onboarding", %{user: user} do
+      assert UserAuth.post_login_path(user) == ~p"/onboarding"
+    end
+
+    test "sends a user with preferred services to the dashboard", %{user: user} do
+      {:ok, user} = Accounts.set_preferred_services(user, ["foot"])
+      assert UserAuth.post_login_path(user) == ~p"/dashboard"
+    end
+  end
 end

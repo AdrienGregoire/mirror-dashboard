@@ -50,7 +50,7 @@ defmodule DashboardWeb.SessionControllerTest do
           user: %{"email" => user.email, "password" => @valid_attrs.password}
         )
 
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/onboarding"
       assert get_session(conn, :user_id) == user.id
     end
 

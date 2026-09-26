@@ -21,7 +21,7 @@ defmodule DashboardWeb.SessionController do
         conn
         |> put_flash(:info, "Welcome back!")
         |> UserAuth.log_in_user(user)
-        |> redirect(to: ~p"/")
+        |> redirect(to: UserAuth.post_login_path(user))
 
       nil ->
         conn

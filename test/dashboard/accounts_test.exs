@@ -198,4 +198,44 @@ defmodule Dashboard.AccountsTest do
       assert Accounts.get_user_by_email_and_password(user.email, "whatever123") == nil
     end
   end
+
+  describe "preferred_services_changeset/2" do
+    test "accepts an empty list" do
+      changeset = User.preferred_services_changeset(%User{}, %{preferred_services: []})
+      assert changeset.valid?
+    end
+
+    test "accepts known service names" do
+      changeset =
+        User.preferred_services_changeset(%User{}, %{preferred_services: ["foot", "basket"]})
+
+      assert changeset.valid?
+    end
+
+    test "rejects an unknown service name" do
+      changeset = User.preferred_services_changeset(%User{}, %{preferred_services: ["rugby"]})
+
+      refute changeset.valid?
+      assert "unknown service rugby" in errors_on(changeset).preferred_services
+    end
+  end
+
+  describe "set_preferred_services/2" do
+    test "persists the chosen services" do
+      {:ok, user} = Accounts.register_user(@valid_attrs, confirmation_url_fun())
+
+      assert {:ok, updated} = Accounts.set_preferred_services(user, ["foot", "tennis"])
+      assert updated.preferred_services == ["foot", "tennis"]
+      assert Accounts.get_user(user.id).preferred_services == ["foot", "tennis"]
+    end
+
+    test "rejects an unknown service and keeps the previous value" do
+      {:ok, user} = Accounts.register_user(@valid_attrs, confirmation_url_fun())
+      {:ok, user} = Accounts.set_preferred_services(user, ["foot"])
+
+      assert {:error, changeset} = Accounts.set_preferred_services(user, ["not-a-service"])
+      assert "unknown service not-a-service" in errors_on(changeset).preferred_services
+      assert Accounts.get_user(user.id).preferred_services == ["foot"]
+    end
+  end
 end

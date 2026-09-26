@@ -84,9 +84,9 @@ defmodule Dashboard.TimerTest do
 
     {:ok, widget} =
       Widgets.add_widget(user, %{
-        service: "rss",
-        widget: "article_list",
-        config: %{"link" => "https://example.com/rss", "number" => 5},
+        service: "foot",
+        widget: "news",
+        config: %{"league" => "ligue-1", "number" => 5},
         refresh_rate: 45
       })
 

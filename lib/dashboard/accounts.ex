@@ -53,6 +53,12 @@ defmodule Dashboard.Accounts do
 
   def get_user(id), do: Repo.get(User, id)
 
+  def set_preferred_services(%User{} = user, service_names) when is_list(service_names) do
+    user
+    |> User.preferred_services_changeset(%{preferred_services: service_names})
+    |> Repo.update()
+  end
+
   def get_user_by_email_and_password(email, password)
       when is_binary(email) and is_binary(password) do
     case get_user_by_email(email) do
