@@ -37,8 +37,7 @@ defmodule DashboardWeb.OnboardingLive do
          socket
          |> assign(current_user: user)
          |> put_flash(:info, "Services enregistrés !")
-         # TODO(Kyle): pointer vers ~p"/dashboard" une fois la grille (3.2) routée
-         |> push_navigate(to: ~p"/")}
+         |> push_navigate(to: ~p"/dashboard")}
 
       {:error, _changeset} ->
         {:noreply, put_flash(socket, :error, "Choisis au moins un service valide.")}

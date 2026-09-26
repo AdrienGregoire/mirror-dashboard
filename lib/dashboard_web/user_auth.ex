@@ -13,7 +13,7 @@ defmodule DashboardWeb.UserAuth do
   @session_user_id_key :user_id
 
   def post_login_path(%Accounts.User{preferred_services: []}), do: ~p"/onboarding"
-  def post_login_path(%Accounts.User{}), do: ~p"/"
+  def post_login_path(%Accounts.User{}), do: ~p"/dashboard"
 
   def log_in_user(conn, user) do
     conn
@@ -54,7 +54,7 @@ defmodule DashboardWeb.UserAuth do
   def on_mount(:ensure_authenticated, _params, session, socket) do
     socket =
       Phoenix.Component.assign_new(socket, :current_user, fn ->
-        case session[@session_user_id_key] do
+        case session["user_id"] do
           nil -> nil
           user_id -> Accounts.get_user(user_id)
         end

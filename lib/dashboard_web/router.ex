@@ -40,6 +40,7 @@ defmodule DashboardWeb.Router do
 
     live_session :authenticated, on_mount: [{DashboardWeb.UserAuth, :ensure_authenticated}] do
       live "/onboarding", OnboardingLive
+      live "/dashboard", DashboardLive
     end
 
     get "/account", AccountController, :show
