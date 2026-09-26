@@ -6,57 +6,96 @@
 #
 
 defmodule Dashboard.Services.Registry do
-  @moduledoc """
-  Catalog of every service and widget type supported by the server.
-
-  Adding a service or a widget type is done here: it is then automatically
-  exposed through `/about.json` and available for subscriptions.
-  """
-
   alias Dashboard.Services.{Service, WidgetType}
 
   @services [
     %Service{
-      name: "weather",
-      description: "Current weather conditions",
+      name: "foot",
+      description: "Football data powered by FotMob",
       auth: :none,
       widgets: [
         %WidgetType{
-          name: "city_temperature",
-          description: "Display temperature for a city",
+          name: "standings",
+          description: "Classement d'un championnat",
+          params: [%{name: "league", type: "string"}]
+        },
+        %WidgetType{
+          name: "news",
+          description: "Dernières actus d'une équipe ou d'un championnat",
           params: [
-            %{name: "city", type: "string"}
+            %{name: "league", type: "string"},
+            %{name: "number", type: "integer"}
           ]
+        },
+        %WidgetType{
+          name: "stats",
+          description: "Statistiques d'une équipe",
+          params: [%{name: "team", type: "string"}]
+        },
+        %WidgetType{
+          name: "next_match",
+          description: "Prochain match d'une équipe",
+          params: [%{name: "team", type: "string"}]
         }
       ]
     },
     %Service{
-      name: "rss",
-      description: "Articles from any RSS feed",
+      name: "basket",
+      description: "Basketball data powered by API-Sports",
       auth: :none,
       widgets: [
         %WidgetType{
-          name: "article_list",
-          description: "Displaying the list of the last articles",
+          name: "standings",
+          description: "Classement d'un championnat",
+          params: [%{name: "league", type: "string"}]
+        },
+        %WidgetType{
+          name: "news",
+          description: "Dernières actus d'une équipe ou d'un championnat",
           params: [
-            %{name: "link", type: "string"},
+            %{name: "league", type: "string"},
             %{name: "number", type: "integer"}
           ]
+        },
+        %WidgetType{
+          name: "stats",
+          description: "Statistiques d'une équipe",
+          params: [%{name: "team", type: "string"}]
+        },
+        %WidgetType{
+          name: "next_match",
+          description: "Prochain match d'une équipe",
+          params: [%{name: "team", type: "string"}]
         }
       ]
     },
     %Service{
-      name: "github",
-      description: "Activity of your GitHub repositories",
-      auth: :oauth,
+      name: "tennis",
+      description: "Tennis data powered by API-Sports",
+      auth: :none,
       widgets: [
         %WidgetType{
-          name: "recent_commits",
-          description: "Display the last commits of a repository",
+          name: "standings",
+          description: "Classement ATP/WTA",
+          params: [%{name: "league", type: "string"}]
+        },
+        %WidgetType{
+          name: "news",
+          description: "Dernières actus d'un joueur ou d'un tournoi",
           params: [
-            %{name: "repository", type: "string"},
+            %{name: "league", type: "string"},
             %{name: "number", type: "integer"}
           ]
+        },
+        %WidgetType{
+          name: "stats",
+          description: "Statistiques d'un joueur",
+          params: [%{name: "team", type: "string"}]
+        },
+        %WidgetType{
+          name: "next_match",
+          description: "Prochain match d'un joueur",
+          params: [%{name: "team", type: "string"}]
         }
       ]
     }
