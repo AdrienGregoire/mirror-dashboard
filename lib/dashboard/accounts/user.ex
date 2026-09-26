@@ -22,6 +22,7 @@ defmodule Dashboard.Accounts.User do
     field :confirmed_at, :utc_datetime
     field :confirmation_token, :string
     field :confirmation_sent_at, :utc_datetime
+    field :preferred_services, {:array, :string}, default: []
     has_many :identities, Dashboard.Accounts.UserIdentity
     has_many :subscriptions, Dashboard.Services.Subscription
     has_many :widgets, Dashboard.Widgets.WidgetInstance
@@ -51,6 +52,20 @@ defmodule Dashboard.Accounts.User do
       confirmed_at: now,
       confirmation_token: nil
     })
+  end
+
+  def preferred_services_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:preferred_services])
+    |> validate_required([:preferred_services])
+    |> validate_change(:preferred_services, fn :preferred_services, names ->
+      known = Dashboard.Services.Registry.all() |> Enum.map(& &1.name)
+      unknown = Enum.reject(names, &(&1 in known))
+
+      if unknown == [],
+        do: [],
+        else: [preferred_services: "unknown service #{Enum.join(unknown, ", ")}"]
+    end)
   end
 
   def role_changeset(user, attrs) do

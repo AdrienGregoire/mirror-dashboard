@@ -36,6 +36,17 @@ defmodule DashboardWeb.Router do
   end
 
   scope "/", DashboardWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live_session :authenticated, on_mount: [{DashboardWeb.UserAuth, :ensure_authenticated}] do
+      live "/onboarding", OnboardingLive
+      live "/dashboard", DashboardLive
+    end
+
+    get "/account", AccountController, :show
+  end
+
+  scope "/", DashboardWeb do
     pipe_through [:browser, :guest_only]
 
     get "/register", UserRegistrationController, :new
