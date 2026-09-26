@@ -25,7 +25,7 @@ defmodule DashboardWeb.AuthController do
         conn
         |> put_flash(:info, "Welcome!")
         |> UserAuth.log_in_user(user)
-        |> redirect(to: ~p"/")
+        |> redirect(to: UserAuth.post_login_path(user))
 
       {:error, :no_email_from_provider} ->
         conn

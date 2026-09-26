@@ -17,7 +17,7 @@ defmodule DashboardWeb.AuthControllerTest do
   end
 
   describe "callback/2 on success" do
-    test "logs the user in and redirects to /", %{conn: conn} do
+    test "logs the user in and redirects to /onboarding", %{conn: conn} do
       auth = %{provider: :github, uid: "999", info: %{email: "octocat@epitech.eu"}}
 
       conn =
@@ -26,7 +26,7 @@ defmodule DashboardWeb.AuthControllerTest do
         |> assign(:ueberauth_auth, auth)
         |> AuthController.callback(%{})
 
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/onboarding"
 
       user = Accounts.get_user_by_email("octocat@epitech.eu")
       assert user != nil
