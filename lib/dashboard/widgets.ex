@@ -47,6 +47,25 @@ defmodule Dashboard.Widgets do
     end
   end
 
+  @doc """
+  Fetches the data to display in a widget through the provider of its service.
+  Called on mount and on every `{:refresh_widget, id}` sent by the timer.
+  """
+  def fetch_data(%WidgetInstance{service: service_name} = widget_instance) do
+    with %Services.Service{} = service <- Services.get_service(service_name),
+         {:ok, credentials} <- credentials(service, widget_instance) do
+      Services.Provider.fetch(
+        service,
+        widget_instance.widget,
+        widget_instance.config,
+        credentials
+      )
+    else
+      nil -> {:error, :unknown_service}
+      error -> error
+    end
+  end
+
   def change_widget(%WidgetInstance{} = widget_instance, attrs \\ %{}) do
     WidgetInstance.update_changeset(widget_instance, attrs)
   end
@@ -173,6 +192,14 @@ defmodule Dashboard.Widgets do
       Ecto.Changeset.add_error(changeset, :service, "requires a subscription")
     else
       changeset
+    end
+  end
+
+  defp credentials(service, %WidgetInstance{user_id: user_id}) do
+    if Services.Service.requires_subscription?(service) do
+      Services.get_credentials(%User{id: user_id}, service.name)
+    else
+      {:ok, %{}}
     end
   end
 
