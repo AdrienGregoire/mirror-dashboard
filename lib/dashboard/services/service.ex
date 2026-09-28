@@ -14,19 +14,23 @@ defmodule Dashboard.Services.Service do
     * `:none` - available by default to any authenticated user
     * `:oauth` - the user links an account, we store its tokens
     * `:credentials` - the user provides a username and a password
+
+  `provider` is the module implementing `Dashboard.Services.Provider` that
+  fetches the widgets data, `nil` while the service is not plugged yet.
   """
 
   alias Dashboard.Services.WidgetType
 
   @derive {Jason.Encoder, only: [:name, :widgets]}
   @enforce_keys [:name, :description, :auth, :widgets]
-  defstruct [:name, :description, :auth, widgets: []]
+  defstruct [:name, :description, :auth, provider: nil, widgets: []]
 
   @type auth :: :none | :oauth | :credentials
   @type t :: %__MODULE__{
           name: String.t(),
           description: String.t(),
           auth: auth(),
+          provider: module() | nil,
           widgets: [WidgetType.t()]
         }
 
