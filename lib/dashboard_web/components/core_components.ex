@@ -506,6 +506,70 @@ defmodule DashboardWeb.CoreComponents do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
   end
 
+  @doc """
+  Renders a modal in the glass theme.
+
+  The modal is displayed as long as it is rendered: the parent toggles it
+  with `:if`. `on_cancel` runs on escape, on backdrop click and on the close
+  button.
+
+  ## Examples
+
+      <.glass_modal :if={@open} id="confirm-modal" on_cancel={JS.push("close")}>
+        This is a modal.
+      </.glass_modal>
+  """
+  attr :id, :string, required: true
+  attr :on_cancel, JS, default: %JS{}
+  attr :max_w, :string, default: "max-w-2xl", doc: "classe Tailwind de largeur max"
+  slot :inner_block, required: true
+
+  def glass_modal(assigns) do
+    ~H"""
+    <div
+      id={@id}
+      class="fixed inset-0 z-40 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      phx-window-keydown={@on_cancel}
+      phx-key="escape"
+    >
+      <div
+        id={"#{@id}-backdrop"}
+        class="absolute inset-0 bg-black/30 backdrop-blur-sm"
+        aria-hidden="true"
+        phx-click={@on_cancel}
+        phx-mounted={JS.transition({"ease-out duration-200", "opacity-0", "opacity-100"})}
+      >
+      </div>
+
+      <.focus_wrap
+        id={"#{@id}-container"}
+        class={["glass-card relative w-full", @max_w]}
+        phx-mounted={
+          JS.transition(
+            {"ease-out duration-300", "opacity-0 translate-y-4 sm:scale-95",
+             "opacity-100 translate-y-0 sm:scale-100"}
+          )
+        }
+      >
+        <button
+          type="button"
+          phx-click={@on_cancel}
+          class="absolute top-5 right-5 z-10 cursor-pointer glass-muted hover:opacity-70"
+          aria-label="Fermer"
+        >
+          <.icon name="hero-x-mark" class="size-6" />
+        </button>
+
+        <div class="max-h-[90vh] overflow-y-auto p-8 sm:p-10">
+          {render_slot(@inner_block)}
+        </div>
+      </.focus_wrap>
+    </div>
+    """
+  end
+
   attr :flash, :map, default: %{}
   attr :max_w, :string, default: "max-w-lg", doc: "classe Tailwind de largeur max"
   slot :inner_block, required: true

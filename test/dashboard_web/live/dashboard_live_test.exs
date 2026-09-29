@@ -97,4 +97,102 @@ defmodule DashboardWeb.DashboardLiveTest do
 
     assert Widgets.get_widget(other_user, other_widget.id).position == 0
   end
+
+  describe "add widget flow" do
+    setup %{conn: conn} do
+      user = user_fixture(["foot", "basket"])
+      {:ok, view, _html} = conn |> log_in(user) |> live(~p"/dashboard")
+      %{user: user, view: view}
+    end
+
+    defp open_modal(view), do: view |> element("#open-add-widget") |> render_click()
+
+    defp pick_type(view, widget) do
+      view |> element("#add-widget button[phx-value-widget='#{widget}']") |> render_click()
+    end
+
+    test "adds a configured widget to the active service", %{user: user, view: view} do
+      assert open_modal(view) =~ "Classement"
+
+      assert pick_type(view, "news") =~ "Nombre d&#39;éléments"
+
+      view
+      |> form("#add-widget-config", config: %{league: "ligue-1", number: "5"})
+      |> render_submit()
+
+      view |> element("#add-widget button[phx-value-rate='900']") |> render_click()
+      html = view |> form("#add-widget-refresh") |> render_submit()
+
+      assert html =~ "Toutes les 15 min"
+      assert html =~ "ligue-1"
+
+      view |> element("#add-widget button", "Ajouter le widget") |> render_click()
+
+      assert render(view) =~ "Widget ajouté"
+      refute has_element?(view, "#add-widget-modal")
+
+      assert [widget] = Widgets.list_widgets(user)
+      assert widget.service == "foot"
+      assert widget.widget == "news"
+      assert widget.config == %{"league" => "ligue-1", "number" => 5}
+      assert widget.refresh_rate == 900
+    end
+
+    test "uses the active tab as service", %{user: user, view: view} do
+      view |> element("button[phx-value-service='basket']") |> render_click()
+      open_modal(view)
+      pick_type(view, "stats")
+
+      view |> form("#add-widget-config", config: %{team: "lakers"}) |> render_submit()
+      view |> form("#add-widget-refresh", refresh_rate: "120") |> render_submit()
+      view |> element("#add-widget button", "Ajouter le widget") |> render_click()
+
+      assert [%{service: "basket", refresh_rate: 120}] = Widgets.list_widgets(user)
+    end
+
+    test "shows the config errors and stays on the step", %{view: view} do
+      open_modal(view)
+      pick_type(view, "news")
+
+      html =
+        view
+        |> form("#add-widget-config", config: %{league: "", number: "abc"})
+        |> render_submit()
+
+      assert html =~ "Ce champ est requis."
+      assert html =~ "Doit être un nombre entier."
+      assert has_element?(view, "#add-widget-config")
+    end
+
+    test "rejects an out of range refresh rate", %{view: view} do
+      open_modal(view)
+      pick_type(view, "standings")
+      view |> form("#add-widget-config", config: %{league: "ligue-1"}) |> render_submit()
+
+      html = view |> form("#add-widget-refresh", refresh_rate: "5") |> render_submit()
+
+      assert html =~ "Choisis une valeur entre 10 s et 24 h."
+      assert has_element?(view, "#add-widget-refresh")
+    end
+
+    test "back keeps the entered config", %{view: view} do
+      open_modal(view)
+      pick_type(view, "standings")
+      view |> form("#add-widget-config", config: %{league: "ligue-1"}) |> render_submit()
+
+      html = view |> element("#add-widget-refresh button", "Retour") |> render_click()
+
+      assert html =~ ~s(value="ligue-1")
+    end
+
+    test "closing the modal adds nothing", %{user: user, view: view} do
+      open_modal(view)
+      pick_type(view, "standings")
+
+      render_click(view, "close_add_widget")
+
+      refute has_element?(view, "#add-widget-modal")
+      assert Widgets.list_widgets(user) == []
+    end
+  end
 end
