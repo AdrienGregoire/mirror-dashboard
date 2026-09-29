@@ -87,6 +87,7 @@ defmodule DashboardWeb do
       import Phoenix.HTML
       # Core UI components
       import DashboardWeb.CoreComponents
+      import DashboardWeb.AuthComponents
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS

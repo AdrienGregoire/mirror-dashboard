@@ -28,6 +28,16 @@ defmodule DashboardWeb.SessionControllerTest do
       assert response =~ "login-form"
     end
 
+    test "renders the glass card with the GitHub button and the sign up link", %{conn: conn} do
+      response = conn |> get(~p"/login") |> html_response(200)
+
+      assert response =~ "glass-card"
+      assert response =~ ~s(href="/auth/github")
+      assert response =~ "Continue with GitHub"
+      assert response =~ ~s(href="/register")
+      assert response =~ ~s(autocomplete="current-password")
+    end
+
     test "redirects an already logged in user to /", %{conn: conn} do
       user = register_and_confirm_user()
 
@@ -63,6 +73,17 @@ defmodule DashboardWeb.SessionControllerTest do
       response = html_response(conn, 200)
       assert response =~ "Invalid email or password"
       assert get_session(conn, :user_id) == nil
+    end
+
+    test "keeps the email but never echoes the password after a failed login", %{conn: conn} do
+      user = register_and_confirm_user()
+
+      conn =
+        post(conn, ~p"/login", user: %{"email" => user.email, "password" => "wrong-password"})
+
+      response = html_response(conn, 200)
+      assert response =~ ~s(value="#{user.email}")
+      refute response =~ "wrong-password"
     end
 
     test "rejects an unknown email", %{conn: conn} do

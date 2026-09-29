@@ -2,31 +2,36 @@
 ## EPITECH PROJECT, 2026
 ## new.html.heex
 ## File description:
-## Login page
+## Registration page
 --%>
 
 <.glass_page flash={@flash}>
-  <div class="glass-card p-10 sm:p-12 space-y-8">
-    <div class="text-center">
-      <h1 class="glass-title text-4xl">Create your account</h1>
-    </div>
-
+  <.auth_card title="Create your account" subtitle="Dashboard Sport">
     <.form
       for={@form}
       id="registration-form"
-      phx-submit="save"
       action={~p"/register"}
       method="post"
       class="space-y-6"
     >
-      <div class="space-y-2 text-left">
-        <label for={@form[:email].id} class="glass-muted block text-sm font-medium">Email</label>
-        <.input field={@form[:email]} type="email" required class="glass-input" />
-      </div>
-      <div class="space-y-2 text-left">
-        <label for={@form[:password].id} class="glass-muted block text-sm font-medium">Password</label>
-        <.input field={@form[:password]} type="password" required class="glass-input" />
-      </div>
+      <.auth_input
+        field={@form[:email]}
+        type="email"
+        label="Email"
+        placeholder="nom@exemple.com"
+        autocomplete="email"
+        required
+        autofocus
+      />
+      <.auth_input
+        field={@form[:password]}
+        type="password"
+        label="Password"
+        placeholder="••••••••"
+        hint="8 characters minimum"
+        autocomplete="new-password"
+        required
+      />
       <button
         type="submit"
         class="glass-button w-full text-primary font-semibold text-lg py-3 mt-4"
@@ -34,5 +39,15 @@
         <.icon name="hero-user-plus" class="w-5 h-5 mr-2" /> Create account
       </button>
     </.form>
-  </div>
+
+    <.auth_divider>or</.auth_divider>
+    <.oauth_button provider="github" label="Sign up with GitHub" />
+
+    <:footer>
+      Already have an account?
+      <.link href={~p"/login"} class="text-primary font-semibold hover:underline ml-1">
+        Log in
+      </.link>
+    </:footer>
+  </.auth_card>
 </.glass_page>

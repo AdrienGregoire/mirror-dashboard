@@ -23,6 +23,17 @@ defmodule DashboardWeb.UserRegistrationControllerTest do
       assert response =~ "Create your account"
       assert response =~ "registration-form"
     end
+
+    test "links to the login page and offers GitHub sign up", %{conn: conn} do
+      response = conn |> get(~p"/register") |> html_response(200)
+
+      assert response =~ "glass-card"
+      assert response =~ ~s(href="/login")
+      assert response =~ ~s(href="/auth/github")
+      assert response =~ "Sign up with GitHub"
+      assert response =~ "8 characters minimum"
+      assert response =~ ~s(autocomplete="new-password")
+    end
   end
 
   describe "POST /register" do
@@ -46,6 +57,9 @@ defmodule DashboardWeb.UserRegistrationControllerTest do
 
       response = html_response(conn, 200)
       assert response =~ "Create your account"
+      assert response =~ "must have the @ sign and no spaces"
+      assert response =~ "at least 8 character"
+      refute response =~ "8 characters minimum"
 
       refute_email_sent()
       assert Accounts.get_user_by_email("not-an-email") == nil
@@ -58,6 +72,7 @@ defmodule DashboardWeb.UserRegistrationControllerTest do
       conn2 = post(build_conn(), ~p"/register", user: @valid_attrs)
       response = html_response(conn2, 200)
       assert response =~ "Create your account"
+      assert response =~ "has already been taken"
 
       assert length(Repo.all(Dashboard.Accounts.User)) == 1
     end
