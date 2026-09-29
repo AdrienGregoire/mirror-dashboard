@@ -35,6 +35,7 @@ defmodule DashboardWeb.AuthComponents do
   attr :label, :string, required: true
   attr :type, :string, default: "text"
   attr :hint, :string, default: nil, doc: "helper text, hidden while the field has errors"
+
   attr :rest, :global,
     include: ~w(autocomplete autofocus placeholder required minlength maxlength)
 
@@ -44,11 +45,16 @@ defmodule DashboardWeb.AuthComponents do
         do: Enum.map(field.errors, &translate_error/1),
         else: []
 
+    value =
+      if assigns.type == "password",
+        do: "",
+        else: Phoenix.HTML.Form.normalize_value(assigns.type, field.value)
+
     assigns =
       assigns
       |> assign(:id, field.id)
       |> assign(:name, field.name)
-      |> assign(:value, Phoenix.HTML.Form.normalize_value(assigns.type, field.value))
+      |> assign(:value, value)
       |> assign(:errors, errors)
 
     ~H"""
