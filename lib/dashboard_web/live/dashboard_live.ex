@@ -18,12 +18,21 @@ defmodule DashboardWeb.DashboardLive do
      assign(socket,
        widgets: widgets,
        services: user.preferred_services,
-       active_service: List.first(user.preferred_services)
+       active_service: List.first(user.preferred_services),
+       adding_widget: false
      )}
   end
 
   def handle_event("select_tab", %{"service" => service}, socket) do
     {:noreply, assign(socket, active_service: service)}
+  end
+
+  def handle_event("open_add_widget", _params, socket) do
+    {:noreply, assign(socket, adding_widget: socket.assigns.active_service != nil)}
+  end
+
+  def handle_event("close_add_widget", _params, socket) do
+    {:noreply, assign(socket, adding_widget: false)}
   end
 
   def handle_event("move_widget", %{"id" => id, "new_position" => new_position}, socket) do
@@ -36,6 +45,13 @@ defmodule DashboardWeb.DashboardLive do
     else
       _ -> {:noreply, socket}
     end
+  end
+
+  def handle_info({DashboardWeb.AddWidgetComponent, {:added, _widget}}, socket) do
+    {:noreply,
+     socket
+     |> assign(widgets: Widgets.list_widgets(socket.assigns.current_user), adding_widget: false)
+     |> put_flash(:info, "Widget ajouté !")}
   end
 
   defp widgets_for(widgets, service), do: Enum.filter(widgets, &(&1.service == service))
@@ -55,7 +71,7 @@ defmodule DashboardWeb.DashboardLive do
           </.link>
         </div>
 
-        <div :if={@services != []} class="flex flex-wrap gap-3">
+        <div :if={@services != []} class="flex flex-wrap items-center gap-3">
           <button
             :for={service <- @services}
             type="button"
@@ -67,6 +83,15 @@ defmodule DashboardWeb.DashboardLive do
             ]}
           >
             {service}
+          </button>
+
+          <button
+            id="open-add-widget"
+            type="button"
+            phx-click="open_add_widget"
+            class="glass-button cursor-pointer text-primary font-semibold ml-auto"
+          >
+            <.icon name="hero-plus" class="size-4 mr-2" /> Ajouter un widget
           </button>
         </div>
 
@@ -117,8 +142,34 @@ defmodule DashboardWeb.DashboardLive do
             <p class="glass-title text-lg capitalize">{widget.widget}</p>
             <p class="glass-muted text-sm">{inspect(widget.config)}</p>
           </div>
+
+          <button
+            :if={widgets_for(@widgets, @active_service) == []}
+            type="button"
+            phx-click="open_add_widget"
+            class="glass-card cursor-pointer p-6 min-h-32 flex flex-col items-center justify-center gap-2 glass-muted border-dashed! hover:-translate-y-0.5 transition-all duration-300"
+          >
+            <.icon name="hero-plus-circle" class="size-8" />
+            <span>Aucun widget pour l'instant. Ajoute ton premier !</span>
+          </button>
         </div>
       </div>
+
+      <.glass_modal
+        :if={@adding_widget}
+        id="add-widget-modal"
+        on_cancel={JS.push("close_add_widget")}
+      >
+        <.live_component
+          module={DashboardWeb.AddWidgetComponent}
+          id="add-widget"
+          user={@current_user}
+          service={@active_service}
+        />
+      </.glass_modal>
+
+      <.flash kind={:info} flash={@flash} />
+      <.flash kind={:error} flash={@flash} />
     </div>
     """
   end
