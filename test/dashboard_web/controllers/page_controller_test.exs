@@ -16,4 +16,11 @@ defmodule DashboardWeb.PageControllerTest do
     assert html =~ ~s(href="/login")
     assert html =~ ~s(href="/register")
   end
+
+  test "GET / labels the two entry points Log in and Sign up", %{conn: conn} do
+    html = conn |> get(~p"/") |> html_response(200)
+
+    assert html =~ "Log in"
+    assert html =~ "Sign up"
+  end
 end
