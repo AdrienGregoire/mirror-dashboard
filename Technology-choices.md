@@ -1,42 +1,51 @@
 # Technology choices
 
-Ce document présente nos choix techniques pour notre projet Dashboard. Ces choix couvrent trois parties : le Backend, le Frontend et la Base de données. Nos choix sont basés sur des comparaisons avec d'autres stacks existantes.
+This document outlines our technical choices for the Dashboard project. These choices cover three areas: the backend, the frontend, and the database. Our choices are based on comparisons with other existing technology stacks.
 
-# Besoins du projet
-Les choix ci-dessous sont basés sur ce que doit faire Dashboard:
-- Données en temps réel
-- UI interactive
-- Services externes
-- Comptes
+## Project Requirements
+The choices below are based on what the Dashboard needs to do:
+- Real-time data
+- Interactive UI
+- External services
+- Accounts
 
 ## Backend
 
-| Option | Écosystème | Performances | Maintenabilité |
+| Option | Ecosystem | Performance | Maintainability |
 | :--- | :--- | :--- | :--- |
-| **Elixir/Phoenix** | Bon mais plus restreint que Node ou Python | BEAM/OTP conçu pour ça | Restart auto des process en erreur |
-| **Node.js/Express** | npm | Event loop mono-thread | Un crash tue tout le process |
-| **Python/Django** | Packages énormes | GIL, limité | Dépend du serveur |
+| **Elixir/Phoenix** | Good but more limited than Node or Python | BEAM/OTP designed for this | Automatic restart of processes that encounter errors |
+| **Node.js/Express** | npm | Single-threaded event loop | A crash kills the entire process |
+| **Python/Django** | Huge packages | GIL, limited | Depends on the server |
+
+### Our Choice: Elixir / Phoenix
+The dashboard must refresh numerous widgets at different intervals and send the results to users, which aligns with the OTP model: a GenServer schedules the refreshes, and PubSub broadcasts the updates. If a call to an external API fails, only the affected process restarts.
 
 ## Frontend
 
-| Option | Complexité de l'UI | Vitesse de développement | UI & Réactivité |
+| Option | UI Complexity | Development Speed | UI & Responsiveness |
 | :--- | :--- | :--- | :--- |
-| **Phoenix LiveView** | CSS pur | un seul langage | chaque interaction passe par un aller-retour serveur |
-| **React / Next.js** | Support websockets/state temps réel | Concurrent rendering | Error boundaries |
-| **Tailwind CSS** | Bien documenté | Beaucoup de themes/plugins | Stable |
+| **Phoenix LiveView** | Pure CSS | Single language | Every interaction requires a round trip to the server |
+| **React / Next.js** | WebSockets/real-time state support | Concurrent rendering | Error boundaries |
+| **Tailwind CSS** | Well-documented | Many themes/plugins | Stable |
+
+### Our Choice: Phoenix LiveView
+The page state is managed on the server side, so widget updates are delivered to the browser without requiring a WebSocket layer or an API between the front end and the back end. Using a single language saves a lot of development time. JavaScript is limited to cases where it’s useful, such as drag-and-drop in the grid, and Tailwind CSS handles the styling.
 
 ## Database
 
-| Option | Modélisation | Performance | Écosystème |
+| Option | Modeling | Performance | Écosystem |
 | :--- | :--- | :--- | :--- |
-| **Ecto et PostgreSQL** | Relationnelle avec clés étrangères | Très bonnes en lecture/écriture | ??? |
-| **MySQL** | Relationnelle | Très bonnes en lecture simple | ??? |
-| **MongoDB** | les relations sont à gérer dans le code | Très bonnes | ??? |
+| **Ecto and PostgreSQL** | Relational with foreign keys | Very good read/write performance | Official Docker image |
+| **MySQL** | Relational | Very good for simple reads | Supported by Ecto (MyXQL) but less common in the Phoenix community |
+| **MongoDB** | Relationships must be managed in the code | Very good | No official Ecto adapter, only community ones |
 
-## Résumé
- 
-| Couche | Choix | Raison principale |
+### Our Choice: Ecto & PostgreSQL
+Our data is interconnected (users, subscriptions, widgets), and foreign keys ensure that no widget remains orphaned. Ecto integrates natively with PostgreSQL for migrations and form validation.
+
+## Summary
+
+| Layer | Choice | Main reason |
 | :--- | :--- | :--- |
-| Backend | Elixir / Phoenix | Rafraîchissement et temps réel avec GenServer, tolérance aux pannes native |
-| Frontend | Phoenix LiveView + Tailwind CSS | Un seul langage et une seule base de code |
-| Database | PostgreSQL + Ecto | Données relationnelles et jsonb pour la configuration des widgets, intégration native avec Ecto |
+| Backend | Elixir / Phoenix | Refresh and real-time capabilities with GenServer, native fault tolerance |
+| Frontend | Phoenix LiveView + Tailwind CSS | A single language and a single codebase |
+| Database | PostgreSQL + Ecto | Relational data and jsonb for widget configuration, native integration with Ecto |
