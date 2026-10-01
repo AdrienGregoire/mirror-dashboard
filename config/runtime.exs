@@ -36,6 +36,12 @@ config :ueberauth, Ueberauth.Strategy.Github.OAuth,
   client_secret: System.get_env("GITHUB_CLIENT_SECRET")
 
 if config_env() == :dev do
+  # Inside docker compose the database lives on the `db` host, not on localhost.
+  # Without DATABASE_URL we keep the localhost settings from config/dev.exs.
+  if database_url = System.get_env("DATABASE_URL") do
+    config :dashboard, Dashboard.Repo, url: database_url
+  end
+
   # Reload browser tabs when matching files change.
   config :dashboard, DashboardWeb.Endpoint,
     live_reload: [

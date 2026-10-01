@@ -144,7 +144,11 @@ defmodule DashboardWeb.DashboardLiveTest do
       pick_type(view, "stats")
 
       view |> form("#add-widget-config", config: %{team: "lakers"}) |> render_submit()
-      view |> form("#add-widget-refresh", refresh_rate: "120") |> render_submit()
+
+      view
+      |> form("#add-widget-refresh", rate: %{hours: "0", minutes: "2", seconds: "0"})
+      |> render_submit()
+
       view |> element("#add-widget button", "Ajouter le widget") |> render_click()
 
       assert [%{service: "basket", refresh_rate: 120}] = Widgets.list_widgets(user)
@@ -169,10 +173,30 @@ defmodule DashboardWeb.DashboardLiveTest do
       pick_type(view, "standings")
       view |> form("#add-widget-config", config: %{league: "ligue-1"}) |> render_submit()
 
-      html = view |> form("#add-widget-refresh", refresh_rate: "5") |> render_submit()
+      html =
+        view
+        |> form("#add-widget-refresh", rate: %{hours: "0", minutes: "0", seconds: "5"})
+        |> render_submit()
 
       assert html =~ "Choisis une valeur entre 10 s et 24 h."
       assert has_element?(view, "#add-widget-refresh")
+    end
+
+    test "accepts a custom hours / minutes / seconds rate", %{user: user, view: view} do
+      open_modal(view)
+      pick_type(view, "standings")
+      view |> form("#add-widget-config", config: %{league: "ligue-1"}) |> render_submit()
+
+      html =
+        view
+        |> form("#add-widget-refresh", rate: %{hours: "1", minutes: "30", seconds: "15"})
+        |> render_submit()
+
+      assert html =~ "Toutes les 1 h 30 min 15 s"
+
+      view |> element("#add-widget button", "Ajouter le widget") |> render_click()
+
+      assert [%{refresh_rate: 5415}] = Widgets.list_widgets(user)
     end
 
     test "back keeps the entered config", %{view: view} do

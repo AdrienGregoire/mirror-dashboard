@@ -51,6 +51,7 @@ defmodule DashboardWeb.AddWidgetComponent do
        config: %{},
        config_errors: %{},
        refresh_rate: @default_rate,
+       rate_parts: rate_parts(@default_rate),
        rate_error: nil,
        submit_error: nil
      )}
@@ -106,20 +107,21 @@ defmodule DashboardWeb.AddWidgetComponent do
   end
 
   def handle_event("select_rate", %{"rate" => rate}, socket) do
-    {:noreply, assign_rate(socket, rate)}
+    {:noreply, assign_rate(socket, rate_parts(String.to_integer(rate)))}
   end
 
-  def handle_event("change_rate", %{"refresh_rate" => rate}, socket) do
-    {:noreply, assign_rate(socket, rate)}
+  def handle_event("change_rate", %{"rate" => parts}, socket) do
+    {:noreply, assign_rate(socket, parts)}
   end
 
   def handle_event("submit_rate", params, socket) do
-    socket = assign_rate(socket, Map.get(params, "refresh_rate", socket.assigns.refresh_rate))
+    socket = assign_rate(socket, Map.get(params, "rate", socket.assigns.rate_parts))
 
     if socket.assigns.rate_error do
       {:noreply, socket}
     else
-      {:noreply, assign(socket, step: :confirm)}
+      {:noreply,
+       assign(socket, rate_parts: rate_parts(socket.assigns.refresh_rate), step: :confirm)}
     end
   end
 
@@ -147,14 +149,41 @@ defmodule DashboardWeb.AddWidgetComponent do
     end
   end
 
-  defp assign_rate(socket, rate) do
-    case parse_rate(rate) do
-      {:ok, rate} -> assign(socket, refresh_rate: rate, rate_error: nil)
-      {:error, message} -> assign(socket, refresh_rate: rate, rate_error: message)
+  defp assign_rate(socket, parts) do
+    parts = Map.take(parts, ~w(hours minutes seconds))
+
+    case parse_rate(parts) do
+      {:ok, rate} ->
+        assign(socket, refresh_rate: rate, rate_parts: parts, rate_error: nil)
+
+      {:error, message} ->
+        assign(socket, refresh_rate: nil, rate_parts: parts, rate_error: message)
     end
   end
 
-  defp parse_rate(rate) when is_integer(rate) do
+  # Turns the hours / minutes / seconds inputs into a total number of seconds.
+  # Empty inputs count as 0.
+  defp parse_rate(parts) do
+    with {:ok, hours} <- parse_unit(parts["hours"]),
+         {:ok, minutes} <- parse_unit(parts["minutes"]),
+         {:ok, seconds} <- parse_unit(parts["seconds"]) do
+      validate_rate(hours * 3600 + minutes * 60 + seconds)
+    end
+  end
+
+  defp parse_unit(value) when value in [nil, ""], do: {:ok, 0}
+
+  defp parse_unit(value) when is_binary(value) do
+    case Integer.parse(String.trim(value)) do
+      {unit, ""} when unit >= 0 -> {:ok, unit}
+      _ -> {:error, "Indique des nombres entiers positifs (heures, minutes, secondes)."}
+    end
+  end
+
+  defp parse_unit(_value),
+    do: {:error, "Indique des nombres entiers positifs (heures, minutes, secondes)."}
+
+  defp validate_rate(rate) do
     range = WidgetInstance.refresh_rate_range()
 
     if rate in range do
@@ -165,11 +194,12 @@ defmodule DashboardWeb.AddWidgetComponent do
     end
   end
 
-  defp parse_rate(rate) when is_binary(rate) do
-    case Integer.parse(String.trim(rate)) do
-      {rate, ""} -> parse_rate(rate)
-      _ -> {:error, "Indique un nombre de secondes."}
-    end
+  defp rate_parts(seconds) do
+    %{
+      "hours" => to_string(div(seconds, 3600)),
+      "minutes" => to_string(div(rem(seconds, 3600), 60)),
+      "seconds" => to_string(rem(seconds, 60))
+    }
   end
 
   defp changed(old, new), do: Map.reject(new, fn {key, value} -> Map.get(old, key) == value end)
@@ -216,14 +246,13 @@ defmodule DashboardWeb.AddWidgetComponent do
   defp error_message(message), do: message
 
   @doc """
-  Formats a refresh rate in seconds for humans (`90` -> `"90 s"`, `300` -> `"5 min"`).
+  Formats a refresh rate in seconds for humans
+  (`90` -> `"1 min 30 s"`, `300` -> `"5 min"`, `3600` -> `"1 h"`).
   """
-  def format_rate(seconds) when is_integer(seconds) do
-    cond do
-      seconds >= 3600 and rem(seconds, 3600) == 0 -> "#{div(seconds, 3600)} h"
-      seconds >= 60 and rem(seconds, 60) == 0 -> "#{div(seconds, 60)} min"
-      true -> "#{seconds} s"
-    end
+  def format_rate(seconds) when is_integer(seconds) and seconds > 0 do
+    [{div(seconds, 3600), "h"}, {div(rem(seconds, 3600), 60), "min"}, {rem(seconds, 60), "s"}]
+    |> Enum.reject(fn {value, _unit} -> value == 0 end)
+    |> Enum.map_join(" ", fn {value, unit} -> "#{value} #{unit}" end)
   end
 
   def format_rate(_seconds), do: "—"
@@ -234,7 +263,11 @@ defmodule DashboardWeb.AddWidgetComponent do
       assign(assigns,
         steps: @steps,
         rate_presets: @rate_presets,
-        rate_range: WidgetInstance.refresh_rate_range()
+        rate_units: [
+          {"hours", "Heures", div(WidgetInstance.refresh_rate_range().last, 3600)},
+          {"minutes", "Minutes", 59},
+          {"seconds", "Secondes", 59}
+        ]
       )
 
     ~H"""
@@ -332,25 +365,33 @@ defmodule DashboardWeb.AddWidgetComponent do
           </button>
         </div>
 
-        <div class="space-y-2">
-          <label for="refresh_rate" class="block text-sm font-medium">
-            Ou une valeur personnalisée (en secondes)
-          </label>
-          <input
-            id="refresh_rate"
-            name="refresh_rate"
-            type="number"
-            min={@rate_range.first}
-            max={@rate_range.last}
-            value={@refresh_rate}
-            phx-debounce="200"
-            class={["glass-input", @rate_error && "ring-2 ring-error/60"]}
-          />
+        <fieldset class="space-y-2">
+          <legend class="block text-sm font-medium">
+            Ou une durée personnalisée (heures, minutes, secondes)
+          </legend>
+
+          <div class="grid grid-cols-3 gap-3">
+            <div :for={{key, label, max} <- @rate_units} class="space-y-1">
+              <label for={"rate_#{key}"} class="block text-xs glass-muted">{label}</label>
+              <input
+                id={"rate_#{key}"}
+                name={"rate[#{key}]"}
+                type="number"
+                inputmode="numeric"
+                min="0"
+                max={max}
+                value={@rate_parts[key]}
+                phx-debounce="200"
+                class={["glass-input", @rate_error && "ring-2 ring-error/60"]}
+              />
+            </div>
+          </div>
+
           <p :if={@rate_error} class="text-sm text-error flex gap-1 items-center">
             <.icon name="hero-exclamation-circle" class="size-4" />
             {@rate_error}
           </p>
-        </div>
+        </fieldset>
 
         <.nav_buttons myself={@myself} submit_label="Suivant" />
       </.form>
