@@ -7,35 +7,21 @@
 
 import Config
 
-# Configure your database
-config :dashboard, Dashboard.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "dashboard_dev",
-  stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10
-
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
-config :dashboard, DashboardWeb.Endpoint,
+config :poc, PocWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  # http: [ip: {127, 0, 0, 1}],
-  http: [ip: {0, 0, 0, 0}],
+  http: [ip: {127, 0, 0, 1}],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "vRdJEg7XbOQe21v4G3K1554wBlqMcJNM+JPCsr6dMiZN3iR/A3bDOqErvu1BJDtZ",
-  watchers: [
-    esbuild: {Esbuild, :install_and_run, [:dashboard, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:dashboard, ~w(--watch)]}
-  ]
+  secret_key_base: "ALc3fiANJzmn/VwDXe0Ntwe5ijFR9QAE2LrzsCW7jK8ly58RQatQj5fhFj3xv4OD",
+  watchers: []
 
 # ## SSL Support
 #
@@ -60,11 +46,8 @@ config :dashboard, DashboardWeb.Endpoint,
 # configured to run both http and https servers on
 # different ports.
 
-# Key used to encrypt service credentials, dev only
-config :dashboard, Dashboard.Vault, key: "rUyzeFoSiyaoIG31EqJVs5FJztBlXadNsJQ0jJJobW8="
-
 # Enable dev routes for dashboard and mailbox
-config :dashboard, dev_routes: true
+config :poc, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"
@@ -75,14 +58,6 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
-
-config :phoenix_live_view,
-  # Include debug annotations and locations in rendered markup.
-  # Changing this configuration will require mix clean and a full recompile.
-  debug_heex_annotations: true,
-  debug_attributes: true,
-  # Enable helpful, but potentially expensive runtime checks
-  enable_expensive_runtime_checks: true
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
