@@ -46,8 +46,8 @@ if config_env() == :dev do
         # Gettext translations
         ~r"priv/gettext/.*\.po$"E,
         # Router, Controllers, LiveViews and LiveComponents
-        ~r"lib/dashboard_web/router\.ex$"E,
-        ~r"lib/dashboard_web/(controllers|live|components)/.*\.(ex|heex)$"E
+        ~r"lib/frontend/router\.ex$"E,
+        ~r"lib/frontend/(controllers|live|components)/.*\.(ex|heex)$"E
       ]
     ]
 end

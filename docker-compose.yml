@@ -13,8 +13,30 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-
-  app:
+  backend:
+    image: hexpm/elixir:1.20.3-erlang-29.0.5-debian-trixie-20260824-slim
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      MIX_ENV: "dev"
+      PORT: "8080"
+      DATABASE_URL: "ecto://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}"
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: >
+      bash -c "apt-get update && apt-get install -y inotify-tools git build-essential &&
+      mix local.hex --force && mix local.rebar --force &&
+      mix deps.get && mix phx.server"
+  frontend:
     build:
       context: .
       dockerfile: Dockerfile
@@ -23,10 +45,10 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "8080:8080"
+      - "4000:4000"
     environment:
       PHX_SERVER: "true"
-      PORT: "8080"
+      PORT: "4000"
       PHX_HOST: "localhost"
       URL_SCHEME: "http"
       DATABASE_URL: "ecto://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}"
