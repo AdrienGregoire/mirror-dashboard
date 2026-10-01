@@ -1,3 +1,10 @@
+#
+## EPITECH PROJECT, 2026
+## dashboard_controller.ex
+## File description:
+## controller for dashboard page
+#
+
 defmodule PocWeb.DashboardController do
   use PocWeb, :controller
 

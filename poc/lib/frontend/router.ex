@@ -1,3 +1,10 @@
+#
+## EPITECH PROJECT, 2026
+## router.ex
+## File description:
+## maps each URL to the correct controller
+#
+
 defmodule PocWeb.Router do
   use PocWeb, :router
 

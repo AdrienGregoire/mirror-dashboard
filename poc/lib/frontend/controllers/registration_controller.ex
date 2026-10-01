@@ -1,3 +1,10 @@
+#
+## EPITECH PROJECT, 2026
+## registration_controller.ex
+## File description:
+## controller for registration page
+#
+
 defmodule PocWeb.RegistrationController do
   use PocWeb, :controller
 
