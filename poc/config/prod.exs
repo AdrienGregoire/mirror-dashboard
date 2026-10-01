@@ -1,3 +1,10 @@
+#
+## EPITECH PROJECT, 2026
+## prod.exs
+## File description:
+## Production environment configuration
+#
+
 import Config
 
 # Force using SSL in production. This also sets the "strict-security-transport" header,
