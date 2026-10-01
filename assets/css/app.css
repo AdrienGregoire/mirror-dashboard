@@ -5,7 +5,7 @@
 @import "phoenix-colocated/dashboard/colocated.css";
 @source "../css";
 @source "../js";
-@source "../../lib/dashboard_web";
+@source "../../lib/frontend";
 /* Required for Tailwind to automatically pick up changes in colocated CSS files in dev */
 @source "../../_build/dev/phoenix-colocated/dashboard/*/";
 
