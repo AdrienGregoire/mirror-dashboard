@@ -7,6 +7,7 @@ defmodule Poc.Application do
 
   @impl true
   def start(_type, _args) do
+    Poc.UserStore.init()
     children = [
       PocWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:poc, :dns_cluster_query) || :ignore},
