@@ -1,0 +1,23 @@
+<div class="page-center">
+  <div class="card">
+    <h1>Create an account</h1>
+    <%= if @error do %>
+      <p class="error"><%= @error %></p>
+    <% end %>
+    <form action="/register" method="post" class="form">
+      <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
+      <div class="field">
+        <label>email</label>
+        <input type="email" name="email" placeholder="nom@exemple.com" required autofocus />
+      </div>
+      <div class="field">
+        <label>password</label>
+        <input type="password" name="password" placeholder="••••••••" required />
+      </div>
+      <button type="submit" class="btn btn-primary w-full">create my account</button>
+    </form>
+    <p class="muted" style="margin-top: 1rem; text-align: center;">
+      Already have an account ? <a href="/dashboard">Log in</a>
+    </p>
+  </div>
+</div>
