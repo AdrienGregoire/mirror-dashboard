@@ -14,15 +14,17 @@ defmodule DashboardWeb.AboutController do
     current_time = System.system_time(:second)
     services = Services.list_services()
 
-    json(conn, %{
-      client: %{
-        host: client_ip
-      },
-      server: %{
-        current_time: current_time,
-        services: services
-      }
-    })
+    json(
+      conn,
+      Jason.OrderedObject.new([
+        {"client", Jason.OrderedObject.new([{"host", client_ip}])},
+        {"server",
+         Jason.OrderedObject.new([
+           {"current_time", current_time},
+           {"services", services}
+         ])}
+      ])
+    )
   end
 
   defp format_ip(ip) do

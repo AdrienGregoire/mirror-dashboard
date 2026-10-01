@@ -45,4 +45,15 @@ defmodule DashboardWeb.AboutControllerTest do
       end
     end
   end
+
+  test "GET /about.json keeps keys order: host, current_time, services", %{conn: conn} do
+    body = conn |> get(~p"/about.json") |> response(200)
+
+    {host_pos, _} = :binary.match(body, "\"host\"")
+    {time_pos, _} = :binary.match(body, "\"current_time\"")
+    {services_pos, _} = :binary.match(body, "\"services\"")
+
+    assert host_pos < time_pos
+    assert time_pos < services_pos
+  end
 end
