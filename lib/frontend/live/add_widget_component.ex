@@ -320,7 +320,25 @@ defmodule DashboardWeb.AddWidgetComponent do
           <label for={"config_#{param.name}"} class="block text-sm font-medium">
             {param_label(param.name)}
           </label>
+          <select
+            :if={param[:options]}
+            id={"config_#{param.name}"}
+            name={"config[#{param.name}]"}
+            phx-change="validate_config"
+            phx-target={@myself}
+            class={["glass-input", @config_errors[param.name] && "ring-2 ring-error/60"]}
+          >
+          <option value="">-- Choisir --</option>
+            <option
+              :for={{label, value} <- param[:options]}
+              value={value}
+              selected={Map.get(@config, param.name) == value}
+            >
+              {label}
+            </option>
+          </select>
           <input
+            :if={!param[:options]}
             id={"config_#{param.name}"}
             name={"config[#{param.name}]"}
             type={if param.type == "integer", do: "number", else: "text"}

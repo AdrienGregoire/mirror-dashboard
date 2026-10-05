@@ -8,8 +8,17 @@
 defmodule DashboardWeb.DashboardLive do
   use DashboardWeb, :live_view
 
-  alias Dashboard.Widgets
+  alias Dashboard.{Services, Widgets}
+  alias Dashboard.Services.{Registry, Provider}
 
+  @widget_labels %{
+    "standings" => "Classement",
+    "news" => "Actualités",
+    "stats" => "Statistiques",
+    "next_match" => "Prochain match"
+  }
+
+  @spec mount(any(), any(), any()) :: {:ok, any()}
   def mount(_params, _session, socket) do
     user = socket.assigns.current_user
     widgets = Widgets.list_widgets(user)
@@ -19,7 +28,8 @@ defmodule DashboardWeb.DashboardLive do
        widgets: widgets,
        services: user.preferred_services,
        active_service: List.first(user.preferred_services),
-       adding_widget: false
+       adding_widget: false,
+       widget_data: fetch_all_data(widgets)
      )}
   end
 
@@ -47,14 +57,37 @@ defmodule DashboardWeb.DashboardLive do
     end
   end
 
-  def handle_info({DashboardWeb.AddWidgetComponent, {:added, _widget}}, socket) do
+  def handle_info({DashboardWeb.AddWidgetComponent, {:added, widget}}, socket) do
+    widgets = Widgets.list_widgets(socket.assigns.current_user)
+    service = Registry.get(widget.service)
+    data = Provider.fetch(service, widget.widget, widget.config, %{})
+
     {:noreply,
      socket
-     |> assign(widgets: Widgets.list_widgets(socket.assigns.current_user), adding_widget: false)
+     |> assign(
+       widgets: widgets,
+       adding_widget: false,
+       widget_data: Map.put(socket.assigns.widget_data, widget.id, data)
+     )
      |> put_flash(:info, "Widget ajouté !")}
   end
 
+  defp fetch_all_data(widgets) do
+    Enum.reduce(widgets, %{}, fn widget, acc ->
+      service = Registry.get(widget.service)
+      result =
+        try do
+          Provider.fetch(service, widget.widget, widget.config, %{})
+        rescue
+          e -> {:error, Exception.message(e)}
+        end
+      Map.put(acc, widget.id, result)
+    end)
+  end
+
   defp widgets_for(widgets, service), do: Enum.filter(widgets, &(&1.service == service))
+
+  defp widget_label(name), do: Map.get(@widget_labels, name, name)
 
   def render(assigns) do
     ~H"""
@@ -137,10 +170,15 @@ defmodule DashboardWeb.DashboardLive do
             id={"widget-#{widget.id}"}
             data-widget-id={widget.id}
             draggable="true"
-            class="glass-card p-6 cursor-grab active:cursor-grabbing space-y-2"
+            class="glass-card p-6 cursor-grab active:cursor-grabbing space-y-4"
           >
-            <p class="glass-title text-lg capitalize">{widget.widget}</p>
-            <p class="glass-muted text-sm">{inspect(widget.config)}</p>
+            <p class="glass-title text-lg capitalize font-semibold">
+              {widget_label(widget.widget)}
+            </p>
+            <.widget_content
+              widget={widget}
+              data={Map.get(@widget_data, widget.id)}
+            />
           </div>
 
           <button
@@ -171,6 +209,62 @@ defmodule DashboardWeb.DashboardLive do
       <.flash kind={:info} flash={@flash} />
       <.flash kind={:error} flash={@flash} />
     </div>
+    """
+  end
+
+  attr :widget, :map, required: true
+  attr :data, :any, default: nil
+
+  defp widget_content(%{data: {:ok, %{rows: rows}}, widget: %{widget: "standings"}} = assigns) do
+    assigns = assign(assigns, :rows, rows)
+
+    ~H"""
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="glass-muted text-xs border-b border-(color:--glass-border)">
+            <th class="text-left py-1 pr-2">#</th>
+            <th class="text-left py-1 pr-2">Équipe</th>
+            <th class="text-center py-1 px-1">MJ</th>
+            <th class="text-center py-1 px-1">V</th>
+            <th class="text-center py-1 px-1">N</th>
+            <th class="text-center py-1 px-1">D</th>
+            <th class="text-center py-1 px-1">Pts</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            :for={team <- @rows}
+            class="border-b border-(color:--glass-border) last:border-0 hover:bg-white/5"
+          >
+            <td class="py-1.5 pr-2 glass-muted text-xs">{team.position}</td>
+            <td class="py-1.5 pr-2 font-medium truncate max-w-[100px]">{team.name}</td>
+            <td class="py-1.5 px-1 text-center glass-muted">{team.played}</td>
+            <td class="py-1.5 px-1 text-center">{team.wins}</td>
+            <td class="py-1.5 px-1 text-center glass-muted">{team.draws}</td>
+            <td class="py-1.5 px-1 text-center glass-muted">{team.losses}</td>
+            <td class="py-1.5 px-1 text-center font-bold text-primary">{team.points}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    """
+  end
+
+  defp widget_content(%{data: {:error, reason}} = assigns) do
+    assigns = assign(assigns, :reason, inspect(reason))
+
+    ~H"""
+    <p class="text-sm text-error flex gap-2 items-center">
+      <.icon name="hero-exclamation-circle" class="size-4 shrink-0" />
+      Erreur : {@reason}
+    </p>
+    """
+  end
+
+  defp widget_content(assigns) do
+    ~H"""
+    <p class="glass-muted text-sm animate-pulse">Chargement…</p>
     """
   end
 end

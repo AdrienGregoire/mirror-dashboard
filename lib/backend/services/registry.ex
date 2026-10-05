@@ -13,18 +13,24 @@ defmodule Dashboard.Services.Registry do
       name: "foot",
       description: "Football data powered by FotMob",
       auth: :none,
+      provider: Dashboard.Services.Foot,
       widgets: [
         %WidgetType{
           name: "standings",
           description: "Classement d'un championnat",
-          params: [%{name: "league", type: "string"}]
-        },
-        %WidgetType{
-          name: "news",
-          description: "Dernières actus d'une équipe ou d'un championnat",
           params: [
-            %{name: "league", type: "string"},
-            %{name: "number", type: "integer"}
+            %{
+              name: "league",
+              type: "string",
+              options: [
+                {"Premier League", "premier-league"},
+                {"Ligue 1", "ligue-1"},
+                {"Liga", "liga"},
+                {"Bundesliga", "bundesliga"},
+                {"Serie A", "serie-a"}
+              ]
+            },
+            %{name: "season", type: "integer"}
           ]
         },
         %WidgetType{
