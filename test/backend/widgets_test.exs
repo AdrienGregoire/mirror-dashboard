@@ -11,9 +11,9 @@ defmodule Dashboard.WidgetsTest do
   alias Dashboard.Widgets.WidgetInstance
 
   @rss %{
-    service: "foot",
+    service: "basket",
     widget: "news",
-    config: %{"league" => "ligue-1", "number" => 5},
+    config: %{"league" => "nba", "number" => 5},
     refresh_rate: 60
   }
 
@@ -29,7 +29,7 @@ defmodule Dashboard.WidgetsTest do
 
   defp add_rss!(user, number) do
     {:ok, widget} =
-      Widgets.add_widget(user, %{@rss | config: %{"league" => "ligue-1", "number" => number}})
+      Widgets.add_widget(user, %{@rss | config: %{"league" => "nba", "number" => number}})
 
     widget
   end
@@ -46,7 +46,7 @@ defmodule Dashboard.WidgetsTest do
       assert {:ok, %WidgetInstance{} = first} = Widgets.add_widget(user, @rss)
       assert first.position == 0
       assert first.user_id == user.id
-      assert first.config == %{"league" => "ligue-1", "number" => 5}
+      assert first.config == %{"league" => "nba", "number" => 5}
       assert first.refresh_rate == 60
       assert Timer.get_refresh_rate(first.id) == 60
 
@@ -56,9 +56,9 @@ defmodule Dashboard.WidgetsTest do
 
     test "accepts string keys and casts integer params", %{user: user} do
       attrs = %{
-        "service" => "foot",
+        "service" => "basket",
         "widget" => "news",
-        "config" => %{"league" => "ligue-1", "number" => "3"},
+        "config" => %{"league" => "nba", "number" => "3"},
         "refresh_rate" => "30"
       }
 
@@ -100,24 +100,29 @@ defmodule Dashboard.WidgetsTest do
       assert "must be greater than or equal to 10" in errors_on(changeset).refresh_rate
     end
 
-    # NOTE(Kyle): désactivé après le passage du Registry à foot/basket/tennis (tous
-    # en auth: :none pour l'instant) — plus aucun service réel ne requiert de
-    # souscription, donc ce cas n'a plus de fixture. A remettre si un service
-    # avec auth: :oauth/:credentials est ajouté au Registry.
-    # test "requires a subscription for services that need an account", %{user: user} do
-    #   attrs = %{
-    #     service: "github",
-    #     widget: "recent_commits",
-    #     config: %{"repository" => "elixir-lang/elixir", "number" => 5},
-    #     refresh_rate: 300
-    #   }
-    #
-    #   assert {:error, changeset} = Widgets.add_widget(user, attrs)
-    #   assert "requires a subscription" in errors_on(changeset).service
-    #
-    #   {:ok, _} = Services.subscribe(user, "github", %{"access_token" => "token"})
-    #   assert {:ok, _widget} = Widgets.add_widget(user, attrs)
-    # end
+    test "foot standings requires a season", %{user: user} do
+      attrs = %{
+        service: "foot",
+        widget: "standings",
+        config: %{"league" => "ligue-1"},
+        refresh_rate: 60
+      }
+
+      assert {:error, changeset} = Widgets.add_widget(user, attrs)
+      assert "season can't be blank" in errors_on(changeset).config
+    end
+
+    test "foot standings casts the season to an integer", %{user: user} do
+      attrs = %{
+        service: "foot",
+        widget: "standings",
+        config: %{"league" => "ligue-1", "season" => "2025"},
+        refresh_rate: 60
+      }
+
+      assert {:ok, widget} = Widgets.add_widget(user, attrs)
+      assert widget.config == %{"league" => "ligue-1", "season" => 2025}
+    end
   end
 
   describe "get_widget/2 and list_widgets/1" do
@@ -139,11 +144,11 @@ defmodule Dashboard.WidgetsTest do
 
       assert {:ok, updated} =
                Widgets.reconfigure_widget(widget, %{
-                 config: %{"league" => "premier-league", "number" => 8},
+                 config: %{"league" => "euroleague", "number" => 8},
                  refresh_rate: 120
                })
 
-      assert updated.config == %{"league" => "premier-league", "number" => 8}
+      assert updated.config == %{"league" => "euroleague", "number" => 8}
       assert updated.refresh_rate == 120
       assert Timer.get_refresh_rate(updated.id) == 120
     end
@@ -152,9 +157,9 @@ defmodule Dashboard.WidgetsTest do
       widget = add_rss!(user, 1)
 
       assert {:ok, updated} =
-               Widgets.reconfigure_widget(widget, %{service: "weather", position: 9})
+               Widgets.reconfigure_widget(widget, %{service: "tennis", position: 9})
 
-      assert updated.service == "foot"
+      assert updated.service == "basket"
       assert updated.position == 0
     end
 
@@ -162,7 +167,7 @@ defmodule Dashboard.WidgetsTest do
       widget = add_rss!(user, 1)
 
       assert {:error, changeset} =
-               Widgets.reconfigure_widget(widget, %{config: %{"league" => "premier-league"}})
+               Widgets.reconfigure_widget(widget, %{config: %{"league" => "euroleague"}})
 
       assert "number can't be blank" in errors_on(changeset).config
     end

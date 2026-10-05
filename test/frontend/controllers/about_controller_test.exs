@@ -39,6 +39,7 @@ defmodule DashboardWeb.AboutControllerTest do
         assert is_list(widget["params"])
 
         for param <- widget["params"] do
+          assert Map.keys(param) |> Enum.sort() == ["name", "type"]
           assert is_binary(param["name"])
           assert param["type"] in ["string", "integer"]
         end
