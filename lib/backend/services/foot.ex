@@ -11,10 +11,10 @@ defmodule Dashboard.Services.Foot do
 
   @leagues %{
     "premier-league" => 39,
-    "ligue-1"        => 61,
-    "liga"           => 140,
-    "bundesliga"     => 78,
-    "serie-a"        => 135
+    "ligue-1" => 61,
+    "liga" => 140,
+    "bundesliga" => 78,
+    "serie-a" => 135
   }
 
   def leagues, do: @leagues
@@ -44,11 +44,15 @@ defmodule Dashboard.Services.Foot do
               points: team["points"]
             }
           end)
+
         {:ok, %{league: league, season: season, rows: rows}}
+
       {:ok, %{status: 200, body: %{"response" => []}}} ->
         {:error, "Le classement pour la saison #{season} n'est pas encore disponible sur l'API."}
+
       {:ok, %{status: status}} ->
         {:error, "API returned HTTP #{status}"}
+
       {:error, reason} ->
         {:error, reason}
     end

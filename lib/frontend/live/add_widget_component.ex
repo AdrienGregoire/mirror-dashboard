@@ -328,7 +328,7 @@ defmodule DashboardWeb.AddWidgetComponent do
             phx-target={@myself}
             class={["glass-input", @config_errors[param.name] && "ring-2 ring-error/60"]}
           >
-          <option value="">-- Choisir --</option>
+            <option value="">-- Choisir --</option>
             <option
               :for={{label, value} <- param[:options]}
               value={value}

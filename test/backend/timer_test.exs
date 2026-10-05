@@ -84,9 +84,9 @@ defmodule Dashboard.TimerTest do
 
     {:ok, widget} =
       Widgets.add_widget(user, %{
-        service: "foot",
+        service: "basket",
         widget: "news",
-        config: %{"league" => "ligue-1", "number" => 5},
+        config: %{"league" => "nba", "number" => 5},
         refresh_rate: 45
       })
 
