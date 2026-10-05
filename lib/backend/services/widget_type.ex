@@ -13,7 +13,6 @@ defmodule Dashboard.Services.WidgetType do
   map with a `:name` and a `:type` (`"string"` or `"integer"`).
   """
 
-  @derive {Jason.Encoder, only: [:name, :description, :params]}
   @enforce_keys [:name, :description, :params]
   defstruct [:name, :description, params: []]
 
@@ -70,4 +69,17 @@ defmodule Dashboard.Services.WidgetType do
 
   defp cast_param("integer", _value), do: {:error, "must be an integer"}
   defp cast_param(_type, _value), do: {:error, "is invalid"}
+end
+
+defimpl Jason.Encoder, for: Dashboard.Services.WidgetType do
+  def encode(widget_type, opts) do
+    Jason.Encode.map(
+      %{
+        name: widget_type.name,
+        description: widget_type.description,
+        params: Enum.map(widget_type.params, &Map.take(&1, [:name, :type]))
+      },
+      opts
+    )
+  end
 end

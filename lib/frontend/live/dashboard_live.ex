@@ -8,7 +8,7 @@
 defmodule DashboardWeb.DashboardLive do
   use DashboardWeb, :live_view
 
-  alias Dashboard.{Services, Widgets}
+  alias Dashboard.Widgets
   alias Dashboard.Services.{Registry, Provider}
 
   @widget_labels %{
@@ -75,12 +75,14 @@ defmodule DashboardWeb.DashboardLive do
   defp fetch_all_data(widgets) do
     Enum.reduce(widgets, %{}, fn widget, acc ->
       service = Registry.get(widget.service)
+
       result =
         try do
           Provider.fetch(service, widget.widget, widget.config, %{})
         rescue
           e -> {:error, Exception.message(e)}
         end
+
       Map.put(acc, widget.id, result)
     end)
   end
@@ -256,8 +258,7 @@ defmodule DashboardWeb.DashboardLive do
 
     ~H"""
     <p class="text-sm text-error flex gap-2 items-center">
-      <.icon name="hero-exclamation-circle" class="size-4 shrink-0" />
-      Erreur : {@reason}
+      <.icon name="hero-exclamation-circle" class="size-4 shrink-0" /> Erreur : {@reason}
     </p>
     """
   end
