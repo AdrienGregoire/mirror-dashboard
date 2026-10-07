@@ -92,7 +92,19 @@ defmodule Dashboard.Services.Registry do
       name: "tennis",
       description: "Tennis data powered by API-Sports",
       auth: :none,
+      provider: Dashboard.Services.Tennis,
       widgets: [
+        %WidgetType{
+          name: "player_ranking",
+          description: "Classement des joueurs",
+          params: [
+            %{
+              name: "circuit",
+              type: "string",
+              options: [{"ATP", "atp"}, {"WTA", "wta"}]
+            }
+          ]
+        },
         %WidgetType{
           name: "standings",
           description: "Classement ATP/WTA",
