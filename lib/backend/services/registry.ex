@@ -34,11 +34,6 @@ defmodule Dashboard.Services.Registry do
           ]
         },
         %WidgetType{
-          name: "stats",
-          description: "Statistiques d'une équipe",
-          params: [%{name: "team", type: "string"}]
-        },
-        %WidgetType{
           name: "top_scorers",
           description: "Meilleurs buteurs d'un championnat",
           params: [
@@ -109,24 +104,6 @@ defmodule Dashboard.Services.Registry do
           name: "standings",
           description: "Classement ATP/WTA",
           params: [%{name: "league", type: "string"}]
-        },
-        %WidgetType{
-          name: "news",
-          description: "Dernières actus d'un joueur ou d'un tournoi",
-          params: [
-            %{name: "league", type: "string"},
-            %{name: "number", type: "integer"}
-          ]
-        },
-        %WidgetType{
-          name: "stats",
-          description: "Statistiques d'un joueur",
-          params: [%{name: "team", type: "string"}]
-        },
-        %WidgetType{
-          name: "next_match",
-          description: "Prochain match d'un joueur",
-          params: [%{name: "team", type: "string"}]
         }
       ]
     }
