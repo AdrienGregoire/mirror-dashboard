@@ -11,7 +11,7 @@ defmodule Dashboard.Services.Registry do
   @services [
     %Service{
       name: "foot",
-      description: "Football data powered by FotMob",
+      description: "Football data powered by API-Football",
       auth: :none,
       provider: Dashboard.Services.Foot,
       widgets: [
@@ -39,9 +39,22 @@ defmodule Dashboard.Services.Registry do
           params: [%{name: "team", type: "string"}]
         },
         %WidgetType{
-          name: "next_match",
-          description: "Prochain match d'une équipe",
-          params: [%{name: "team", type: "string"}]
+          name: "top_scorers",
+          description: "Meilleurs buteurs d'un championnat",
+          params: [
+            %{
+              name: "league",
+              type: "string",
+              options: [
+                {"Premier League", "premier-league"},
+                {"Ligue 1", "ligue-1"},
+                {"Liga", "liga"},
+                {"Bundesliga", "bundesliga"},
+                {"Serie A", "serie-a"}
+              ]
+            },
+            %{name: "season", type: "integer"}
+          ]
         }
       ]
     },

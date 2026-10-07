@@ -33,7 +33,8 @@ defmodule DashboardWeb.AddWidgetComponent do
     "standings" => {"Classement", "hero-trophy"},
     "news" => {"Actualités", "hero-newspaper"},
     "stats" => {"Statistiques", "hero-chart-bar"},
-    "next_match" => {"Prochain match", "hero-calendar-days"}
+    "next_match" => {"Prochain match", "hero-calendar-days"},
+    "top_scorers" => {"Top buteurs", "hero-star"}
   }
 
   @param_labels %{
