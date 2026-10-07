@@ -52,35 +52,32 @@ defmodule DashboardWeb.DashboardLiveTest do
 
   test "shows the widgets of the active tab only", %{conn: conn} do
     user = user_fixture(["foot", "basket"])
-    add_widget!(user, "foot", "next_match", %{"team" => "psg"})
+    add_widget!(user, "foot", "top_scorers", %{"league" => "ligue-1", "season" => 2025})
     add_widget!(user, "basket", "stats", %{"team" => "lakers"})
 
     {:ok, _view, html} = conn |> log_in(user) |> live(~p"/dashboard")
-
-    assert html =~ "Prochain match"
+    assert html =~ "Top buteurs"
     refute html =~ "Statistiques"
   end
 
   test "select_tab switches the displayed widgets", %{conn: conn} do
     user = user_fixture(["foot", "basket"])
-    add_widget!(user, "foot", "next_match", %{"team" => "psg"})
+    add_widget!(user, "foot", "top_scorers", %{"league" => "ligue-1", "season" => 2025})
     add_widget!(user, "basket", "stats", %{"team" => "lakers"})
 
     {:ok, view, _html} = conn |> log_in(user) |> live(~p"/dashboard")
-
     html = view |> element("button[phx-value-service='basket']") |> render_click()
 
     assert html =~ "Statistiques"
-    refute html =~ "Prochain match"
+    refute html =~ "Top buteurs"
   end
 
   test "move_widget updates the position when the widget belongs to the user", %{conn: conn} do
     user = user_fixture(["foot"])
     first = add_widget!(user, "foot", "stats", %{"team" => "psg"})
-    add_widget!(user, "foot", "next_match", %{"team" => "psg"})
+    add_widget!(user, "foot", "standings", %{"league" => "ligue-1", "season" => 2025})
 
     {:ok, view, _html} = conn |> log_in(user) |> live(~p"/dashboard")
-
     render_hook(view, "move_widget", %{"id" => to_string(first.id), "new_position" => "1"})
 
     assert Widgets.get_widget(user, first.id).position == 1
@@ -113,7 +110,6 @@ defmodule DashboardWeb.DashboardLiveTest do
 
     test "adds a configured widget to the active service", %{user: user, view: view} do
       assert open_modal(view) =~ "Classement"
-
       assert pick_type(view, "news") =~ "Nombre d&#39;éléments"
 
       view
@@ -122,7 +118,6 @@ defmodule DashboardWeb.DashboardLiveTest do
 
       view |> element("#add-widget button[phx-value-rate='900']") |> render_click()
       html = view |> form("#add-widget-refresh") |> render_submit()
-
       assert html =~ "Toutes les 15 min"
       assert html =~ "nba"
 
@@ -172,9 +167,7 @@ defmodule DashboardWeb.DashboardLiveTest do
       open_modal(view)
       pick_type(view, "standings")
 
-      view
-      |> form("#add-widget-config", config: %{league: "nba", season: "2024"})
-      |> render_submit()
+      view |> form("#add-widget-config", config: %{league: "nba"}) |> render_submit()
 
       html =
         view
@@ -189,9 +182,7 @@ defmodule DashboardWeb.DashboardLiveTest do
       open_modal(view)
       pick_type(view, "standings")
 
-      view
-      |> form("#add-widget-config", config: %{league: "nba", season: "2024"})
-      |> render_submit()
+      view |> form("#add-widget-config", config: %{league: "nba"}) |> render_submit()
 
       html =
         view
@@ -208,8 +199,25 @@ defmodule DashboardWeb.DashboardLiveTest do
     test "foot standings offers a league select and requires a season", %{view: view} do
       view |> element("button[phx-value-service='foot']") |> render_click()
       open_modal(view)
-
       html = pick_type(view, "standings")
+
+      assert html =~ "Premier League"
+      assert html =~ "Season"
+
+      html =
+        view
+        |> form("#add-widget-config", config: %{league: "ligue-1", season: ""})
+        |> render_submit()
+
+      assert html =~ "Doit être un nombre entier."
+      assert has_element?(view, "#add-widget-config")
+    end
+
+    test "foot top_scorers offers a league select and requires a season", %{view: view} do
+      view |> element("button[phx-value-service='foot']") |> render_click()
+      open_modal(view)
+      html = pick_type(view, "top_scorers")
+
       assert html =~ "Premier League"
       assert html =~ "Season"
 
@@ -242,12 +250,9 @@ defmodule DashboardWeb.DashboardLiveTest do
       open_modal(view)
       pick_type(view, "standings")
 
-      view
-      |> form("#add-widget-config", config: %{league: "nba", season: "2024"})
-      |> render_submit()
+      view |> form("#add-widget-config", config: %{league: "nba"}) |> render_submit()
 
       html = view |> element("#add-widget-refresh button", "Retour") |> render_click()
-
       assert html =~ ~s(value="nba")
     end
 

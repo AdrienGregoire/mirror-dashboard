@@ -15,7 +15,8 @@ defmodule DashboardWeb.DashboardLive do
     "standings" => "Classement",
     "news" => "Actualités",
     "stats" => "Statistiques",
-    "next_match" => "Prochain match"
+    "next_match" => "Prochain match",
+    "top_scorers" => "Top buteurs"
   }
 
   @spec mount(any(), any(), any()) :: {:ok, any()}
@@ -59,32 +60,26 @@ defmodule DashboardWeb.DashboardLive do
 
   def handle_info({DashboardWeb.AddWidgetComponent, {:added, widget}}, socket) do
     widgets = Widgets.list_widgets(socket.assigns.current_user)
-    service = Registry.get(widget.service)
-    data = Provider.fetch(service, widget.widget, widget.config, %{})
 
     {:noreply,
      socket
      |> assign(
        widgets: widgets,
        adding_widget: false,
-       widget_data: Map.put(socket.assigns.widget_data, widget.id, data)
+       widget_data: Map.put(socket.assigns.widget_data, widget.id, safe_fetch(widget))
      )
      |> put_flash(:info, "Widget ajouté !")}
   end
 
   defp fetch_all_data(widgets) do
-    Enum.reduce(widgets, %{}, fn widget, acc ->
-      service = Registry.get(widget.service)
+    Map.new(widgets, fn widget -> {widget.id, safe_fetch(widget)} end)
+  end
 
-      result =
-        try do
-          Provider.fetch(service, widget.widget, widget.config, %{})
-        rescue
-          e -> {:error, Exception.message(e)}
-        end
-
-      Map.put(acc, widget.id, result)
-    end)
+  defp safe_fetch(widget) do
+    service = Registry.get(widget.service)
+    Provider.fetch(service, widget.widget, widget.config, %{})
+  rescue
+    e -> {:error, Exception.message(e)}
   end
 
   defp widgets_for(widgets, service), do: Enum.filter(widgets, &(&1.service == service))
@@ -122,7 +117,6 @@ defmodule DashboardWeb.DashboardLive do
           >
             {service}
           </button>
-
           <button
             id="open-add-widget"
             type="button"
@@ -169,7 +163,6 @@ defmodule DashboardWeb.DashboardLive do
               }
             }
           </script>
-
           <div
             :for={widget <- widgets_for(@widgets, @active_service)}
             id={"widget-#{widget.id}"}
@@ -283,12 +276,60 @@ defmodule DashboardWeb.DashboardLive do
             class="border-b border-(color:--glass-border) last:border-0 hover:bg-white/5"
           >
             <td class="py-1.5 pr-2 glass-muted text-xs">{team.position}</td>
-            <td class="py-1.5 pr-2 font-medium truncate max-w-[100px]">{team.name}</td>
+            <td class="py-1.5 pr-2 font-medium truncate max-w-[100px]">
+              <div class="flex items-center gap-2">
+                <img src={team.logo} alt={team.name} class="size-5 object-contain shrink-0" />
+                {team.name}
+              </div>
+            </td>
             <td class="py-1.5 px-1 text-center glass-muted">{team.played}</td>
             <td class="py-1.5 px-1 text-center">{team.wins}</td>
             <td class="py-1.5 px-1 text-center glass-muted">{team.draws}</td>
             <td class="py-1.5 px-1 text-center glass-muted">{team.losses}</td>
             <td class="py-1.5 px-1 text-center font-bold text-primary">{team.points}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    """
+  end
+
+  defp widget_content(%{data: {:ok, %{rows: rows}}, widget: %{widget: "top_scorers"}} = assigns) do
+    assigns = assign(assigns, :rows, rows)
+
+    ~H"""
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="glass-muted text-xs border-b border-(color:--glass-border)">
+            <th class="text-left py-1 pr-2">#</th>
+            <th class="text-left py-1 pr-2">Joueur</th>
+            <th class="text-left py-1 pr-2">Équipe</th>
+            <th class="text-center py-1 px-1">MJ</th>
+            <th class="text-center py-1 px-1">Passes</th>
+            <th class="text-center py-1 px-1">Buts</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            :for={player <- @rows}
+            class="border-b border-(color:--glass-border) last:border-0 hover:bg-white/5"
+          >
+            <td class="py-1.5 pr-2 glass-muted text-xs">{player.position}</td>
+            <td class="py-1.5 pr-2 font-medium truncate max-w-[100px]">
+              <div class="flex items-center gap-2">
+                <img
+                  src={player.photo}
+                  alt={player.name}
+                  class="size-6 rounded-full object-cover shrink-0"
+                />
+                {player.name}
+              </div>
+            </td>
+            <td class="py-1.5 pr-2 glass-muted truncate max-w-[80px]">{player.team}</td>
+            <td class="py-1.5 px-1 text-center glass-muted">{player.played}</td>
+            <td class="py-1.5 px-1 text-center glass-muted">{player.assists}</td>
+            <td class="py-1.5 px-1 text-center font-bold text-primary">{player.goals}</td>
           </tr>
         </tbody>
       </table>
