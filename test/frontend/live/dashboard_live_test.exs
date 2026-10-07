@@ -246,6 +246,22 @@ defmodule DashboardWeb.DashboardLiveTest do
     #   refute html =~ "Saison"
     # end
 
+    test "basket standings offers a league select and requires a season", %{view: view} do
+      open_modal(view)
+
+      html = pick_type(view, "standings")
+      assert html =~ "NBA"
+      assert html =~ "Season"
+
+      html =
+        view
+        |> form("#add-widget-config", config: %{league: "nba", season: ""})
+        |> render_submit()
+
+      assert html =~ "Doit être un nombre entier."
+      assert has_element?(view, "#add-widget-config")
+    end
+
     test "back keeps the entered config", %{view: view} do
       open_modal(view)
       pick_type(view, "standings")

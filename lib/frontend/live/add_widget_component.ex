@@ -8,11 +8,9 @@
 defmodule DashboardWeb.AddWidgetComponent do
   @moduledoc """
   Four steps flow adding a widget of `service` to the `user` dashboard.
-
   Notifies the parent LiveView with `{DashboardWeb.AddWidgetComponent, {:added, widget}}`
   once the widget is created.
   """
-
   use DashboardWeb, :live_component
 
   alias Dashboard.{Services, Widgets}
@@ -34,13 +32,16 @@ defmodule DashboardWeb.AddWidgetComponent do
     "news" => {"Actualités", "hero-newspaper"},
     "stats" => {"Statistiques", "hero-chart-bar"},
     "next_match" => {"Prochain match", "hero-calendar-days"},
-    "top_scorers" => {"Top buteurs", "hero-star"}
+    "top_scorers" => {"Top buteurs", "hero-star"},
+    "player_ranking" => {"Classement Joueurs", "hero-trophy"}
   }
 
   @param_labels %{
     "league" => {"Championnat", "ex : ligue-1"},
     "number" => {"Nombre d'éléments", "ex : 5"},
-    "team" => {"Équipe / joueur", "ex : psg"}
+    "team" => {"Équipe / joueur", "ex : psg"},
+    "circuit" => {"Circuit (ATP/WTA)", "ex : atp"},
+    "season" => {"Saison", "ex : 2024"}
   }
 
   @impl true
@@ -256,7 +257,7 @@ defmodule DashboardWeb.AddWidgetComponent do
     |> Enum.map_join(" ", fn {value, unit} -> "#{value} #{unit}" end)
   end
 
-  def format_rate(_seconds), do: "—"
+  def format_rate(_seconds), do: ""
 
   @impl true
   def render(assigns) do
@@ -282,7 +283,6 @@ defmodule DashboardWeb.AddWidgetComponent do
 
       <div :if={@step == :type} class="space-y-4">
         <p class="glass-muted">Quel type de widget veux-tu ajouter ?</p>
-
         <div class="grid sm:grid-cols-2 gap-4">
           <button
             :for={widget_type <- @widget_types}
@@ -370,7 +370,6 @@ defmodule DashboardWeb.AddWidgetComponent do
         class="space-y-6"
       >
         <p class="glass-muted">À quelle fréquence le widget doit-il se mettre à jour ?</p>
-
         <div class="flex flex-wrap gap-3">
           <button
             :for={rate <- @rate_presets}
@@ -388,7 +387,6 @@ defmodule DashboardWeb.AddWidgetComponent do
           <legend class="block text-sm font-medium">
             Ou une durée personnalisée (heures, minutes, secondes)
           </legend>
-
           <div class="grid grid-cols-3 gap-3">
             <div :for={{key, label, max} <- @rate_units} class="space-y-1">
               <label for={"rate_#{key}"} class="block text-xs glass-muted">{label}</label>
@@ -405,7 +403,6 @@ defmodule DashboardWeb.AddWidgetComponent do
               />
             </div>
           </div>
-
           <p :if={@rate_error} class="text-sm text-error flex gap-1 items-center">
             <.icon name="hero-exclamation-circle" class="size-4" />
             {@rate_error}
@@ -417,7 +414,6 @@ defmodule DashboardWeb.AddWidgetComponent do
 
       <div :if={@step == :confirm} class="space-y-6">
         <p class="glass-muted">Vérifie les informations avant d'ajouter le widget.</p>
-
         <dl class="glass-panel rounded-2xl divide-y divide-(color:--glass-border)">
           <.summary_row label="Sport" value={@service} />
           <.summary_row label="Widget" value={widget_label(@widget_type.name)} />
@@ -428,7 +424,6 @@ defmodule DashboardWeb.AddWidgetComponent do
           />
           <.summary_row label="Rafraîchissement" value={"Toutes les #{format_rate(@refresh_rate)}"} />
         </dl>
-
         <p :if={@submit_error} class="text-sm text-error flex gap-1 items-center">
           <.icon name="hero-exclamation-circle" class="size-4" />
           {@submit_error}

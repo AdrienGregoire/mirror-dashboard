@@ -30,6 +30,11 @@ config :dashboard, DashboardWeb.Endpoint,
 # Key used to encrypt service credentials, test only
 config :dashboard, Dashboard.Vault, key: "cHqnCVVlJNnyzwDJlbO6wi/F76NT3nx9W2XYp/P2E+c="
 
+# API-Basketball calls are answered by Req.Test stubs, never by the network
+config :dashboard, :basket_req_options,
+  plug: {Req.Test, Dashboard.Services.Basket},
+  retry: false
+
 # The boot load queries every widget. Tests register instances themselves.
 config :dashboard, Dashboard.Timer, load_instances: false
 

@@ -225,7 +225,15 @@ defmodule Dashboard.WidgetsTest do
 
   describe "fetch_data/1" do
     test "a service without provider is not implemented yet", %{user: user} do
-      assert Widgets.fetch_data(add_rss!(user, 1)) == {:error, :not_implemented}
+      {:ok, widget} =
+        Widgets.add_widget(user, %{
+          service: "tennis",
+          widget: "news",
+          config: %{"league" => "atp", "number" => 5},
+          refresh_rate: 60
+        })
+
+      assert Widgets.fetch_data(widget) == {:error, :not_implemented}
     end
 
     test "an unknown service is rejected" do
