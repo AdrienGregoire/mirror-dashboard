@@ -16,7 +16,8 @@ defmodule DashboardWeb.DashboardLive do
     "news" => "Actualités",
     "stats" => "Statistiques",
     "next_match" => "Prochain match",
-    "top_scorers" => "Top buteurs"
+    "top_scorers" => "Top buteurs",
+    "player_ranking" => "Classement Joueurs"
   }
 
   @spec mount(any(), any(), any()) :: {:ok, any()}
@@ -330,6 +331,50 @@ defmodule DashboardWeb.DashboardLive do
             <td class="py-1.5 px-1 text-center glass-muted">{player.played}</td>
             <td class="py-1.5 px-1 text-center glass-muted">{player.assists}</td>
             <td class="py-1.5 px-1 text-center font-bold text-primary">{player.goals}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    """
+  end
+
+  defp widget_content(
+         %{data: {:ok, %{rows: rows}}, widget: %{widget: "player_ranking"}} = assigns
+       ) do
+    assigns = assign(assigns, :rows, rows)
+
+    ~H"""
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="glass-muted text-xs border-b border-(color:--glass-border)">
+            <th class="text-left py-1 pr-2">#</th>
+            <th class="text-left py-1 pr-2">Joueur</th>
+            <th class="text-center py-1 px-1">Mvt</th>
+            <th class="text-center py-1 px-1">Points</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            :for={player <- @rows}
+            class="border-b border-(color:--glass-border) last:border-0 hover:bg-white/5"
+          >
+            <td class="py-1.5 pr-2 glass-muted text-xs">{player.position}</td>
+            <td class="py-1.5 pr-2 font-medium truncate max-w-[150px]">{player.name}</td>
+            <td class="py-1.5 px-1 text-center glass-muted">
+              <.icon
+                :if={player.movement == "up"}
+                name="hero-arrow-trending-up"
+                class="size-4 text-success"
+              />
+              <.icon
+                :if={player.movement == "down"}
+                name="hero-arrow-trending-down"
+                class="size-4 text-error"
+              />
+              <span :if={player.movement == "same"}>-</span>
+            </td>
+            <td class="py-1.5 px-1 text-center font-bold text-primary">{player.points}</td>
           </tr>
         </tbody>
       </table>
