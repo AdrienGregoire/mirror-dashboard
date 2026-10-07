@@ -276,7 +276,11 @@ defmodule DashboardWeb.DashboardLive do
             <td class="py-1.5 pr-2 glass-muted text-xs">{player.position}</td>
             <td class="py-1.5 pr-2 font-medium truncate max-w-[100px]">
               <div class="flex items-center gap-2">
-                <img src={player.photo} alt={player.name} class="size-6 rounded-full object-cover shrink-0" />
+                <img
+                  src={player.photo}
+                  alt={player.name}
+                  class="size-6 rounded-full object-cover shrink-0"
+                />
                 {player.name}
               </div>
             </td>
@@ -291,7 +295,9 @@ defmodule DashboardWeb.DashboardLive do
     """
   end
 
-  defp widget_content(%{data: {:ok, %{rows: rows}}, widget: %{widget: "player_ranking"}} = assigns) do
+  defp widget_content(
+         %{data: {:ok, %{rows: rows}}, widget: %{widget: "player_ranking"}} = assigns
+       ) do
     assigns = assign(assigns, :rows, rows)
 
     ~H"""
@@ -313,8 +319,16 @@ defmodule DashboardWeb.DashboardLive do
             <td class="py-1.5 pr-2 glass-muted text-xs">{player.position}</td>
             <td class="py-1.5 pr-2 font-medium truncate max-w-[150px]">{player.name}</td>
             <td class="py-1.5 px-1 text-center glass-muted">
-              <.icon :if={player.movement == "up"} name="hero-arrow-trending-up" class="size-4 text-success" />
-              <.icon :if={player.movement == "down"} name="hero-arrow-trending-down" class="size-4 text-error" />
+              <.icon
+                :if={player.movement == "up"}
+                name="hero-arrow-trending-up"
+                class="size-4 text-success"
+              />
+              <.icon
+                :if={player.movement == "down"}
+                name="hero-arrow-trending-down"
+                class="size-4 text-error"
+              />
               <span :if={player.movement == "same"}>-</span>
             </td>
             <td class="py-1.5 px-1 text-center font-bold text-primary">{player.points}</td>
