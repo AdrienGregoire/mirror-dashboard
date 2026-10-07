@@ -84,14 +84,4 @@ defmodule DashboardWeb.UserAuth do
       |> halt()
     end
   end
-
-  def redirect_if_user_is_authenticated(conn, _opts) do
-    if conn.assigns[:current_user] do
-      conn
-      |> redirect(to: ~p"/")
-      |> halt()
-    else
-      conn
-    end
-  end
 end

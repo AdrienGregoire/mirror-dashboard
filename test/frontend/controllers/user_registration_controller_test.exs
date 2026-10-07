@@ -24,6 +24,18 @@ defmodule DashboardWeb.UserRegistrationControllerTest do
       assert response =~ "registration-form"
     end
 
+    test "still shows the form to a user who already has a session", %{conn: conn} do
+      {:ok, user} = Accounts.register_user(@valid_attrs, &"http://localhost/users/confirm/#{&1}")
+
+      response =
+        conn
+        |> init_test_session(user_id: user.id)
+        |> get(~p"/register")
+        |> html_response(200)
+
+      assert response =~ "Create your account"
+    end
+
     test "links to the login page and offers GitHub sign up", %{conn: conn} do
       response = conn |> get(~p"/register") |> html_response(200)
 
