@@ -171,7 +171,10 @@ defmodule DashboardWeb.DashboardLiveTest do
     test "rejects an out of range refresh rate", %{view: view} do
       open_modal(view)
       pick_type(view, "standings")
-      view |> form("#add-widget-config", config: %{league: "nba"}) |> render_submit()
+
+      view
+      |> form("#add-widget-config", config: %{league: "nba", season: "2024"})
+      |> render_submit()
 
       html =
         view
@@ -185,7 +188,10 @@ defmodule DashboardWeb.DashboardLiveTest do
     test "accepts a custom hours / minutes / seconds rate", %{user: user, view: view} do
       open_modal(view)
       pick_type(view, "standings")
-      view |> form("#add-widget-config", config: %{league: "nba"}) |> render_submit()
+
+      view
+      |> form("#add-widget-config", config: %{league: "nba", season: "2024"})
+      |> render_submit()
 
       html =
         view
@@ -216,10 +222,29 @@ defmodule DashboardWeb.DashboardLiveTest do
       assert has_element?(view, "#add-widget-config")
     end
 
+    test "basket standings offers a league select and requires a season", %{view: view} do
+      open_modal(view)
+
+      html = pick_type(view, "standings")
+      assert html =~ "NBA"
+      assert html =~ "Season"
+
+      html =
+        view
+        |> form("#add-widget-config", config: %{league: "nba", season: ""})
+        |> render_submit()
+
+      assert html =~ "Doit être un nombre entier."
+      assert has_element?(view, "#add-widget-config")
+    end
+
     test "back keeps the entered config", %{view: view} do
       open_modal(view)
       pick_type(view, "standings")
-      view |> form("#add-widget-config", config: %{league: "nba"}) |> render_submit()
+
+      view
+      |> form("#add-widget-config", config: %{league: "nba", season: "2024"})
+      |> render_submit()
 
       html = view |> element("#add-widget-refresh button", "Retour") |> render_click()
 
