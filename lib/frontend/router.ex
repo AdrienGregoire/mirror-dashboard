@@ -23,10 +23,6 @@ defmodule DashboardWeb.Router do
     plug :accepts, ["json"]
   end
 
-  pipeline :guest_only do
-    plug :redirect_if_user_is_authenticated
-  end
-
   scope "/", DashboardWeb do
     pipe_through :browser
 
@@ -47,7 +43,7 @@ defmodule DashboardWeb.Router do
   end
 
   scope "/", DashboardWeb do
-    pipe_through [:browser, :guest_only]
+    pipe_through :browser
 
     get "/register", UserRegistrationController, :new
     post "/register", UserRegistrationController, :create

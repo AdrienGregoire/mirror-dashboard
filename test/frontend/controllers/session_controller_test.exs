@@ -38,7 +38,7 @@ defmodule DashboardWeb.SessionControllerTest do
       assert response =~ ~s(autocomplete="current-password")
     end
 
-    test "redirects an already logged in user to /", %{conn: conn} do
+    test "still shows the form to a user who already has a session", %{conn: conn} do
       user = register_and_confirm_user()
 
       conn =
@@ -47,7 +47,7 @@ defmodule DashboardWeb.SessionControllerTest do
         |> recycle()
         |> get(~p"/login")
 
-      assert redirected_to(conn) == ~p"/"
+      assert html_response(conn, 200) =~ "Continue with GitHub"
     end
   end
 

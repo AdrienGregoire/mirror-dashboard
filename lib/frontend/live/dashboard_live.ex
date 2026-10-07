@@ -16,7 +16,8 @@ defmodule DashboardWeb.DashboardLive do
     "news" => "Actualités",
     "stats" => "Statistiques",
     "next_match" => "Prochain match",
-    "top_scorers" => "Top buteurs"
+    "top_scorers" => "Top buteurs",
+    "player_ranking" => "Classement Joueurs"
   }
 
   @spec mount(any(), any(), any()) :: {:ok, any()}
@@ -85,6 +86,9 @@ defmodule DashboardWeb.DashboardLive do
   defp widgets_for(widgets, service), do: Enum.filter(widgets, &(&1.service == service))
 
   defp widget_label(name), do: Map.get(@widget_labels, name, name)
+
+  defp format_pct(pct),
+    do: pct |> :erlang.float_to_binary(decimals: 3) |> String.trim_leading("0")
 
   def render(assigns) do
     ~H"""
@@ -210,6 +214,56 @@ defmodule DashboardWeb.DashboardLive do
   attr :widget, :map, required: true
   attr :data, :any, default: nil
 
+  # Basketball has no draws: the table shows the win percentage instead.
+  defp widget_content(
+         %{data: {:ok, %{rows: [%{win_pct: _} | _] = rows}}, widget: %{widget: "standings"}} =
+           assigns
+       ) do
+    assigns = assign(assigns, :rows, rows)
+
+    ~H"""
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="glass-muted text-xs border-b border-(color:--glass-border)">
+            <th class="text-left py-1 pr-2">#</th>
+            <th class="text-left py-1 pr-2">Équipe</th>
+            <th class="text-center py-1 px-1">MJ</th>
+            <th class="text-center py-1 px-1">V</th>
+            <th class="text-center py-1 px-1">D</th>
+            <th class="text-center py-1 px-1">%V</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            :for={team <- @rows}
+            class="border-b border-(color:--glass-border) last:border-0 hover:bg-white/5"
+          >
+            <td class="py-1.5 pr-2 glass-muted text-xs">{team.position}</td>
+            <td class="py-1.5 pr-2 font-medium truncate max-w-[100px]">
+              <div class="flex items-center gap-2">
+                <img
+                  :if={team.logo}
+                  src={team.logo}
+                  alt={team.name}
+                  class="size-5 object-contain shrink-0"
+                />
+                {team.name}
+              </div>
+            </td>
+            <td class="py-1.5 px-1 text-center glass-muted">{team.played}</td>
+            <td class="py-1.5 px-1 text-center">{team.wins}</td>
+            <td class="py-1.5 px-1 text-center glass-muted">{team.losses}</td>
+            <td class="py-1.5 px-1 text-center font-bold text-primary">
+              {format_pct(team.win_pct)}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    """
+  end
+
   defp widget_content(%{data: {:ok, %{rows: rows}}, widget: %{widget: "standings"}} = assigns) do
     assigns = assign(assigns, :rows, rows)
 
@@ -287,6 +341,50 @@ defmodule DashboardWeb.DashboardLive do
             <td class="py-1.5 px-1 text-center glass-muted">{player.played}</td>
             <td class="py-1.5 px-1 text-center glass-muted">{player.assists}</td>
             <td class="py-1.5 px-1 text-center font-bold text-primary">{player.goals}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    """
+  end
+
+  defp widget_content(
+         %{data: {:ok, %{rows: rows}}, widget: %{widget: "player_ranking"}} = assigns
+       ) do
+    assigns = assign(assigns, :rows, rows)
+
+    ~H"""
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="glass-muted text-xs border-b border-(color:--glass-border)">
+            <th class="text-left py-1 pr-2">#</th>
+            <th class="text-left py-1 pr-2">Joueur</th>
+            <th class="text-center py-1 px-1">Mvt</th>
+            <th class="text-center py-1 px-1">Points</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            :for={player <- @rows}
+            class="border-b border-(color:--glass-border) last:border-0 hover:bg-white/5"
+          >
+            <td class="py-1.5 pr-2 glass-muted text-xs">{player.position}</td>
+            <td class="py-1.5 pr-2 font-medium truncate max-w-[150px]">{player.name}</td>
+            <td class="py-1.5 px-1 text-center glass-muted">
+              <.icon
+                :if={player.movement == "up"}
+                name="hero-arrow-trending-up"
+                class="size-4 text-success"
+              />
+              <.icon
+                :if={player.movement == "down"}
+                name="hero-arrow-trending-down"
+                class="size-4 text-error"
+              />
+              <span :if={player.movement == "same"}>-</span>
+            </td>
+            <td class="py-1.5 px-1 text-center font-bold text-primary">{player.points}</td>
           </tr>
         </tbody>
       </table>

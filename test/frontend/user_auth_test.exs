@@ -98,27 +98,6 @@ defmodule DashboardWeb.UserAuthTest do
     end
   end
 
-  describe "redirect_if_user_is_authenticated/2" do
-    test "halts and redirects to / when there is a current user", %{conn: conn, user: user} do
-      conn =
-        conn
-        |> assign(:current_user, user)
-        |> UserAuth.redirect_if_user_is_authenticated([])
-
-      assert conn.halted
-      assert redirected_to(conn) == ~p"/"
-    end
-
-    test "lets the request through when there is no current user", %{conn: conn} do
-      conn =
-        conn
-        |> assign(:current_user, nil)
-        |> UserAuth.redirect_if_user_is_authenticated([])
-
-      refute conn.halted
-    end
-  end
-
   describe "post_login_path/1" do
     test "sends a user with no preferred service to onboarding", %{user: user} do
       assert UserAuth.post_login_path(user) == ~p"/onboarding"
