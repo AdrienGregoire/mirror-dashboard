@@ -240,7 +240,17 @@ defmodule DashboardWeb.DashboardLive do
             class="border-b border-(color:--glass-border) last:border-0 hover:bg-white/5"
           >
             <td class="py-1.5 pr-2 glass-muted text-xs">{team.position}</td>
-            <td class="py-1.5 pr-2 font-medium truncate max-w-[100px]">{team.name}</td>
+            <td class="py-1.5 pr-2 font-medium truncate max-w-[100px]">
+              <div class="flex items-center gap-2">
+                <img
+                  :if={team.logo}
+                  src={team.logo}
+                  alt={team.name}
+                  class="size-5 object-contain shrink-0"
+                />
+                {team.name}
+              </div>
+            </td>
             <td class="py-1.5 px-1 text-center glass-muted">{team.played}</td>
             <td class="py-1.5 px-1 text-center">{team.wins}</td>
             <td class="py-1.5 px-1 text-center glass-muted">{team.losses}</td>
