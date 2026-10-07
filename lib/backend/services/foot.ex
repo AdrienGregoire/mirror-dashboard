@@ -2,7 +2,7 @@
 ## EPITECH PROJECT, 2026
 ## foot.ex
 ## File description:
-## API-Football provider — fetches football data for the "foot" service
+## API-Football provider fetches football data for the "foot" service
 #
 
 defmodule Dashboard.Services.Foot do
@@ -37,6 +37,7 @@ defmodule Dashboard.Services.Foot do
             %{
               position: team["rank"],
               name: get_in(team, ["team", "name"]),
+              logo: get_in(team, ["team", "logo"]),
               played: get_in(team, ["all", "played"]),
               wins: get_in(team, ["all", "win"]),
               draws: get_in(team, ["all", "draw"]),
@@ -94,6 +95,7 @@ defmodule Dashboard.Services.Foot do
       %{
         position: rank,
         name: get_in(entry, ["player", "name"]),
+        photo: get_in(entry, ["player", "photo"]),
         team: get_in(stats, ["team", "name"]),
         played: get_in(stats, ["games", "appearences"]),
         goals: get_in(stats, ["goals", "total"]),
