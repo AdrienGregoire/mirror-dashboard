@@ -30,6 +30,7 @@ services:
       GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
       GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
       FOOT_API: ${FOOT_API}
+      BASKET_API: ${BASKET_API}
     volumes:
       - .:/app
     working_dir: /app
@@ -58,6 +59,7 @@ services:
       GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
       GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
       FOOT_API: ${FOOT_API}
+      BASKET_API: ${BASKET_API}
 
 volumes:
   db_data:
