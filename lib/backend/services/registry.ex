@@ -57,11 +57,25 @@ defmodule Dashboard.Services.Registry do
       name: "basket",
       description: "Basketball data powered by API-Sports",
       auth: :none,
+      provider: Dashboard.Services.Basket,
       widgets: [
         %WidgetType{
           name: "standings",
           description: "Classement d'un championnat",
-          params: [%{name: "league", type: "string"}]
+          params: [
+            %{
+              name: "league",
+              type: "string",
+              options: [
+                {"NBA", "nba"},
+                {"WNBA", "wnba"},
+                {"EuroLeague", "euroleague"},
+                {"Betclic Élite (LNB)", "lnb-pro-a"},
+                {"Liga ACB", "acb"}
+              ]
+            },
+            %{name: "season", type: "integer"}
+          ]
         },
         %WidgetType{
           name: "news",

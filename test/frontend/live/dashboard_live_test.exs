@@ -235,15 +235,20 @@ defmodule DashboardWeb.DashboardLiveTest do
       assert has_element?(view, "#add-widget-config")
     end
 
-    test "tennis player_ranking offers a circuit select without season", %{view: view} do
-      view |> element("button[phx-value-service='tennis']") |> render_click()
+    test "basket standings offers a league select and requires a season", %{view: view} do
       open_modal(view)
-      html = pick_type(view, "player_ranking")
 
-      assert html =~ "Circuit (ATP/WTA)"
-      assert html =~ "ATP"
-      assert html =~ "WTA"
-      refute html =~ "Saison"
+      html = pick_type(view, "standings")
+      assert html =~ "NBA"
+      assert html =~ "Season"
+
+      html =
+        view
+        |> form("#add-widget-config", config: %{league: "nba", season: ""})
+        |> render_submit()
+
+      assert html =~ "Doit être un nombre entier."
+      assert has_element?(view, "#add-widget-config")
     end
 
     test "back keeps the entered config", %{view: view} do
