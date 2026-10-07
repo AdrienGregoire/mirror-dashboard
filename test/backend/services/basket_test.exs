@@ -20,7 +20,11 @@ defmodule Dashboard.Services.BasketTest do
     %{
       "position" => position,
       "group" => %{"name" => group},
-      "team" => %{"id" => id, "name" => name},
+      "team" => %{
+        "id" => id,
+        "name" => name,
+        "logo" => "https://media.api-sports.io/basketball/teams/#{id}.png"
+      },
       "games" => %{
         "played" => wins + losses,
         "win" => %{"total" => wins, "percentage" => "0.000"},
@@ -52,6 +56,7 @@ defmodule Dashboard.Services.BasketTest do
 
     assert row.position == 1
     assert row.name == "Celtics"
+    assert row.logo == "https://media.api-sports.io/basketball/teams/1.png"
     assert row.played == 82
     assert row.wins == 60
     assert row.losses == 22

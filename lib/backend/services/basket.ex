@@ -116,6 +116,7 @@ defmodule Dashboard.Services.Basket do
     %{
       position: entry["position"],
       name: get_in(entry, ["team", "name"]),
+      logo: get_in(entry, ["team", "logo"]),
       played: played,
       wins: wins,
       losses: get_in(entry, ["games", "lose", "total"]) || 0,

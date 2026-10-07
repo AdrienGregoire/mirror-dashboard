@@ -167,7 +167,9 @@ defmodule DashboardWeb.DashboardLiveTest do
       open_modal(view)
       pick_type(view, "standings")
 
-      view |> form("#add-widget-config", config: %{league: "nba"}) |> render_submit()
+      view
+      |> form("#add-widget-config", config: %{league: "nba", season: "2024"})
+      |> render_submit()
 
       html =
         view
@@ -182,7 +184,9 @@ defmodule DashboardWeb.DashboardLiveTest do
       open_modal(view)
       pick_type(view, "standings")
 
-      view |> form("#add-widget-config", config: %{league: "nba"}) |> render_submit()
+      view
+      |> form("#add-widget-config", config: %{league: "nba", season: "2024"})
+      |> render_submit()
 
       html =
         view
@@ -250,7 +254,9 @@ defmodule DashboardWeb.DashboardLiveTest do
       open_modal(view)
       pick_type(view, "standings")
 
-      view |> form("#add-widget-config", config: %{league: "nba"}) |> render_submit()
+      view
+      |> form("#add-widget-config", config: %{league: "nba", season: "2024"})
+      |> render_submit()
 
       html = view |> element("#add-widget-refresh button", "Retour") |> render_click()
       assert html =~ ~s(value="nba")
