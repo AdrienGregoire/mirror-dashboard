@@ -35,10 +35,8 @@ config :dashboard, :basket_req_options,
   plug: {Req.Test, Dashboard.Services.Basket},
   retry: false
 
-# Tests stub the providers with different payloads, never serve them from the cache
 config :dashboard, Dashboard.Cache, enabled: false
 
-# Sportradar tennis calls are answered by Req.Test stubs as well
 config :dashboard, :tennis_req_options,
   plug: {Req.Test, Dashboard.Services.Tennis},
   retry: false

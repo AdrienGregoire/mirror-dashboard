@@ -79,9 +79,6 @@ defmodule DashboardWeb.DashboardLive do
     {:noreply, update(socket, :widget_data, &Map.put(&1, id, {:error, inspect(reason)}))}
   end
 
-  # Every widget loads in its own task: the page is displayed right away (with
-  # "Chargement...") and the cards fill in as soon as their API answers, instead
-  # of waiting for the slowest one, one after the other.
   defp load_widgets(socket, widgets) do
     Enum.reduce(widgets, socket, fn widget, socket ->
       start_async(socket, {:widget, widget.id}, fn -> safe_fetch(widget) end)

@@ -6,18 +6,6 @@
 #
 
 defmodule Dashboard.Cache do
-  @moduledoc """
-  ETS backed cache with a time to live per entry.
-
-  Only successful results (`{:ok, value}`) are stored, so an error is always
-  retried on the next call. Reads never go through the owning process, they hit
-  the public ETS table directly. The process only creates the table and sweeps
-  expired entries.
-
-  The cache can be turned off with `config :dashboard, Dashboard.Cache, enabled: false`
-  (this is what the test environment does).
-  """
-
   use GenServer
 
   @table __MODULE__

@@ -94,8 +94,6 @@ defmodule Dashboard.Services.Tennis do
     end
   end
 
-  # A day of the schedule weighs a few hundred KB and the trial plan is limited to
-  # one request per second: every player of the day is searched in the same cached copy.
   defp day_summaries(day) do
     Dashboard.Cache.fetch({:tennis_day, day}, @schedule_ttl, fn ->
       case get("/schedules/#{Date.to_iso8601(day)}/summaries.json") do

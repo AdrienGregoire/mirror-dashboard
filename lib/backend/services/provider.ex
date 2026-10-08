@@ -34,8 +34,6 @@ defmodule Dashboard.Services.Provider do
 
   alias Dashboard.Services.Service
 
-  # Successful results are reused for a few seconds: reloading the page, switching
-  # tabs or several users sharing the same widget do not hit the external API again.
   @cache_ttl :timer.seconds(30)
 
   @type widget :: String.t()
