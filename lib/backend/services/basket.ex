@@ -18,8 +18,6 @@ defmodule Dashboard.Services.Basket do
 
   @base_url "https://v1.basketball.api-sports.io"
 
-  # `split_season: true` leagues are played over two years ("2024-2025"),
-  # the others over a single one ("2024").
   @leagues %{
     "nba" => %{id: 12, split_season: true},
     "wnba" => %{id: 13, split_season: false},
@@ -46,7 +44,65 @@ defmodule Dashboard.Services.Basket do
     end
   end
 
+  def fetch("stats", %{"league" => league, "season" => season, "team" => team}, _credentials) do
+    with {:ok, api_key} <- api_key(),
+         {:ok, %{id: id, split_season: split?}} <- resolve_league(league),
+         api_season = season_param(season, split?),
+         {:ok, response} <-
+           get("/statistics", api_key, league: id, season: api_season, team: team) do
+      {:ok, stats(response, api_season)}
+    else
+      {:error, :empty} ->
+        {:error, "Les statistiques de cette équipe ne sont pas disponibles sur l'API."}
+
+      {:error, _reason} = error ->
+        error
+    end
+  end
+
   def fetch(_widget, _config, _credentials), do: {:error, :unknown_widget}
+
+  @doc """
+  Teams of a league for a season, as `{name, id}` options sorted by name.
+
+  Feeds the team select of the `stats` widget. `config` holds the raw values
+  of the `"league"` and `"season"` params, as typed in the form.
+  """
+  @spec team_options(%{optional(String.t()) => String.t() | integer()}) ::
+          {:ok, [{String.t(), String.t()}]} | {:error, String.t()}
+  def team_options(%{"league" => league, "season" => season}) do
+    with {:ok, season} <- parse_season(season),
+         {:ok, api_key} <- api_key(),
+         {:ok, %{id: id, split_season: split?}} <- resolve_league(league),
+         {:ok, teams} <- get("/teams", api_key, league: id, season: season_param(season, split?)) do
+      options =
+        teams
+        |> Enum.uniq_by(& &1["id"])
+        |> Enum.sort_by(&String.downcase(&1["name"] || ""))
+        |> Enum.map(&{&1["name"], to_string(&1["id"])})
+
+      {:ok, options}
+    else
+      {:error, :empty} -> {:error, "Aucune équipe trouvée pour cette saison."}
+      {:error, _reason} = error -> error
+    end
+  end
+
+  def team_options(_config), do: {:error, "Choisis un championnat et une saison."}
+
+  defp parse_season(season) when is_integer(season), do: check_season(season)
+
+  defp parse_season(season) when is_binary(season) do
+    case Integer.parse(String.trim(season)) do
+      {season, ""} -> check_season(season)
+      _ -> {:error, "Saison invalide."}
+    end
+  end
+
+  defp parse_season(_season), do: {:error, "Saison invalide."}
+
+  defp check_season(season) when season in 1990..2100, do: {:ok, season}
+  defp check_season(_season), do: {:error, "Saison invalide."}
 
   defp api_key do
     case System.get_env("BASKET_API") do
@@ -55,7 +111,6 @@ defmodule Dashboard.Services.Basket do
     end
   end
 
-  # Known slugs, or a raw API-Sports league id typed by the user.
   defp resolve_league(league) do
     case Map.fetch(@leagues, league) do
       {:ok, info} ->
@@ -68,6 +123,40 @@ defmodule Dashboard.Services.Basket do
         end
     end
   end
+
+  defp stats(response, season) do
+    wins = get_in(response, ["games", "wins", "all", "total"]) || 0
+    losses = get_in(response, ["games", "loses", "all", "total"]) || 0
+    played = get_in(response, ["games", "played", "all"]) || wins + losses
+
+    %{
+      team: get_in(response, ["team", "name"]),
+      logo: get_in(response, ["team", "logo"]),
+      league: get_in(response, ["league", "name"]),
+      season: season,
+      played: played,
+      wins: wins,
+      losses: losses,
+      win_pct: if(played > 0, do: wins / played, else: 0.0),
+      points_for_avg: to_float(get_in(response, ["points", "for", "average", "all"])),
+      points_against_avg: to_float(get_in(response, ["points", "against", "average", "all"])),
+      home_wins: get_in(response, ["games", "wins", "home", "total"]) || 0,
+      home_losses: get_in(response, ["games", "loses", "home", "total"]) || 0,
+      away_wins: get_in(response, ["games", "wins", "away", "total"]) || 0,
+      away_losses: get_in(response, ["games", "loses", "away", "total"]) || 0
+    }
+  end
+
+  defp to_float(value) when is_number(value), do: value * 1.0
+
+  defp to_float(value) when is_binary(value) do
+    case Float.parse(value) do
+      {float, _rest} -> float
+      :error -> nil
+    end
+  end
+
+  defp to_float(_value), do: nil
 
   defp season_param(season, true), do: "#{season}-#{season + 1}"
   defp season_param(season, false), do: "#{season}"
@@ -95,9 +184,6 @@ defmodule Dashboard.Services.Basket do
     end
   end
 
-  # The API answers `[[team, ...]]`. Leagues split in conferences / divisions
-  # (NBA) list every team once per group: we keep one entry per team and rank
-  # them over the whole league.
   defp rows(response) do
     entries = List.flatten(response)
 

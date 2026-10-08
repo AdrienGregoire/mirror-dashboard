@@ -10,7 +10,13 @@ defmodule Dashboard.Services.WidgetType do
   A widget type is the template a user picks to create a widget instance.
 
   `params` lists the configuration options of the widget. Each param is a
-  map with a `:name` and a `:type` (`"string"` or `"integer"`).
+  map with a `:name` and a `:type` (`"string"` or `"integer"`), and may carry:
+
+    * `:options` - a list of `{label, value}` the user picks from
+    * `:options_from` and `:depends_on` - options computed by `{module, function}`
+      from the values of the params listed in `:depends_on`. The function gets
+      a map of those raw values and returns `{:ok, [{label, value}]}` or
+      `{:error, message}`.
   """
 
   @enforce_keys [:name, :description, :params]
@@ -19,7 +25,14 @@ defmodule Dashboard.Services.WidgetType do
   @param_types ["string", "integer"]
   @max_string_length 2048
 
-  @type param :: %{name: String.t(), type: String.t()}
+  @type option :: {label :: String.t(), value :: String.t()}
+  @type param :: %{
+          required(:name) => String.t(),
+          required(:type) => String.t(),
+          optional(:options) => [option()],
+          optional(:options_from) => {module(), atom()},
+          optional(:depends_on) => [String.t()]
+        }
   @type t :: %__MODULE__{name: String.t(), description: String.t(), params: [param()]}
 
   def param_types, do: @param_types

@@ -54,7 +54,7 @@ defmodule DashboardWeb.DashboardLiveTest do
   test "shows the widgets of the active tab only", %{conn: conn} do
     user = user_fixture(["foot", "basket"])
     add_widget!(user, "foot", "top_scorers", %{"league" => "ligue-1", "season" => 2025})
-    add_widget!(user, "basket", "stats", %{"team" => "lakers"})
+    add_widget!(user, "basket", "stats", %{"league" => "nba", "season" => 2024, "team" => "145"})
 
     {:ok, _view, html} = conn |> log_in(user) |> live(~p"/dashboard")
     assert html =~ "Top buteurs"
@@ -64,7 +64,7 @@ defmodule DashboardWeb.DashboardLiveTest do
   test "select_tab switches the displayed widgets", %{conn: conn} do
     user = user_fixture(["foot", "basket"])
     add_widget!(user, "foot", "top_scorers", %{"league" => "ligue-1", "season" => 2025})
-    add_widget!(user, "basket", "stats", %{"team" => "lakers"})
+    add_widget!(user, "basket", "stats", %{"league" => "nba", "season" => 2024, "team" => "145"})
 
     {:ok, view, _html} = conn |> log_in(user) |> live(~p"/dashboard")
     html = view |> element("button[phx-value-service='basket']") |> render_click()
