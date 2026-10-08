@@ -41,6 +41,9 @@ defmodule DashboardWeb.Router do
     end
 
     get "/account", AccountController, :show
+    put "/account/update_email", AccountController, :update_email
+    put "/account/update_password", AccountController, :update_password
+    delete "/account", AccountController, :delete
   end
 
   scope "/", DashboardWeb do

@@ -113,6 +113,15 @@ defmodule DashboardWeb.DashboardLive do
       <div class="glass-blob top-20 -right-10 bg-(color:--glass-blob-2)"></div>
       <div class="glass-blob -bottom-10 left-1/3 bg-(color:--glass-blob-3)"></div>
 
+      <div class="absolute top-4 right-4 sm:top-8 sm:right-8 z-50">
+        <.link
+          href={~p"/account"}
+          class="glass-button p-2 text-primary hover:text-white transition-colors"
+          title="Mon compte"
+        >
+          <.icon name="hero-user" class="size-6" />
+        </.link>
+      </div>
       <div class="relative z-10 flex-1 flex flex-col w-full max-w-6xl mx-auto p-4 sm:p-8">
         <div class="space-y-8">
           <div :if={@services == []} class="glass-card p-10 text-center space-y-4">
