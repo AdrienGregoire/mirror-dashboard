@@ -40,15 +40,20 @@ locally, or customized.
 | `GITHUB_CLIENT_ID` | Client ID of your GitHub OAuth App |
 | `GITHUB_CLIENT_SECRET` | Client secret of your GitHub OAuth App |
 
-Create the OAuth App in GitHub.
+Create an OAuth App in GitHub (*Settings → Developer settings → OAuth Apps → New OAuth App*) with:
+
+- **Homepage URL**: `http://localhost:4000`
+- **Authorization callback URL**: `http://localhost:4000/auth/github/callback`
+
+Then copy the Client ID and a generated Client secret into your `.env`.
 
 ### External APIs
 
-| Variable | Service | Where to get a key |
-|----------|---------|--------------------|
-| `FOOT_API` | [API-Football](https://www.api-football.com/) | API-Football |
-| `TENNIS_API` | [Sportradar](https://developer.sportradar.com/) (tennis) | Sportradar |
-| `BASKET_API` | [API-Basketball](https://api-sports.io/documentation/basketball/v1) | API-Sports |
+| Variable | Service |
+|----------|---------|
+| `FOOT_API` | [API-Football](https://www.api-football.com/) |
+| `TENNIS_API` | [Sportradar](https://developer.sportradar.com/) (tennis) |
+| `BASKET_API` | [API-Basketball](https://api-sports.io/documentation/basketball/v1) |
 
 
 ## 2. Build
