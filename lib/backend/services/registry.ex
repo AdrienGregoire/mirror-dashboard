@@ -93,7 +93,7 @@ defmodule Dashboard.Services.Registry do
     },
     %Service{
       name: "tennis",
-      description: "Tennis data powered by API-Sports",
+      description: "Tennis data powered by Sportradar",
       auth: :none,
       provider: Dashboard.Services.Tennis,
       widgets: [
@@ -112,6 +112,11 @@ defmodule Dashboard.Services.Registry do
           name: "standings",
           description: "Classement ATP/WTA",
           params: [%{name: "league", type: "string"}]
+        },
+        %WidgetType{
+          name: "next_match",
+          description: "Prochain match d'un joueur",
+          params: [%{name: "player", type: "string"}]
         }
       ]
     }

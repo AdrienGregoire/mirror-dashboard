@@ -41,6 +41,7 @@ defmodule DashboardWeb.AddWidgetComponent do
     "number" => {"Nombre d'éléments", "ex : 5"},
     "team" => {"Équipe", "ex : psg"},
     "circuit" => {"Circuit (ATP/WTA)", "ex : atp"},
+    "player" => {"Joueur", "ex : jannik sinner"},
     "season" => {"Saison", "ex : 2024"}
   }
 
