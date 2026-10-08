@@ -13,10 +13,6 @@ defmodule Dashboard.Cache do
 
   def start_link(opts \\ []), do: GenServer.start_link(__MODULE__, opts, name: __MODULE__)
 
-  @doc """
-  Returns the cached value of `key`, or runs `fun` and caches its result for
-  `ttl_ms` milliseconds when it is `{:ok, value}`.
-  """
   @spec fetch(term(), non_neg_integer(), (-> {:ok, term()} | {:error, term()})) ::
           {:ok, term()} | {:error, term()}
   def fetch(key, ttl_ms, fun) when is_integer(ttl_ms) and is_function(fun, 0) do
@@ -30,9 +26,6 @@ defmodule Dashboard.Cache do
     end
   end
 
-  @doc """
-  Removes every entry.
-  """
   def clear do
     if :ets.whereis(@table) != :undefined, do: :ets.delete_all_objects(@table)
     :ok
