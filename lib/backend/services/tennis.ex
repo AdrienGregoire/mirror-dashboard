@@ -19,6 +19,7 @@ defmodule Dashboard.Services.Tennis do
   @base_url "https://api.sportradar.com/tennis/trial/v3/en"
   @max_players 10
   @days_ahead 6
+  @schedule_ttl :timer.minutes(2)
   @upcoming_statuses ["not_started", "live", "delayed", "interrupted", "suspended"]
 
   @impl true
@@ -81,16 +82,30 @@ defmodule Dashboard.Services.Tennis do
   defp find_next_match(tokens, player, date, offset) do
     day = Date.add(date, offset)
 
-    case get("/schedules/#{Date.to_iso8601(day)}/summaries.json") do
-      {:ok, %{status: 200, body: %{"summaries" => summaries}}} when is_list(summaries) ->
+    case day_summaries(day) do
+      {:ok, summaries} ->
         case best_match(summaries, tokens) do
           nil -> find_next_match(tokens, player, date, offset + 1)
           match -> {:ok, match}
         end
 
-      other ->
-        http_error(other)
+      {:error, response} ->
+        http_error(response)
     end
+  end
+
+  # A day of the schedule weighs a few hundred KB and the trial plan is limited to
+  # one request per second: every player of the day is searched in the same cached copy.
+  defp day_summaries(day) do
+    Dashboard.Cache.fetch({:tennis_day, day}, @schedule_ttl, fn ->
+      case get("/schedules/#{Date.to_iso8601(day)}/summaries.json") do
+        {:ok, %{status: 200, body: %{"summaries" => summaries}}} when is_list(summaries) ->
+          {:ok, summaries}
+
+        other ->
+          {:error, other}
+      end
+    end)
   end
 
   defp best_match(summaries, tokens) do

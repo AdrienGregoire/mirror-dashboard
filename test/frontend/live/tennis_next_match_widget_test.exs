@@ -65,10 +65,31 @@ defmodule DashboardWeb.TennisNextMatchWidgetTest do
     }
   end
 
+  test "renders the page before the widget data arrives", %{conn: conn, user: user} do
+    test_pid = self()
+
+    Req.Test.stub(Tennis, fn conn ->
+      send(test_pid, {:blocked, self()})
+
+      receive do
+        :go -> Req.Test.json(conn, %{"summaries" => [match([])]})
+      end
+    end)
+
+    {:ok, view, html} = conn |> init_test_session(user_id: user.id) |> live(~p"/dashboard")
+    assert html =~ "Chargement"
+    refute html =~ "Jannik Sinner"
+
+    assert_receive {:blocked, plug_pid}, 1_000
+    send(plug_pid, :go)
+    assert render_async(view) =~ "Jannik Sinner"
+  end
+
   test "shows the next match of the player", %{conn: conn, user: user} do
     stub_summaries([match([])])
 
-    {:ok, _view, html} = conn |> init_test_session(user_id: user.id) |> live(~p"/dashboard")
+    {:ok, view, _html} = conn |> init_test_session(user_id: user.id) |> live(~p"/dashboard")
+    html = render_async(view)
 
     assert html =~ "Jannik Sinner"
     assert html =~ "Alexander Zverev"
@@ -81,19 +102,22 @@ defmodule DashboardWeb.TennisNextMatchWidgetTest do
 
   test "shows a live match and unconfirmed times", %{conn: conn, user: user} do
     stub_summaries([match(status: "live")])
-    {:ok, _view, html} = conn |> init_test_session(user_id: user.id) |> live(~p"/dashboard")
+    {:ok, view, _html} = conn |> init_test_session(user_id: user.id) |> live(~p"/dashboard")
+    html = render_async(view)
     assert html =~ "EN DIRECT"
     assert html =~ "En cours"
 
     stub_summaries([match(confirmed: false)])
-    {:ok, _view, html} = conn |> init_test_session(user_id: user.id) |> live(~p"/dashboard")
+    {:ok, view, _html} = conn |> init_test_session(user_id: user.id) |> live(~p"/dashboard")
+    html = render_async(view)
     assert html =~ "heure à confirmer"
   end
 
   test "shows an error when the player has no upcoming match", %{conn: conn, user: user} do
     stub_summaries([])
 
-    {:ok, _view, html} = conn |> init_test_session(user_id: user.id) |> live(~p"/dashboard")
+    {:ok, view, _html} = conn |> init_test_session(user_id: user.id) |> live(~p"/dashboard")
+    html = render_async(view)
 
     assert html =~ "Aucun match à venir"
   end

@@ -109,11 +109,6 @@ defmodule Dashboard.Services.Registry do
           ]
         },
         %WidgetType{
-          name: "standings",
-          description: "Classement ATP/WTA",
-          params: [%{name: "league", type: "string"}]
-        },
-        %WidgetType{
           name: "next_match",
           description: "Prochain match d'un joueur",
           params: [%{name: "player", type: "string"}]
