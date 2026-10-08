@@ -76,14 +76,6 @@ defmodule Dashboard.Services.Registry do
           ]
         },
         %WidgetType{
-          name: "news",
-          description: "Dernières actus d'une équipe ou d'un championnat",
-          params: [
-            %{name: "league", type: "string"},
-            %{name: "number", type: "integer"}
-          ]
-        },
-        %WidgetType{
           name: "stats",
           description: "Statistiques d'une équipe",
           params: [
@@ -96,17 +88,12 @@ defmodule Dashboard.Services.Registry do
               depends_on: ["league", "season"]
             }
           ]
-        },
-        %WidgetType{
-          name: "next_match",
-          description: "Prochain match d'une équipe",
-          params: [%{name: "team", type: "string"}]
         }
       ]
     },
     %Service{
       name: "tennis",
-      description: "Tennis data powered by API-Sports",
+      description: "Tennis data powered by Sportradar",
       auth: :none,
       provider: Dashboard.Services.Tennis,
       widgets: [
@@ -125,6 +112,11 @@ defmodule Dashboard.Services.Registry do
           name: "standings",
           description: "Classement ATP/WTA",
           params: [%{name: "league", type: "string"}]
+        },
+        %WidgetType{
+          name: "next_match",
+          description: "Prochain match d'un joueur",
+          params: [%{name: "player", type: "string"}]
         }
       ]
     }

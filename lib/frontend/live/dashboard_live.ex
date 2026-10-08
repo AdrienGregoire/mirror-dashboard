@@ -106,6 +106,21 @@ defmodule DashboardWeb.DashboardLive do
   defp format_pct(pct),
     do: pct |> :erlang.float_to_binary(decimals: 3) |> String.trim_leading("0")
 
+  defp match_time(%{live: true}), do: "En cours"
+
+  defp match_time(%{start_time: start_time, time_confirmed: confirmed}) do
+    case DateTime.from_iso8601(start_time || "") do
+      {:ok, datetime, _offset} when confirmed ->
+        Calendar.strftime(datetime, "%d/%m/%Y · %H:%M UTC")
+
+      {:ok, datetime, _offset} ->
+        Calendar.strftime(datetime, "%d/%m/%Y · heure à confirmer")
+
+      _ ->
+        "Date à confirmer"
+    end
+  end
+
   def render(assigns) do
     ~H"""
     <div class="relative flex flex-col min-h-screen overflow-hidden bg-(color:--glass-bg-page)">
@@ -450,6 +465,40 @@ defmodule DashboardWeb.DashboardLive do
           <dt class="glass-muted text-xs">{label}</dt>
         </div>
       </dl>
+    </div>
+    """
+  end
+
+  defp widget_content(
+         %{data: {:ok, %{opponent: _} = match}, widget: %{widget: "next_match"}} = assigns
+       ) do
+    assigns = assign(assigns, :match, match)
+
+    ~H"""
+    <div class="space-y-3 text-center">
+      <p :if={@match.live} class="text-xs font-semibold text-error animate-pulse">EN DIRECT</p>
+      <div class="flex items-center justify-center gap-3">
+        <div class="min-w-0">
+          <p class="font-semibold truncate">{@match.player}</p>
+          <p :if={@match.player_country} class="glass-muted text-xs truncate">
+            {@match.player_country}
+          </p>
+        </div>
+        <span class="glass-muted text-sm">vs</span>
+        <div class="min-w-0">
+          <p class="font-semibold truncate">{@match.opponent}</p>
+          <p :if={@match.opponent_country} class="glass-muted text-xs truncate">
+            {@match.opponent_country}
+          </p>
+        </div>
+      </div>
+      <p class="text-lg font-bold text-primary">{match_time(@match)}</p>
+      <p :if={@match.competition} class="glass-muted text-xs truncate">
+        {@match.competition}<span :if={@match.round}> · {@match.round}</span>
+      </p>
+      <p :if={@match.venue} class="glass-muted text-xs truncate">
+        {@match.venue}<span :if={@match.city}>, {@match.city}</span>
+      </p>
     </div>
     """
   end
