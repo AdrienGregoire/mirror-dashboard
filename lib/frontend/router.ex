@@ -29,6 +29,7 @@ defmodule DashboardWeb.Router do
     get "/", PageController, :home
     get "/users/confirm/:token", UserConfirmationController, :confirm
     delete "/logout", SessionController, :delete
+    get "/privacy", PageController, :privacy
   end
 
   scope "/", DashboardWeb do
