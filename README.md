@@ -9,7 +9,7 @@ The project is launched using Docker Compose. You do not need to install Elixir,
 ## Prerequisites
 
 - Docker installed on your machine.
-- The Docker Compose plugin (verify with docker compose version)
+- The Docker Compose plugin (verify with `docker compose version`)
 
 ## 1. Configuration
 
@@ -19,7 +19,7 @@ Copy the example file and fill in the values:
 cp .env.example .env
 ```
 
-Then edit `.env`.:*
+Then edit `.env`:
 
 ### Application
 
@@ -106,17 +106,14 @@ The reasoning behind these choices is detailed in [Technology choices](Technolog
 
 | Service | Widgets |
 |---------|---------|
-| Football | standings |
-| Football | top scorers |
-| Basketball | ??? |
-| Basketball | ??? |
-| Tennis | ??? |
-| Tennis | ??? |
+| Football | standings, top scorers |
+| Basketball | standings, team stat |
+| Tennis | player ranking, next match |
 
 ## Running the tests
 
 ```bash
-mix precommit
+docker compose run --rm app mix precommit
 ```
 
 # License
