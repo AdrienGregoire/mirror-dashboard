@@ -52,6 +52,7 @@ defmodule DashboardWeb.AddWidgetComponent do
        widget_type: nil,
        config: %{},
        config_errors: %{},
+       dynamic_options: %{},
        refresh_rate: @default_rate,
        rate_parts: rate_parts(@default_rate),
        rate_error: nil,
@@ -76,24 +77,32 @@ defmodule DashboardWeb.AddWidgetComponent do
         {:noreply, socket}
 
       widget_type ->
-        config =
-          if socket.assigns.widget_type == widget_type, do: socket.assigns.config, else: %{}
+        same_type? = socket.assigns.widget_type == widget_type
+        config = if same_type?, do: socket.assigns.config, else: %{}
+        dynamic_options = if same_type?, do: socket.assigns.dynamic_options, else: %{}
 
         {:noreply,
-         assign(socket,
+         socket
+         |> assign(
            widget_type: widget_type,
            config: config,
            config_errors: %{},
+           dynamic_options: dynamic_options,
            step: :config
-         )}
+         )
+         |> load_options()}
     end
   end
 
   def handle_event("validate_config", %{"config" => config}, socket) do
-    errors =
-      Map.drop(socket.assigns.config_errors, Map.keys(changed(socket.assigns.config, config)))
+    old_config = socket.assigns.config
+    config = reset_dependents(socket.assigns.widget_type, old_config, config)
+    errors = Map.drop(socket.assigns.config_errors, Map.keys(changed(old_config, config)))
 
-    {:noreply, assign(socket, config: config, config_errors: errors)}
+    {:noreply,
+     socket
+     |> assign(config: config, config_errors: errors)
+     |> load_options()}
   end
 
   def handle_event("submit_config", params, socket) do
@@ -148,6 +157,102 @@ defmodule DashboardWeb.AddWidgetComponent do
 
       {:error, _reason} ->
         {:noreply, assign(socket, submit_error: "Impossible d'ajouter ce widget, réessaie.")}
+    end
+  end
+
+  @impl true
+  def handle_async({:options, name}, result, socket) do
+    case {result, socket.assigns.dynamic_options[name]} do
+      {{:ok, {key, options}}, %{key: key}} ->
+        {:noreply, put_options(socket, name, key, options)}
+
+      {{:exit, reason}, %{key: key}} ->
+        {:noreply,
+         put_options(socket, name, key, {:error, "Chargement impossible : #{inspect(reason)}"})}
+
+      _ ->
+        {:noreply, socket}
+    end
+  end
+
+  defp reset_dependents(nil, _old, config), do: config
+
+  defp reset_dependents(%WidgetType{params: params}, old, config) do
+    Enum.reduce(params, config, fn
+      %{name: name, depends_on: deps}, config ->
+        if Enum.any?(deps, &(Map.get(old, &1) != Map.get(config, &1))),
+          do: Map.put(config, name, ""),
+          else: config
+
+      _param, config ->
+        config
+    end)
+  end
+
+  defp load_options(socket) do
+    %{widget_type: widget_type, config: config} = socket.assigns
+
+    Enum.reduce(widget_type.params, socket, fn
+      %{name: name, options_from: {module, function}, depends_on: deps}, socket ->
+        values = Map.new(deps, &{&1, config |> Map.get(&1, "") |> to_string() |> String.trim()})
+        key = if Enum.all?(values, fn {_dep, value} -> value != "" end), do: values
+        current = get_in(socket.assigns.dynamic_options, [name, :key])
+
+        cond do
+          key == current ->
+            socket
+
+          key == nil ->
+            assign(socket, dynamic_options: Map.delete(socket.assigns.dynamic_options, name))
+
+          true ->
+            socket
+            |> put_options(name, key, :loading)
+            |> start_async({:options, name}, fn -> {key, apply(module, function, [key])} end)
+        end
+
+      _param, socket ->
+        socket
+    end)
+  end
+
+  defp put_options(socket, name, key, state) do
+    assign(socket,
+      dynamic_options: Map.put(socket.assigns.dynamic_options, name, %{key: key, state: state})
+    )
+  end
+
+  defp options_for(%{options: options}, _dynamic) when is_list(options), do: options
+
+  defp options_for(%{name: name, options_from: _}, dynamic) do
+    case dynamic[name] do
+      %{state: {:ok, options}} -> options
+      _ -> []
+    end
+  end
+
+  defp options_for(_param, _dynamic), do: []
+
+  defp select_param?(param),
+    do: Map.has_key?(param, :options) or Map.has_key?(param, :options_from)
+
+  defp options_status(%{name: name, options_from: _}, dynamic) do
+    case dynamic[name] do
+      nil -> "Renseigne d'abord le championnat et la saison."
+      %{state: :loading} -> "Chargement…"
+      %{state: {:error, message}} -> message
+      %{state: {:ok, _options}} -> nil
+    end
+  end
+
+  defp options_status(_param, _dynamic), do: nil
+
+  defp display_value(param, config, dynamic) do
+    value = Map.get(config, param.name)
+
+    case Enum.find(options_for(param, dynamic), fn {_label, option} -> option == value end) do
+      {label, _value} -> label
+      nil -> value
     end
   end
 
@@ -322,16 +427,17 @@ defmodule DashboardWeb.AddWidgetComponent do
             {param_label(param.name)}
           </label>
           <select
-            :if={param[:options]}
+            :if={select_param?(param)}
             id={"config_#{param.name}"}
             name={"config[#{param.name}]"}
-            phx-change="validate_config"
-            phx-target={@myself}
+            disabled={not is_nil(options_status(param, @dynamic_options))}
             class={["glass-input", @config_errors[param.name] && "ring-2 ring-error/60"]}
           >
-            <option value="">-- Choisir --</option>
+            <option value="">
+              {options_status(param, @dynamic_options) || "Choisir"}
+            </option>
             <option
-              :for={{label, value} <- param[:options]}
+              :for={{label, value} <- options_for(param, @dynamic_options)}
               value={value}
               selected={Map.get(@config, param.name) == value}
             >
@@ -339,7 +445,7 @@ defmodule DashboardWeb.AddWidgetComponent do
             </option>
           </select>
           <input
-            :if={!param[:options]}
+            :if={!select_param?(param)}
             id={"config_#{param.name}"}
             name={"config[#{param.name}]"}
             type={if param.type == "integer", do: "number", else: "text"}
@@ -420,7 +526,7 @@ defmodule DashboardWeb.AddWidgetComponent do
           <.summary_row
             :for={param <- @widget_type.params}
             label={param_label(param.name)}
-            value={Map.get(@config, param.name)}
+            value={display_value(param, @config, @dynamic_options)}
           />
           <.summary_row label="Rafraîchissement" value={"Toutes les #{format_rate(@refresh_rate)}"} />
         </dl>
