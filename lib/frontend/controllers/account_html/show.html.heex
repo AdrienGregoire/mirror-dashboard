@@ -2,17 +2,84 @@
 ## EPITECH PROJECT, 2026
 ## show.html.heex
 ## File description:
-## Placeholder account page — completed as a bonus feature later
+## Placeholder account page
 --%>
 
-<.glass_page flash={@flash}>
-  <div class="glass-card p-12 text-center space-y-6">
-    <h1 class="glass-title text-4xl">Mon compte</h1>
-    <p class="glass-muted">
-      Cette page sera complétée plus tard (gestion du compte et des services suivis).
-    </p>
-    <.link href={~p"/onboarding"} class="glass-button text-primary">
-      Gérer mes services
-    </.link>
+<.glass_page flash={@flash} max_w="max-w-2xl">
+  <div class="glass-card p-10 sm:p-12 space-y-10">
+    <div class="flex items-center justify-between">
+      <h1 class="glass-title text-3xl">Mon compte</h1>
+      <.link href={~p"/dashboard"} class="glass-button text-sm px-4">Retour au Dashboard</.link>
+    </div>
+
+    <div class="space-y-6">
+      <h2 class="text-xl font-semibold text-white">Changer d'email</h2>
+      <.form
+        for={@email_changeset}
+        action={~p"/account/update_email"}
+        method="put"
+        class="space-y-4"
+      >
+        <.auth_input field={@email_changeset[:email]} type="email" label="Nouvel email" required />
+        <button type="submit" class="glass-button text-primary font-semibold">Mettre à jour l'email</button>
+      </.form>
+    </div>
+
+    <.auth_divider>Sécurité</.auth_divider>
+
+    <div class="space-y-6">
+      <h2 class="text-xl font-semibold text-white">
+        {if @current_user.hashed_password,
+          do: "Changer de mot de passe",
+          else: "Créer un mot de passe"}
+      </h2>
+      <.form
+        for={@password_changeset}
+        action={~p"/account/update_password"}
+        method="put"
+        class="space-y-4"
+      >
+        <div :if={@current_user.hashed_password} class="space-y-2 text-left mb-4">
+          <label for="current_password" class="glass-muted block text-sm font-medium">Mot de passe actuel</label>
+          <input
+            type="password"
+            name="user[current_password]"
+            id="current_password"
+            class="glass-input"
+            required
+          />
+        </div>
+        <.auth_input
+          field={@password_changeset[:password]}
+          type="password"
+          label="Nouveau mot de passe"
+          hint="8 caractères minimum"
+          required
+        />
+        <button type="submit" class="glass-button text-primary font-semibold">
+          {if @current_user.hashed_password, do: "Mettre à jour", else: "Définir le mot de passe"}
+        </button>
+      </.form>
+    </div>
+
+    <.auth_divider>Services</.auth_divider>
+
+    <div class="space-y-4 text-center">
+      <p class="glass-muted">Gère tes sports et abonnements actuels.</p>
+      <.link href={~p"/onboarding"} class="glass-button text-primary w-full inline-block py-3">Gérer mes sports</.link>
+    </div>
+
+    <.auth_divider>Zone de danger</.auth_divider>
+
+    <div class="space-y-4 text-center">
+      <.link
+        href={~p"/account"}
+        method="delete"
+        data-confirm="Es-tu sûr de vouloir supprimer définitivement ton compte ? Cette action est irréversible."
+        class="glass-button text-error font-semibold w-full inline-block py-3"
+      >
+        Supprimer le compte
+      </.link>
+    </div>
   </div>
 </.glass_page>

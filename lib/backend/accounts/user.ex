@@ -94,6 +94,19 @@ defmodule Dashboard.Accounts.User do
 
   def valid_password?(_, _), do: false
 
+  def email_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:email])
+    |> validate_email()
+    |> put_change(:confirmed_at, nil)
+  end
+
+  def password_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:password])
+    |> validate_password()
+  end
+
   defp validate_email(changeset) do
     changeset
     |> update_change(:email, fn
