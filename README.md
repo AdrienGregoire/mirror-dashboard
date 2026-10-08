@@ -85,9 +85,39 @@ docker compose down -v
 - **Database**: PostgreSQL & Ecto
 - **Deployment**: Docker Compose
 
-## Projet structure
+The reasoning behind these choices is detailed in [Technology choices](Technology-choices.md).
 
-...
+## Project structure
+
+```
+.
+├── lib/
+│   ├── backend/      # business logic: accounts, services, widgets engine
+│   └── frontend/     # Phoenix web layer: router, controllers, templates
+├── priv/             # migrations
+├── test/             # ExUnit tests
+├── poc/              # proofs of concept for technology choices
+├── docker-compose.yml
+├── Dockerfile
+└── .env.example
+```
+
+## Services and widgets
+
+| Service | Widgets |
+|---------|---------|
+| Football | standings |
+| Football | top scorers |
+| Basketball | ??? |
+| Basketball | ??? |
+| Tennis | ??? |
+| Tennis | ??? |
+
+## Running the tests
+
+```bash
+mix precommit
+```
 
 # License
 Epitech.
