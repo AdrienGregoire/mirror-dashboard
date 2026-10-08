@@ -103,6 +103,48 @@ defmodule Dashboard.Accounts do
     Repo.delete(user)
   end
 
+  def update_user_email(%User{} = user, attrs, confirmation_url_fun) do
+    changeset = User.email_changeset(user, attrs)
+
+    if changeset.valid? && changeset.changes[:email] do
+      token = generate_token()
+
+      changeset =
+        changeset
+        |> Ecto.Changeset.put_change(:confirmation_token, token)
+        |> Ecto.Changeset.put_change(
+          :confirmation_sent_at,
+          DateTime.utc_now() |> DateTime.truncate(:second)
+        )
+
+      case Repo.update(changeset) do
+        {:ok, updated_user} ->
+          Dashboard.Accounts.UserNotifier.deliver_confirmation_instructions(
+            updated_user,
+            confirmation_url_fun.(token)
+          )
+
+          {:ok, updated_user}
+
+        error ->
+          error
+      end
+    else
+      Repo.update(changeset)
+    end
+  end
+
+  def update_user_password(%User{} = user, password, attrs) do
+    if user.hashed_password && !User.valid_password?(user, password) do
+      {:error,
+       Ecto.Changeset.add_error(Ecto.Changeset.change(user), :current_password, "is not valid")}
+    else
+      user
+      |> User.password_changeset(attrs)
+      |> Repo.update()
+    end
+  end
+
   defp get_user_identity(provider, uid) do
     UserIdentity
     |> Repo.get_by(provider: provider, uid: uid)
