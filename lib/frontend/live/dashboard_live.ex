@@ -87,6 +87,22 @@ defmodule DashboardWeb.DashboardLive do
 
   defp widget_label(name), do: Map.get(@widget_labels, name, name)
 
+  defp stat_tiles(stats) do
+    [
+      {"Matchs", stats.played},
+      {"Victoires", stats.wins},
+      {"Défaites", stats.losses},
+      {"% victoires", format_pct(stats.win_pct)},
+      {"Pts marqués", format_avg(stats.points_for_avg)},
+      {"Pts encaissés", format_avg(stats.points_against_avg)},
+      {"Domicile", "#{stats.home_wins}-#{stats.home_losses}"},
+      {"Extérieur", "#{stats.away_wins}-#{stats.away_losses}"}
+    ]
+  end
+
+  defp format_avg(nil), do: "-"
+  defp format_avg(avg), do: :erlang.float_to_binary(avg, decimals: 1)
+
   defp format_pct(pct),
     do: pct |> :erlang.float_to_binary(decimals: 3) |> String.trim_leading("0")
 
@@ -224,7 +240,6 @@ defmodule DashboardWeb.DashboardLive do
   attr :widget, :map, required: true
   attr :data, :any, default: nil
 
-  # Basketball has no draws: the table shows the win percentage instead.
   defp widget_content(
          %{data: {:ok, %{rows: [%{win_pct: _} | _] = rows}}, widget: %{widget: "standings"}} =
            assigns
@@ -398,6 +413,34 @@ defmodule DashboardWeb.DashboardLive do
           </tr>
         </tbody>
       </table>
+    </div>
+    """
+  end
+
+  defp widget_content(%{data: {:ok, %{win_pct: _} = stats}, widget: %{widget: "stats"}} = assigns) do
+    assigns = assign(assigns, :stats, stats)
+
+    ~H"""
+    <div class="space-y-4">
+      <div class="flex items-center gap-3">
+        <img
+          :if={@stats.logo}
+          src={@stats.logo}
+          alt={@stats.team}
+          class="size-10 object-contain shrink-0"
+        />
+        <div class="min-w-0">
+          <p class="font-semibold truncate">{@stats.team}</p>
+          <p class="glass-muted text-xs truncate">{@stats.league} · {@stats.season}</p>
+        </div>
+      </div>
+
+      <dl class="grid grid-cols-3 gap-3 text-center">
+        <div :for={{label, value} <- stat_tiles(@stats)}>
+          <dd class="text-lg font-bold text-primary">{value}</dd>
+          <dt class="glass-muted text-xs">{label}</dt>
+        </div>
+      </dl>
     </div>
     """
   end

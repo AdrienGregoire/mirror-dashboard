@@ -8,6 +8,14 @@
 defmodule Dashboard.Services.Registry do
   alias Dashboard.Services.{Service, WidgetType}
 
+  @basket_leagues [
+    {"NBA", "nba"},
+    {"WNBA", "wnba"},
+    {"EuroLeague", "euroleague"},
+    {"Betclic Élite (LNB)", "lnb-pro-a"},
+    {"Liga ACB", "acb"}
+  ]
+
   @services [
     %Service{
       name: "foot",
@@ -63,17 +71,7 @@ defmodule Dashboard.Services.Registry do
           name: "standings",
           description: "Classement d'un championnat",
           params: [
-            %{
-              name: "league",
-              type: "string",
-              options: [
-                {"NBA", "nba"},
-                {"WNBA", "wnba"},
-                {"EuroLeague", "euroleague"},
-                {"Betclic Élite (LNB)", "lnb-pro-a"},
-                {"Liga ACB", "acb"}
-              ]
-            },
+            %{name: "league", type: "string", options: @basket_leagues},
             %{name: "season", type: "integer"}
           ]
         },
@@ -88,7 +86,16 @@ defmodule Dashboard.Services.Registry do
         %WidgetType{
           name: "stats",
           description: "Statistiques d'une équipe",
-          params: [%{name: "team", type: "string"}]
+          params: [
+            %{name: "league", type: "string", options: @basket_leagues},
+            %{name: "season", type: "integer"},
+            %{
+              name: "team",
+              type: "string",
+              options_from: {Dashboard.Services.Basket, :team_options},
+              depends_on: ["league", "season"]
+            }
+          ]
         },
         %WidgetType{
           name: "next_match",
