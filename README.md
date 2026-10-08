@@ -1,8 +1,9 @@
 # Dashboard
 
-Dashboard is a third-year full-stack web project at Epitech.
+Dashboard is a third-year full-stack web project at Epitech. It's a customizable dashboard where users subscribe to external services and display their data through widgets.
 
 # Getting Started
+
 The project is launched using Docker Compose. You do not need to install Elixir, Erlang, or Postgres locally.
 
 ## Prerequisites
@@ -10,7 +11,7 @@ The project is launched using Docker Compose. You do not need to install Elixir,
 - Docker installed on your machine.
 - The Docker Compose plugin (verify with docker compose version)
 
-### 1. Configuration
+## 1. Configuration
 
 Copy the example file and fill in the values:
 
@@ -18,35 +19,53 @@ Copy the example file and fill in the values:
 cp .env.example .env
 ```
 
-Then edit `.env` and replace `SECRET_KEY_BASE` with a real value generated using:
+Then edit `.env`.:*
 
-```bash
-openssl rand -base64 48
-```
+### Application
 
-and `ENCRYPTION_KEY` (used to encrypt the credentials and tokens of the services users subscribe to) with:
+| Variable | Description |
+|----------|-------------|
+| `SECRET_KEY_BASE` | Phoenix secret. Generate it with `openssl rand -base64 48` |
+| `ENCRYPTION_KEY` | Encrypts the credentials and tokens of the services users subscribe to. Generate it with `openssl rand -base64 32` |
 
-```bash
-openssl rand -base64 32
-```
+### Database
 
-(`POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB` can be left as is locally, or customized.)
+`POSTGRES_USER`, `POSTGRES_PASSWORD` and `POSTGRES_DB` can be left as is
+locally, or customized.
 
-### 2. Building the image
+### GitHub OAuth
+
+| Variable | Description |
+|----------|-------------|
+| `GITHUB_CLIENT_ID` | Client ID of your GitHub OAuth App |
+| `GITHUB_CLIENT_SECRET` | Client secret of your GitHub OAuth App |
+
+Create the OAuth App in GitHub.
+
+### External APIs
+
+| Variable | Service | Where to get a key |
+|----------|---------|--------------------|
+| `FOOT_API` | [API-Football](https://www.api-football.com/) | API-Football |
+| `TENNIS_API` | [Sportradar](https://developer.sportradar.com/) (tennis) | Sportradar |
+| `BASKET_API` | [API-Basketball](https://api-sports.io/documentation/basketball/v1) | API-Sports |
+
+
+## 2. Build
 
 ```bash
 docker compose build
 ```
 
-### 3. Launching
+## 3. Run
 
 ```bash
 docker compose up
 ```
 
-The application is available at [http://localhost:8080](http://localhost:8080).
+The application is available at [http://localhost:4000](http://localhost:4000).
 
-### 4. Stopping the application
+## 4. Stop
 
 ```bash
 docker compose down
@@ -57,6 +76,18 @@ To remove everything, including persisted Postgres data:
 ```bash
 docker compose down -v
 ```
+
+# Technical overview
+
+## Stack
+
+- **Backend / frontend**: Elixir, Phoenix
+- **Database**: PostgreSQL & Ecto
+- **Deployment**: Docker Compose
+
+## Projet structure
+
+...
 
 # License
 Epitech.
