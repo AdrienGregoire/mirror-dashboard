@@ -35,6 +35,11 @@ config :dashboard, :basket_req_options,
   plug: {Req.Test, Dashboard.Services.Basket},
   retry: false
 
+# Sportradar tennis calls are answered by Req.Test stubs as well
+config :dashboard, :tennis_req_options,
+  plug: {Req.Test, Dashboard.Services.Tennis},
+  retry: false
+
 # The boot load queries every widget. Tests register instances themselves.
 config :dashboard, Dashboard.Timer, load_instances: false
 

@@ -39,8 +39,9 @@ defmodule DashboardWeb.AddWidgetComponent do
   @param_labels %{
     "league" => {"Championnat", "ex : ligue-1"},
     "number" => {"Nombre d'éléments", "ex : 5"},
-    "team" => {"Équipe / joueur", "ex : psg"},
+    "team" => {"Équipe", "ex : psg"},
     "circuit" => {"Circuit (ATP/WTA)", "ex : atp"},
+    "player" => {"Joueur", "ex : jannik sinner"},
     "season" => {"Saison", "ex : 2024"}
   }
 
