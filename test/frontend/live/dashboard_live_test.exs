@@ -113,16 +113,16 @@ defmodule DashboardWeb.DashboardLiveTest do
 
     test "adds a configured widget to the active service", %{user: user, view: view} do
       assert open_modal(view) =~ "Classement"
-      assert pick_type(view, "news") =~ "Nombre d&#39;éléments"
+      assert pick_type(view, "standings") =~ "Saison"
 
       view
-      |> form("#add-widget-config", config: %{league: "nba", number: "5"})
+      |> form("#add-widget-config", config: %{league: "nba", season: "2024"})
       |> render_submit()
 
       view |> element("#add-widget button[phx-value-rate='900']") |> render_click()
       html = view |> form("#add-widget-refresh") |> render_submit()
       assert html =~ "Toutes les 15 min"
-      assert html =~ "nba"
+      assert html =~ "NBA"
 
       view |> element("#add-widget button", "Ajouter le widget") |> render_click()
 
@@ -131,8 +131,8 @@ defmodule DashboardWeb.DashboardLiveTest do
 
       assert [widget] = Widgets.list_widgets(user)
       assert widget.service == "basket"
-      assert widget.widget == "news"
-      assert widget.config == %{"league" => "nba", "number" => 5}
+      assert widget.widget == "standings"
+      assert widget.config == %{"league" => "nba", "season" => 2024}
       assert widget.refresh_rate == 900
     end
 
@@ -156,11 +156,11 @@ defmodule DashboardWeb.DashboardLiveTest do
 
     test "shows the config errors and stays on the step", %{view: view} do
       open_modal(view)
-      pick_type(view, "news")
+      pick_type(view, "standings")
 
       html =
         view
-        |> form("#add-widget-config", config: %{league: "", number: "abc"})
+        |> form("#add-widget-config", config: %{league: "", season: "abc"})
         |> render_submit()
 
       assert html =~ "Ce champ est requis."
