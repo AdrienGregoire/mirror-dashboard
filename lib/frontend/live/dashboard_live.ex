@@ -114,7 +114,11 @@ defmodule DashboardWeb.DashboardLive do
       <div class="glass-blob -bottom-10 left-1/3 bg-(color:--glass-blob-3)"></div>
 
       <div class="absolute top-4 right-4 sm:top-8 sm:right-8 z-50">
-        <.link href={~p"/account"} class="glass-button p-2 text-primary hover:text-white transition-colors" title="Mon compte">
+        <.link
+          href={~p"/account"}
+          class="glass-button p-2 text-primary hover:text-white transition-colors"
+          title="Mon compte"
+        >
           <.icon name="hero-user" class="size-6" />
         </.link>
       </div>
