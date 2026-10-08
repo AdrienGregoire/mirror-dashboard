@@ -73,7 +73,8 @@ defmodule DashboardWeb.BasketStatsWidgetTest do
       Req.Test.json(conn, %{"errors" => [], "response" => response})
     end)
 
-    {:ok, _view, html} = conn |> init_test_session(user_id: user.id) |> live(~p"/dashboard")
+    {:ok, view, _html} = conn |> init_test_session(user_id: user.id) |> live(~p"/dashboard")
+    html = render_async(view)
 
     assert html =~ "Los Angeles Lakers"
     assert html =~ ~s(src="https://logo/145.png")
@@ -90,7 +91,8 @@ defmodule DashboardWeb.BasketStatsWidgetTest do
       Req.Test.json(conn, %{"errors" => [], "response" => []})
     end)
 
-    {:ok, _view, html} = conn |> init_test_session(user_id: user.id) |> live(~p"/dashboard")
+    {:ok, view, _html} = conn |> init_test_session(user_id: user.id) |> live(~p"/dashboard")
+    html = render_async(view)
 
     assert html =~ "pas disponibles"
   end

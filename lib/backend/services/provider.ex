@@ -34,6 +34,10 @@ defmodule Dashboard.Services.Provider do
 
   alias Dashboard.Services.Service
 
+  # Successful results are reused for a few seconds: reloading the page, switching
+  # tabs or several users sharing the same widget do not hit the external API again.
+  @cache_ttl :timer.seconds(30)
+
   @type widget :: String.t()
   @type config :: %{optional(String.t()) => String.t() | integer()}
   @type credentials :: map()
@@ -42,7 +46,8 @@ defmodule Dashboard.Services.Provider do
   @callback fetch(widget(), config(), credentials()) :: {:ok, data()} | {:error, term()}
 
   @doc """
-  Dispatches `fetch/3` to the provider of the service.
+  Dispatches `fetch/3` to the provider of the service. Successful results are
+  cached for a short time (see `Dashboard.Cache`).
   """
   @spec fetch(Service.t(), widget(), config(), credentials()) :: {:ok, data()} | {:error, term()}
   def fetch(%Service{provider: nil}, _widget, _config, _credentials),
@@ -50,7 +55,11 @@ defmodule Dashboard.Services.Provider do
 
   def fetch(%Service{provider: provider} = service, widget, config, credentials) do
     if Service.get_widget(service, widget) do
-      provider.fetch(widget, config, credentials)
+      key = {service.name, widget, config, :erlang.phash2(credentials)}
+
+      Dashboard.Cache.fetch(key, @cache_ttl, fn ->
+        provider.fetch(widget, config, credentials)
+      end)
     else
       {:error, :unknown_widget}
     end

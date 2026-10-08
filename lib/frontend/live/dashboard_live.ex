@@ -25,14 +25,16 @@ defmodule DashboardWeb.DashboardLive do
     user = socket.assigns.current_user
     widgets = Widgets.list_widgets(user)
 
-    {:ok,
-     assign(socket,
-       widgets: widgets,
-       services: user.preferred_services,
-       active_service: List.first(user.preferred_services),
-       adding_widget: false,
-       widget_data: fetch_all_data(widgets)
-     )}
+    socket =
+      assign(socket,
+        widgets: widgets,
+        services: user.preferred_services,
+        active_service: List.first(user.preferred_services),
+        adding_widget: false,
+        widget_data: %{}
+      )
+
+    {:ok, if(connected?(socket), do: load_widgets(socket, widgets), else: socket)}
   end
 
   def handle_event("select_tab", %{"service" => service}, socket) do
@@ -64,16 +66,26 @@ defmodule DashboardWeb.DashboardLive do
 
     {:noreply,
      socket
-     |> assign(
-       widgets: widgets,
-       adding_widget: false,
-       widget_data: Map.put(socket.assigns.widget_data, widget.id, safe_fetch(widget))
-     )
+     |> assign(widgets: widgets, adding_widget: false)
+     |> load_widgets([widget])
      |> put_flash(:info, "Widget ajouté !")}
   end
 
-  defp fetch_all_data(widgets) do
-    Map.new(widgets, fn widget -> {widget.id, safe_fetch(widget)} end)
+  def handle_async({:widget, id}, {:ok, result}, socket) do
+    {:noreply, update(socket, :widget_data, &Map.put(&1, id, result))}
+  end
+
+  def handle_async({:widget, id}, {:exit, reason}, socket) do
+    {:noreply, update(socket, :widget_data, &Map.put(&1, id, {:error, inspect(reason)}))}
+  end
+
+  # Every widget loads in its own task: the page is displayed right away (with
+  # "Chargement...") and the cards fill in as soon as their API answers, instead
+  # of waiting for the slowest one, one after the other.
+  defp load_widgets(socket, widgets) do
+    Enum.reduce(widgets, socket, fn widget, socket ->
+      start_async(socket, {:widget, widget.id}, fn -> safe_fetch(widget) end)
+    end)
   end
 
   defp safe_fetch(widget) do

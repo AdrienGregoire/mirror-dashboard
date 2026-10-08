@@ -15,6 +15,7 @@ defmodule Dashboard.Application do
         Dashboard.Repo,
         {DNSCluster, query: Application.get_env(:dashboard, :dns_cluster_query) || :ignore},
         {Phoenix.PubSub, name: Dashboard.PubSub},
+        Dashboard.Cache,
         Dashboard.Timer
       ] ++
         mailer_children() ++
