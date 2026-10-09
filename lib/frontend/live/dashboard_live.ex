@@ -12,12 +12,12 @@ defmodule DashboardWeb.DashboardLive do
   alias Dashboard.Services.{Registry, Provider}
 
   @widget_labels %{
-    "standings" => "Classement",
-    "news" => "Actualités",
-    "stats" => "Statistiques",
-    "next_match" => "Prochain match",
-    "top_scorers" => "Top buteurs",
-    "player_ranking" => "Classement Joueurs"
+    "standings" => "Standings",
+    "news" => "News",
+    "stats" => "Stats",
+    "next_match" => "Next match",
+    "top_scorers" => "Top scorers",
+    "player_ranking" => "Player ranking"
   }
 
   @spec mount(any(), any(), any()) :: {:ok, any()}
@@ -68,7 +68,7 @@ defmodule DashboardWeb.DashboardLive do
      socket
      |> assign(widgets: widgets, adding_widget: false)
      |> load_widgets([widget])
-     |> put_flash(:info, "Widget ajouté !")}
+     |> put_flash(:info, "Widget added !")}
   end
 
   def handle_async({:widget, id}, {:ok, result}, socket) do
@@ -99,13 +99,13 @@ defmodule DashboardWeb.DashboardLive do
   defp stat_tiles(stats) do
     [
       {"Matchs", stats.played},
-      {"Victoires", stats.wins},
-      {"Défaites", stats.losses},
-      {"% victoires", format_pct(stats.win_pct)},
-      {"Pts marqués", format_avg(stats.points_for_avg)},
-      {"Pts encaissés", format_avg(stats.points_against_avg)},
-      {"Domicile", "#{stats.home_wins}-#{stats.home_losses}"},
-      {"Extérieur", "#{stats.away_wins}-#{stats.away_losses}"}
+      {"Wins", stats.wins},
+      {"Losses", stats.losses},
+      {"% Wins", format_pct(stats.win_pct)},
+      {"Pts scored", format_avg(stats.points_for_avg)},
+      {"Pts allowed", format_avg(stats.points_against_avg)},
+      {"Home", "#{stats.home_wins}-#{stats.home_losses}"},
+      {"Away", "#{stats.away_wins}-#{stats.away_losses}"}
     ]
   end
 
@@ -115,7 +115,7 @@ defmodule DashboardWeb.DashboardLive do
   defp format_pct(pct),
     do: pct |> :erlang.float_to_binary(decimals: 3) |> String.trim_leading("0")
 
-  defp match_time(%{live: true}), do: "En cours"
+  defp match_time(%{live: true}), do: "In progress"
 
   defp match_time(%{start_time: start_time, time_confirmed: confirmed}) do
     case DateTime.from_iso8601(start_time || "") do
@@ -123,10 +123,10 @@ defmodule DashboardWeb.DashboardLive do
         Calendar.strftime(datetime, "%d/%m/%Y · %H:%M UTC")
 
       {:ok, datetime, _offset} ->
-        Calendar.strftime(datetime, "%d/%m/%Y · heure à confirmer")
+        Calendar.strftime(datetime, "%d/%m/%Y · time to be confirmed")
 
       _ ->
-        "Date à confirmer"
+        "Date to be confirmed"
     end
   end
 
@@ -141,7 +141,7 @@ defmodule DashboardWeb.DashboardLive do
         <.link
           href={~p"/account"}
           class="glass-button p-2 text-primary hover:text-white transition-colors"
-          title="Mon compte"
+          title="My account"
         >
           <.icon name="hero-user" class="size-6" />
         </.link>
@@ -149,9 +149,9 @@ defmodule DashboardWeb.DashboardLive do
       <div class="relative z-10 flex-1 flex flex-col w-full max-w-6xl mx-auto p-4 sm:p-8">
         <div class="space-y-8">
           <div :if={@services == []} class="glass-card p-10 text-center space-y-4">
-            <p class="glass-muted">Tu n'as encore choisi aucun sport à suivre.</p>
+            <p class="glass-muted">You haven't chosen any sports to follow yet.</p>
             <.link href={~p"/onboarding"} class="glass-button text-primary">
-              Choisir mes sports
+              Choose my sports
             </.link>
           </div>
 
@@ -175,7 +175,7 @@ defmodule DashboardWeb.DashboardLive do
               phx-click="open_add_widget"
               class="glass-button cursor-pointer text-primary font-semibold ml-auto"
             >
-              <.icon name="hero-plus" class="size-4 mr-2" /> Ajouter un widget
+              <.icon name="hero-plus" class="size-4 mr-2" /> Add a widget
             </button>
           </div>
 
@@ -239,7 +239,7 @@ defmodule DashboardWeb.DashboardLive do
               class="glass-card cursor-pointer p-6 min-h-32 flex flex-col items-center justify-center gap-2 glass-muted border-dashed! hover:-translate-y-0.5 transition-all duration-300"
             >
               <.icon name="hero-plus-circle" class="size-8" />
-              <span>Aucun widget pour l'instant. Ajoute ton premier !</span>
+              <span>No widgets yet. Add your first one !</span>
             </button>
           </div>
         </div>

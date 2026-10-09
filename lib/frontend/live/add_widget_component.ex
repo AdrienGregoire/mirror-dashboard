@@ -20,7 +20,7 @@ defmodule DashboardWeb.AddWidgetComponent do
   @steps [
     type: "Type",
     config: "Configuration",
-    refresh: "Rafraîchissement",
+    refresh: "Refresh",
     confirm: "Confirmation"
   ]
 
@@ -28,21 +28,21 @@ defmodule DashboardWeb.AddWidgetComponent do
   @default_rate 300
 
   @widget_labels %{
-    "standings" => {"Classement", "hero-trophy"},
-    "news" => {"Actualités", "hero-newspaper"},
-    "stats" => {"Statistiques", "hero-chart-bar"},
-    "next_match" => {"Prochain match", "hero-calendar-days"},
-    "top_scorers" => {"Top buteurs", "hero-star"},
-    "player_ranking" => {"Classement Joueurs", "hero-trophy"}
+    "standings" => {"Standings", "hero-trophy"},
+    "news" => {"News", "hero-newspaper"},
+    "stats" => {"Stats", "hero-chart-bar"},
+    "next_match" => {"Next match", "hero-calendar-days"},
+    "top_scorers" => {"Top scorers", "hero-star"},
+    "player_ranking" => {"Player ranking", "hero-trophy"}
   }
 
   @param_labels %{
-    "league" => {"Championnat", "ex : ligue-1"},
-    "number" => {"Nombre d'éléments", "ex : 5"},
-    "team" => {"Équipe", "ex : psg"},
+    "league" => {"League", "ex : ligue-1"},
+    "number" => {"Number", "ex : 5"},
+    "team" => {"Team", "ex : psg"},
     "circuit" => {"Circuit (ATP/WTA)", "ex : atp"},
-    "player" => {"Joueur", "ex : jannik sinner"},
-    "season" => {"Saison", "ex : 2024"}
+    "player" => {"Player", "ex : jannik sinner"},
+    "season" => {"Season", "ex : 2024"}
   }
 
   @impl true
@@ -381,14 +381,14 @@ defmodule DashboardWeb.AddWidgetComponent do
     ~H"""
     <div id={@id} class="space-y-8">
       <div class="space-y-2 pr-8">
-        <h2 class="glass-title text-3xl">Ajouter un widget</h2>
+        <h2 class="glass-title text-3xl">Add a widget</h2>
         <p class="glass-muted capitalize">{@service}</p>
       </div>
 
       <.stepper steps={@steps} current={@step} />
 
       <div :if={@step == :type} class="space-y-4">
-        <p class="glass-muted">Quel type de widget veux-tu ajouter ?</p>
+        <p class="glass-muted">What kind of widget do you want to add ?</p>
         <div class="grid sm:grid-cols-2 gap-4">
           <button
             :for={widget_type <- @widget_types}
@@ -435,7 +435,7 @@ defmodule DashboardWeb.AddWidgetComponent do
             class={["glass-input", @config_errors[param.name] && "ring-2 ring-error/60"]}
           >
             <option value="">
-              {options_status(param, @dynamic_options) || "Choisir"}
+              {options_status(param, @dynamic_options) || "Choose"}
             </option>
             <option
               :for={{label, value} <- options_for(param, @dynamic_options)}
@@ -464,7 +464,7 @@ defmodule DashboardWeb.AddWidgetComponent do
           </p>
         </div>
 
-        <.nav_buttons myself={@myself} submit_label="Suivant" />
+        <.nav_buttons myself={@myself} submit_label="Next" />
       </.form>
 
       <.form
@@ -476,7 +476,7 @@ defmodule DashboardWeb.AddWidgetComponent do
         phx-target={@myself}
         class="space-y-6"
       >
-        <p class="glass-muted">À quelle fréquence le widget doit-il se mettre à jour ?</p>
+        <p class="glass-muted">How often should the widget update ?</p>
         <div class="flex flex-wrap gap-3">
           <button
             :for={rate <- @rate_presets}
@@ -516,11 +516,11 @@ defmodule DashboardWeb.AddWidgetComponent do
           </p>
         </fieldset>
 
-        <.nav_buttons myself={@myself} submit_label="Suivant" />
+        <.nav_buttons myself={@myself} submit_label="Next" />
       </.form>
 
       <div :if={@step == :confirm} class="space-y-6">
-        <p class="glass-muted">Vérifie les informations avant d'ajouter le widget.</p>
+        <p class="glass-muted">Check the information before adding the widget.</p>
         <dl class="glass-panel rounded-2xl divide-y divide-(color:--glass-border)">
           <.summary_row label="Sport" value={@service} />
           <.summary_row label="Widget" value={widget_label(@widget_type.name)} />
@@ -529,7 +529,7 @@ defmodule DashboardWeb.AddWidgetComponent do
             label={param_label(param.name)}
             value={display_value(param, @config, @dynamic_options)}
           />
-          <.summary_row label="Rafraîchissement" value={"Toutes les #{format_rate(@refresh_rate)}"} />
+          <.summary_row label="Rafraîchissement" value={"Every hour #{format_rate(@refresh_rate)}"} />
         </dl>
         <p :if={@submit_error} class="text-sm text-error flex gap-1 items-center">
           <.icon name="hero-exclamation-circle" class="size-4" />
@@ -543,7 +543,7 @@ defmodule DashboardWeb.AddWidgetComponent do
             phx-target={@myself}
             class="glass-button cursor-pointer"
           >
-            <.icon name="hero-arrow-left" class="size-4 mr-2" /> Retour
+            <.icon name="hero-arrow-left" class="size-4 mr-2" /> Back
           </button>
           <button
             type="button"
@@ -552,7 +552,7 @@ defmodule DashboardWeb.AddWidgetComponent do
             phx-disable-with="Ajout…"
             class="glass-button cursor-pointer text-primary font-semibold"
           >
-            <.icon name="hero-check" class="size-4 mr-2" /> Ajouter le widget
+            <.icon name="hero-check" class="size-4 mr-2" /> Add the widget
           </button>
         </div>
       </div>
@@ -595,7 +595,7 @@ defmodule DashboardWeb.AddWidgetComponent do
     ~H"""
     <div class="flex justify-between gap-3">
       <button type="button" phx-click="back" phx-target={@myself} class="glass-button cursor-pointer">
-        <.icon name="hero-arrow-left" class="size-4 mr-2" /> Retour
+        <.icon name="hero-arrow-left" class="size-4 mr-2" /> Back
       </button>
       <button type="submit" class="glass-button cursor-pointer text-primary font-semibold">
         {@submit_label} <.icon name="hero-arrow-right" class="size-4 ml-2" />
