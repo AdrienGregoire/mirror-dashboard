@@ -121,5 +121,11 @@ The reasoning behind these choices is detailed in [Technology choices](Technolog
 docker compose run --rm app mix precommit
 ```
 
+## Running the load tests
+```bash
+mix run load_tests/load_test.exs
+mix run load_tests/load_test_login.exs
+```
+
 # License
 Epitech.
