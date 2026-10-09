@@ -47,7 +47,7 @@ defmodule DashboardWeb.DashboardLiveTest do
     user = user_fixture()
     {:ok, _view, html} = conn |> log_in(user) |> live(~p"/dashboard")
 
-    assert html =~ "aucun sport"
+    assert html =~ "You haven&#39;t chosen any sports to follow yet"
     assert html =~ "/onboarding"
   end
 
@@ -57,8 +57,8 @@ defmodule DashboardWeb.DashboardLiveTest do
     add_widget!(user, "basket", "stats", %{"league" => "nba", "season" => 2024, "team" => "145"})
 
     {:ok, _view, html} = conn |> log_in(user) |> live(~p"/dashboard")
-    assert html =~ "Top buteurs"
-    refute html =~ "Statistiques"
+    assert html =~ "Top scorers"
+    refute html =~ "Stats"
   end
 
   test "select_tab switches the displayed widgets", %{conn: conn} do
@@ -69,8 +69,8 @@ defmodule DashboardWeb.DashboardLiveTest do
     {:ok, view, _html} = conn |> log_in(user) |> live(~p"/dashboard")
     html = view |> element("button[phx-value-service='basket']") |> render_click()
 
-    assert html =~ "Statistiques"
-    refute html =~ "Top buteurs"
+    assert html =~ "Stats"
+    refute html =~ "Top scorers"
   end
 
   test "move_widget updates the position when the widget belongs to the user", %{conn: conn} do
@@ -112,8 +112,8 @@ defmodule DashboardWeb.DashboardLiveTest do
     end
 
     test "adds a configured widget to the active service", %{user: user, view: view} do
-      assert open_modal(view) =~ "Classement"
-      assert pick_type(view, "standings") =~ "Saison"
+      assert open_modal(view) =~ "Standings"
+      assert pick_type(view, "standings") =~ "Season"
 
       view
       |> form("#add-widget-config", config: %{league: "nba", season: "2024"})
@@ -121,12 +121,12 @@ defmodule DashboardWeb.DashboardLiveTest do
 
       view |> element("#add-widget button[phx-value-rate='900']") |> render_click()
       html = view |> form("#add-widget-refresh") |> render_submit()
-      assert html =~ "Toutes les 15 min"
+      assert html =~ "Every 15 min"
       assert html =~ "NBA"
 
-      view |> element("#add-widget button", "Ajouter le widget") |> render_click()
+      view |> element("#add-widget button", "Add the widget") |> render_click()
 
-      assert render(view) =~ "Widget ajouté"
+      assert render(view) =~ "Widget added"
       refute has_element?(view, "#add-widget-modal")
 
       assert [widget] = Widgets.list_widgets(user)
@@ -149,7 +149,7 @@ defmodule DashboardWeb.DashboardLiveTest do
       |> form("#add-widget-refresh", rate: %{hours: "0", minutes: "2", seconds: "0"})
       |> render_submit()
 
-      view |> element("#add-widget button", "Ajouter le widget") |> render_click()
+      view |> element("#add-widget button", "Add the widget") |> render_click()
 
       assert [%{service: "foot", refresh_rate: 120}] = Widgets.list_widgets(user)
     end
@@ -198,9 +198,9 @@ defmodule DashboardWeb.DashboardLiveTest do
         |> form("#add-widget-refresh", rate: %{hours: "1", minutes: "30", seconds: "15"})
         |> render_submit()
 
-      assert html =~ "Toutes les 1 h 30 min 15 s"
+      assert html =~ "Every 1 h 30 min 15 s"
 
-      view |> element("#add-widget button", "Ajouter le widget") |> render_click()
+      view |> element("#add-widget button", "Add the widget") |> render_click()
 
       assert [%{refresh_rate: 5415}] = Widgets.list_widgets(user)
     end
@@ -247,7 +247,7 @@ defmodule DashboardWeb.DashboardLiveTest do
     #   assert html =~ "Circuit (ATP/WTA)"
     #   assert html =~ "ATP"
     #   assert html =~ "WTA"
-    #   refute html =~ "Saison"
+    #   refute html =~ "Season"
     # end
 
     # test "basket standings offers a league select and requires a season", %{view: view} do
@@ -274,7 +274,7 @@ defmodule DashboardWeb.DashboardLiveTest do
       |> form("#add-widget-config", config: %{league: "nba", season: "2024"})
       |> render_submit()
 
-      html = view |> element("#add-widget-refresh button", "Retour") |> render_click()
+      html = view |> element("#add-widget-refresh button", "Back") |> render_click()
       assert html =~ ~s(value="nba")
     end
 

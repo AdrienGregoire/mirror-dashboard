@@ -66,8 +66,8 @@ defmodule DashboardWeb.BasketTeamStatsFlowTest do
   end
 
   test "asks for the league and the season before listing the teams", %{html: html} do
-    assert html =~ "Championnat"
-    assert html =~ "Saison"
+    assert html =~ "League"
+    assert html =~ "Season"
     assert html =~ "Renseigne d&#39;abord le championnat et la saison."
     refute_received {:request, "/teams", _}
   end
@@ -133,7 +133,7 @@ defmodule DashboardWeb.BasketTeamStatsFlowTest do
 
     view |> form("#add-widget-config", config: %{team: "145"}) |> render_submit()
 
-    html = view |> element("#add-widget-refresh button", "Retour") |> render_click()
+    html = view |> element("#add-widget-refresh button", "Back") |> render_click()
     assert html =~ ~s(value="145" selected)
 
     view |> form("#add-widget-config", config: %{team: "145"}) |> render_submit()
@@ -141,7 +141,7 @@ defmodule DashboardWeb.BasketTeamStatsFlowTest do
 
     assert html =~ "Los Angeles Lakers"
 
-    view |> element("#add-widget button", "Ajouter le widget") |> render_click()
+    view |> element("#add-widget button", "Add the widget") |> render_click()
 
     assert [widget] = Widgets.list_widgets(user)
     assert widget.service == "basket"
