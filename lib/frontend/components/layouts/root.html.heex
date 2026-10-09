@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang={assigns[:locale] || "en"}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,7 +11,6 @@
     <script>
       (() => {
         const systemTheme = () => matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-
         const setTheme = (theme) => {
           if (theme === "system") {
             localStorage.removeItem("phx:theme");
@@ -28,7 +27,6 @@
         }
         window.addEventListener("storage", (e) => e.key === "phx:theme" && setTheme(e.newValue || "system"));
         window.addEventListener("phx:set-theme", (e) => setTheme(e.target.dataset.phxTheme));
-
         matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
           if (document.documentElement.getAttribute("data-theme-source") === "system") {
             document.documentElement.setAttribute("data-theme", systemTheme());
@@ -38,6 +36,40 @@
     </script>
   </head>
   <body>
+    <%!-- Barre d'outils globale (Sélecteur de langue + Compte) --%>
+    <div class="fixed top-4 right-4 sm:top-8 sm:right-8 z-50 flex items-center gap-3">
+      <div class="flex items-center gap-1 glass-card p-1">
+        <.link
+          href={~p"/locale?locale=en"}
+          method="post"
+          class={[
+            "glass-button text-xs px-2.5 py-1",
+            (assigns[:locale] || "en") == "en" && "ring-2 ring-primary font-bold"
+          ]}
+        >
+          EN
+        </.link>
+        <.link
+          href={~p"/locale?locale=fr"}
+          method="post"
+          class={[
+            "glass-button text-xs px-2.5 py-1",
+            assigns[:locale] == "fr" && "ring-2 ring-primary font-bold"
+          ]}
+        >
+          FR
+        </.link>
+      </div>
+      <.link
+        :if={assigns[:current_user]}
+        href={~p"/account"}
+        class="glass-button p-2 text-primary hover:text-white transition-colors"
+        title="My account"
+      >
+        <.icon name="hero-user" class="size-6" />
+      </.link>
+    </div>
+
     {@inner_content}
   </body>
 </html>

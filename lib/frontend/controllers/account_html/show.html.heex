@@ -2,36 +2,43 @@
 ## EPITECH PROJECT, 2026
 ## show.html.heex
 ## File description:
-## Placeholder account page
+## Account management page
 --%>
 
 <.glass_page flash={@flash} max_w="max-w-2xl">
   <div class="glass-card p-10 sm:p-12 space-y-10">
     <div class="flex items-center justify-between">
-      <h1 class="glass-title text-3xl">My account</h1>
-      <.link href={~p"/dashboard"} class="glass-button text-sm px-4">Back to Dashboard</.link>
+      <h1 class="glass-title text-3xl">{gettext("My account")}</h1>
+      <.link href={~p"/dashboard"} class="glass-button text-sm px-4">{gettext("Back to Dashboard")}</.link>
     </div>
 
     <div class="space-y-6">
-      <h2 class="text-xl font-semibold text-white">Change email address</h2>
+      <h2 class="text-xl font-semibold text-white">{gettext("Change email address")}</h2>
       <.form
         for={@email_changeset}
         action={~p"/account/update_email"}
         method="put"
         class="space-y-4"
       >
-        <.auth_input field={@email_changeset[:email]} type="email" label="New email" required />
-        <button type="submit" class="glass-button text-primary font-semibold">Update email address</button>
+        <.auth_input
+          field={@email_changeset[:email]}
+          type="email"
+          label={gettext("New email")}
+          required
+        />
+        <button type="submit" class="glass-button text-primary font-semibold">{gettext(
+          "Update email address"
+        )}</button>
       </.form>
     </div>
 
-    <.auth_divider>Security</.auth_divider>
+    <.auth_divider>{gettext("Security")}</.auth_divider>
 
     <div class="space-y-6">
       <h2 class="text-xl font-semibold text-white">
         {if @current_user.hashed_password,
-          do: "Change password",
-          else: "Create a password"}
+          do: gettext("Change password"),
+          else: gettext("Create a password")}
       </h2>
       <.form
         for={@password_changeset}
@@ -40,7 +47,9 @@
         class="space-y-4"
       >
         <div :if={@current_user.hashed_password} class="space-y-2 text-left mb-4">
-          <label for="current_password" class="glass-muted block text-sm font-medium">Current password</label>
+          <label for="current_password" class="glass-muted block text-sm font-medium">{gettext(
+            "Current password"
+          )}</label>
           <input
             type="password"
             name="user[current_password]"
@@ -52,33 +61,41 @@
         <.auth_input
           field={@password_changeset[:password]}
           type="password"
-          label="New password"
-          hint="8 characters minimum"
+          label={gettext("New password")}
+          hint={gettext("8 characters minimum")}
           required
         />
         <button type="submit" class="glass-button text-primary font-semibold">
-          {if @current_user.hashed_password, do: "Update", else: "Set the password"}
+          {if @current_user.hashed_password,
+            do: gettext("Update"),
+            else: gettext("Set the password")}
         </button>
       </.form>
     </div>
 
-    <.auth_divider>Services</.auth_divider>
+    <.auth_divider>{gettext("Services")}</.auth_divider>
 
     <div class="space-y-4 text-center">
-      <p class="glass-muted">Manage your current sports and subscriptions.</p>
-      <.link href={~p"/onboarding"} class="glass-button text-primary w-full inline-block py-3">Manage your sports</.link>
+      <p class="glass-muted">{gettext("Manage your current sports and subscriptions.")}</p>
+      <.link href={~p"/onboarding"} class="glass-button text-primary w-full inline-block py-3">{gettext(
+        "Manage your sports"
+      )}</.link>
     </div>
 
-    <.auth_divider>Danger zone</.auth_divider>
+    <.auth_divider>{gettext("Danger zone")}</.auth_divider>
 
     <div class="space-y-4 text-center">
       <.link
         href={~p"/account"}
         method="delete"
-        data-confirm="Are you sure you want to permanently delete your account ? This action cannot be undone."
+        data-confirm={
+          gettext(
+            "Are you sure you want to permanently delete your account ? This action cannot be undone."
+          )
+        }
         class="glass-button text-error font-semibold w-full inline-block py-3"
       >
-        Delete the account
+        {gettext("Delete the account")}
       </.link>
     </div>
   </div>
