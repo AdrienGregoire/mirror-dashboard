@@ -10,7 +10,7 @@ total_requests = 50_000
 concurrency = 1000
 
 IO.puts("Starting load test on #{target_url}...")
-IO.puts("Total request : #{total_requests} | Concurrency: #{concurrency}\n")
+IO.puts("Total requests : #{total_requests} | Concurrency: #{concurrency}\n")
 
 start_time = System.monotonic_time(:millisecond)
 
