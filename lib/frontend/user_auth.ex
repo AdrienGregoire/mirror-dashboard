@@ -10,6 +10,7 @@ defmodule DashboardWeb.UserAuth do
   import Plug.Conn
   import Phoenix.Controller
   alias Dashboard.Accounts
+
   @session_user_id_key :user_id
 
   def post_login_path(%Accounts.User{preferred_services: []}), do: ~p"/onboarding"
@@ -36,7 +37,6 @@ defmodule DashboardWeb.UserAuth do
   def fetch_current_user(conn, _opts) do
     user_id = get_session(conn, @session_user_id_key)
     user = user_id && Accounts.get_user(user_id)
-
     assign(conn, :current_user, user)
   end
 
@@ -52,8 +52,13 @@ defmodule DashboardWeb.UserAuth do
   end
 
   def on_mount(:ensure_authenticated, _params, session, socket) do
+    locale = session["locale"] || "en"
+    Gettext.put_locale(DashboardWeb.Gettext, locale)
+
     socket =
-      Phoenix.Component.assign_new(socket, :current_user, fn ->
+      socket
+      |> Phoenix.Component.assign(:locale, locale)
+      |> Phoenix.Component.assign_new(:current_user, fn ->
         case session["user_id"] do
           nil -> nil
           user_id -> Accounts.get_user(user_id)

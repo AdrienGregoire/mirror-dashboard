@@ -6,12 +6,12 @@
 --%>
 
 <.glass_page flash={@flash}>
-  <.auth_card title="Log in" subtitle="Dashboard Sport">
+  <.auth_card title={gettext("Log in")} subtitle={gettext("Dashboard Sport")}>
     <.form for={@form} id="login-form" action={~p"/login"} method="post" class="space-y-6">
       <.auth_input
         field={@form[:email]}
         type="email"
-        label="Email"
+        label={gettext("Email")}
         placeholder="name@exemple.com"
         autocomplete="email"
         required
@@ -20,7 +20,7 @@
       <.auth_input
         field={@form[:password]}
         type="password"
-        label="Password"
+        label={gettext("Password")}
         placeholder="••••••••"
         autocomplete="current-password"
         required
@@ -29,17 +29,17 @@
         type="submit"
         class="glass-button w-full text-primary font-semibold text-lg py-3 mt-4"
       >
-        <.icon name="hero-arrow-right-on-rectangle" class="w-5 h-5 mr-2" /> Log in
+        <.icon name="hero-arrow-right-on-rectangle" class="w-5 h-5 mr-2" /> {gettext("Log in")}
       </button>
     </.form>
 
-    <.auth_divider>or</.auth_divider>
-    <.oauth_button provider="github" label="Continue with GitHub" />
+    <.auth_divider>{gettext("or")}</.auth_divider>
+    <.oauth_button provider="github" label={gettext("Continue with GitHub")} />
 
     <:footer>
-      No account yet?
+      {gettext("No account yet?")}
       <.link href={~p"/register"} class="text-primary font-semibold hover:underline ml-1">
-        Sign up
+        {gettext("Sign up")}
       </.link>
     </:footer>
   </.auth_card>
