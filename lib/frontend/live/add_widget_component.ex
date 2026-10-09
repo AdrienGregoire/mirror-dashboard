@@ -529,7 +529,7 @@ defmodule DashboardWeb.AddWidgetComponent do
             label={param_label(param.name)}
             value={display_value(param, @config, @dynamic_options)}
           />
-          <.summary_row label="Rafraîchissement" value={"Every hour #{format_rate(@refresh_rate)}"} />
+          <.summary_row label="Rafraîchissement" value={"Every #{format_rate(@refresh_rate)}"} />
         </dl>
         <p :if={@submit_error} class="text-sm text-error flex gap-1 items-center">
           <.icon name="hero-exclamation-circle" class="size-4" />
