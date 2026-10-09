@@ -25,7 +25,7 @@ defmodule Dashboard.Services.Registry do
       widgets: [
         %WidgetType{
           name: "standings",
-          description: "Classement d'un championnat",
+          description: "League standings",
           params: [
             %{
               name: "league",
@@ -43,7 +43,7 @@ defmodule Dashboard.Services.Registry do
         },
         %WidgetType{
           name: "top_scorers",
-          description: "Meilleurs buteurs d'un championnat",
+          description: "Top Scorers in a league",
           params: [
             %{
               name: "league",
@@ -69,7 +69,7 @@ defmodule Dashboard.Services.Registry do
       widgets: [
         %WidgetType{
           name: "standings",
-          description: "Classement d'un championnat",
+          description: "League standings",
           params: [
             %{name: "league", type: "string", options: @basket_leagues},
             %{name: "season", type: "integer"}
@@ -77,7 +77,7 @@ defmodule Dashboard.Services.Registry do
         },
         %WidgetType{
           name: "stats",
-          description: "Statistiques d'une équipe",
+          description: "Team statistics",
           params: [
             %{name: "league", type: "string", options: @basket_leagues},
             %{name: "season", type: "integer"},
@@ -99,7 +99,7 @@ defmodule Dashboard.Services.Registry do
       widgets: [
         %WidgetType{
           name: "player_ranking",
-          description: "Classement des joueurs",
+          description: "Player rankings",
           params: [
             %{
               name: "circuit",
@@ -110,7 +110,7 @@ defmodule Dashboard.Services.Registry do
         },
         %WidgetType{
           name: "next_match",
-          description: "Prochain match d'un joueur",
+          description: "A player's next match",
           params: [%{name: "player", type: "string"}]
         }
       ]

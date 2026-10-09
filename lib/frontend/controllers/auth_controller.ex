@@ -23,7 +23,7 @@ defmodule DashboardWeb.AuthController do
     case Accounts.get_or_create_user_from_oauth(auth) do
       {:ok, user} ->
         conn
-        |> put_flash(:info, "Welcome!")
+        |> put_flash(:info, "Welcome !")
         |> UserAuth.log_in_user(user)
         |> redirect(to: UserAuth.post_login_path(user))
 

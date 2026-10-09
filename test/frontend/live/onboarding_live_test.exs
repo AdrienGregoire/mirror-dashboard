@@ -36,7 +36,7 @@ defmodule DashboardWeb.OnboardingLiveTest do
     assert html =~ "foot"
     assert html =~ "basket"
     assert html =~ "tennis"
-    assert has_element?(view, "button[disabled]", "Continuer")
+    assert has_element?(view, "button[disabled]", "Continue")
   end
 
   test "picking a service enables the continue button", %{conn: conn} do
@@ -45,7 +45,7 @@ defmodule DashboardWeb.OnboardingLiveTest do
 
     view |> element("button[phx-value-service='foot']") |> render_click()
 
-    refute has_element?(view, "button[disabled]", "Continuer")
+    refute has_element?(view, "button[disabled]", "Continue")
   end
 
   test "toggling a service twice clears the selection again", %{conn: conn} do
@@ -55,7 +55,7 @@ defmodule DashboardWeb.OnboardingLiveTest do
     view |> element("button[phx-value-service='foot']") |> render_click()
     view |> element("button[phx-value-service='foot']") |> render_click()
 
-    assert has_element?(view, "button[disabled]", "Continuer")
+    assert has_element?(view, "button[disabled]", "Continue")
   end
 
   test "saving persists the selection and redirects to /dashboard", %{conn: conn} do
@@ -65,7 +65,7 @@ defmodule DashboardWeb.OnboardingLiveTest do
     view |> element("button[phx-value-service='basket']") |> render_click()
 
     assert {:error, {:live_redirect, %{to: "/dashboard"}}} =
-             view |> element("button", "Continuer") |> render_click()
+             view |> element("button", "Continue") |> render_click()
 
     assert Accounts.get_user(user.id).preferred_services == ["basket"]
   end

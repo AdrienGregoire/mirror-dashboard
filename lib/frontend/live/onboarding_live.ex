@@ -36,11 +36,11 @@ defmodule DashboardWeb.OnboardingLive do
         {:noreply,
          socket
          |> assign(current_user: user)
-         |> put_flash(:info, "Services enregistrés !")
+         |> put_flash(:info, "Services registered !")
          |> push_navigate(to: ~p"/dashboard")}
 
       {:error, _changeset} ->
-        {:noreply, put_flash(socket, :error, "Choisis au moins un service valide.")}
+        {:noreply, put_flash(socket, :error, "Select at least one valid service.")}
     end
   end
 
@@ -49,8 +49,8 @@ defmodule DashboardWeb.OnboardingLive do
     <.glass_page flash={@flash} max_w="max-w-2xl">
       <div class="glass-card p-10 sm:p-12 space-y-8">
         <div class="text-center space-y-2">
-          <h1 class="glass-title text-4xl">Choisis tes sports</h1>
-          <p class="glass-muted">Tu pourras changer ça à tout moment depuis ton compte.</p>
+          <h1 class="glass-title text-4xl">Subscribe to your sports</h1>
+          <p class="glass-muted">You can change this at any time from your account.</p>
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -74,7 +74,7 @@ defmodule DashboardWeb.OnboardingLive do
           disabled={MapSet.size(@selected) == 0}
           class="glass-button w-full text-primary font-semibold text-lg py-3 disabled:opacity-40"
         >
-          Continuer
+          Continue
         </button>
       </div>
     </.glass_page>
