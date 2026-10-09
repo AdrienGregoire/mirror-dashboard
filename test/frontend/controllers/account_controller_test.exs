@@ -35,6 +35,6 @@ defmodule DashboardWeb.AccountControllerTest do
       |> init_test_session(user_id: user.id)
       |> get(~p"/account")
 
-    assert html_response(conn, 200) =~ "Mon compte"
+    assert html_response(conn, 200) =~ "My account"
   end
 end

@@ -105,12 +105,12 @@ defmodule DashboardWeb.TennisNextMatchWidgetTest do
     {:ok, view, _html} = conn |> init_test_session(user_id: user.id) |> live(~p"/dashboard")
     html = render_async(view)
     assert html =~ "EN DIRECT"
-    assert html =~ "En cours"
+    assert html =~ "In progress"
 
     stub_summaries([match(confirmed: false)])
     {:ok, view, _html} = conn |> init_test_session(user_id: user.id) |> live(~p"/dashboard")
     html = render_async(view)
-    assert html =~ "heure à confirmer"
+    assert html =~ "time to be confirmed"
   end
 
   test "shows an error when the player has no upcoming match", %{conn: conn, user: user} do
