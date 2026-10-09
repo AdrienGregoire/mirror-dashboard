@@ -27,24 +27,6 @@ defmodule DashboardWeb.AddWidgetComponent do
   @rate_presets [30, 60, 300, 900, 3600]
   @default_rate 300
 
-  @widget_labels %{
-    "standings" => {"Standings", "hero-trophy"},
-    "news" => {"News", "hero-newspaper"},
-    "stats" => {"Stats", "hero-chart-bar"},
-    "next_match" => {"Next match", "hero-calendar-days"},
-    "top_scorers" => {"Top scorers", "hero-star"},
-    "player_ranking" => {"Player ranking", "hero-trophy"}
-  }
-
-  @param_labels %{
-    "league" => {"League", "ex : ligue-1"},
-    "number" => {"Number", "ex : 5"},
-    "team" => {"Team", "ex : psg"},
-    "circuit" => {"Circuit (ATP/WTA)", "ex : atp"},
-    "player" => {"Player", "ex : jannik sinner"},
-    "season" => {"Season", "ex : 2024"}
-  }
-
   @impl true
   def mount(socket) do
     {:ok,
@@ -157,7 +139,8 @@ defmodule DashboardWeb.AddWidgetComponent do
         {:noreply, socket}
 
       {:error, _reason} ->
-        {:noreply, assign(socket, submit_error: "Impossible d'ajouter ce widget, réessaie.")}
+        {:noreply,
+         assign(socket, submit_error: gettext("Impossible d'ajouter ce widget, réessaie."))}
     end
   end
 
@@ -169,7 +152,12 @@ defmodule DashboardWeb.AddWidgetComponent do
 
       {{:exit, reason}, %{key: key}} ->
         {:noreply,
-         put_options(socket, name, key, {:error, "Chargement impossible : #{inspect(reason)}"})}
+         put_options(
+           socket,
+           name,
+           key,
+           {:error, "#{gettext("Chargement impossible :")} #{inspect(reason)}"}
+         )}
 
       _ ->
         {:noreply, socket}
@@ -239,8 +227,8 @@ defmodule DashboardWeb.AddWidgetComponent do
 
   defp options_status(%{name: name, options_from: _}, dynamic) do
     case dynamic[name] do
-      nil -> "Renseigne d'abord le championnat et la saison."
-      %{state: :loading} -> "Chargement…"
+      nil -> gettext("Renseigne d'abord le championnat et la saison.")
+      %{state: :loading} -> gettext("Chargement…")
       %{state: {:error, message}} -> message
       %{state: {:ok, _options}} -> nil
     end
@@ -269,8 +257,6 @@ defmodule DashboardWeb.AddWidgetComponent do
     end
   end
 
-  # Turns the hours / minutes / seconds inputs into a total number of seconds.
-  # Empty inputs count as 0.
   defp parse_rate(parts) do
     with {:ok, hours} <- parse_unit(parts["hours"]),
          {:ok, minutes} <- parse_unit(parts["minutes"]),
@@ -284,12 +270,12 @@ defmodule DashboardWeb.AddWidgetComponent do
   defp parse_unit(value) when is_binary(value) do
     case Integer.parse(String.trim(value)) do
       {unit, ""} when unit >= 0 -> {:ok, unit}
-      _ -> {:error, "Indique des nombres entiers positifs (heures, minutes, secondes)."}
+      _ -> {:error, gettext("Indique des nombres entiers positifs (heures, minutes, secondes).")}
     end
   end
 
   defp parse_unit(_value),
-    do: {:error, "Indique des nombres entiers positifs (heures, minutes, secondes)."}
+    do: {:error, gettext("Indique des nombres entiers positifs (heures, minutes, secondes).")}
 
   defp validate_rate(rate) do
     range = WidgetInstance.refresh_rate_range()
@@ -298,7 +284,7 @@ defmodule DashboardWeb.AddWidgetComponent do
       {:ok, rate}
     else
       {:error,
-       "Choisis une valeur entre #{format_rate(range.first)} et #{format_rate(range.last)}."}
+       "#{gettext("Choisis une valeur entre")} #{format_rate(range.first)} #{gettext("et")} #{format_rate(range.last)}."}
     end
   end
 
@@ -321,42 +307,62 @@ defmodule DashboardWeb.AddWidgetComponent do
   defp step_index(step), do: Enum.find_index(Keyword.keys(@steps), &(&1 == step))
 
   defp widget_label(name) do
-    case Map.get(@widget_labels, name) do
-      {label, _icon} -> label
-      nil -> name |> String.replace("_", " ") |> String.capitalize()
-    end
+    labels = %{
+      "standings" => gettext("Standings"),
+      "news" => gettext("News"),
+      "stats" => gettext("Stats"),
+      "next_match" => gettext("Next match"),
+      "top_scorers" => gettext("Top scorers"),
+      "player_ranking" => gettext("Player ranking")
+    }
+
+    Map.get(labels, name, name |> String.replace("_", " ") |> String.capitalize())
   end
 
   defp widget_icon(name) do
-    case Map.get(@widget_labels, name) do
-      {_label, icon} -> icon
-      nil -> "hero-squares-2x2"
-    end
+    icons = %{
+      "standings" => "hero-trophy",
+      "news" => "hero-newspaper",
+      "stats" => "hero-chart-bar",
+      "next_match" => "hero-calendar-days",
+      "top_scorers" => "hero-star",
+      "player_ranking" => "hero-trophy"
+    }
+
+    Map.get(icons, name, "hero-squares-2x2")
   end
 
   defp param_label(name) do
-    case Map.get(@param_labels, name) do
-      {label, _placeholder} -> label
-      nil -> name |> String.replace("_", " ") |> String.capitalize()
-    end
+    labels = %{
+      "league" => gettext("League"),
+      "number" => gettext("Number"),
+      "team" => gettext("Team"),
+      "circuit" => gettext("Circuit (ATP/WTA)"),
+      "player" => gettext("Player"),
+      "season" => gettext("Season")
+    }
+
+    Map.get(labels, name, name |> String.replace("_", " ") |> String.capitalize())
   end
 
   defp param_placeholder(name) do
-    case Map.get(@param_labels, name) do
-      {_label, placeholder} -> placeholder
-      nil -> nil
-    end
+    placeholders = %{
+      "league" => "ex : ligue-1",
+      "number" => "ex : 5",
+      "team" => "ex : psg",
+      "circuit" => "ex : atp",
+      "player" => "ex : jannik sinner",
+      "season" => "ex : 2024"
+    }
+
+    Map.get(placeholders, name)
   end
 
-  defp error_message("can't be blank"), do: "Ce champ est requis."
-  defp error_message("must be an integer"), do: "Doit être un nombre entier."
-  defp error_message("is too long"), do: "Valeur trop longue."
-  defp error_message(message), do: message
+  defp error_message("can't be blank"), do: gettext("Ce champ est requis.")
+  defp error_message("must be an integer"), do: gettext("Doit être un nombre entier.")
+  defp error_message("is too long"), do: gettext("Valeur trop longue.")
+  defp error_message(message), do: Gettext.gettext(DashboardWeb.Gettext, message)
 
-  @doc """
-  Formats a refresh rate in seconds for humans
-  (`90` -> `"1 min 30 s"`, `300` -> `"5 min"`, `3600` -> `"1 h"`).
-  """
   def format_rate(seconds) when is_integer(seconds) and seconds > 0 do
     [{div(seconds, 3600), "h"}, {div(rem(seconds, 3600), 60), "min"}, {rem(seconds, 60), "s"}]
     |> Enum.reject(fn {value, _unit} -> value == 0 end)
@@ -369,26 +375,31 @@ defmodule DashboardWeb.AddWidgetComponent do
   def render(assigns) do
     assigns =
       assign(assigns,
-        steps: @steps,
+        steps: [
+          type: gettext("Type"),
+          config: gettext("Configuration"),
+          refresh: gettext("Refresh"),
+          confirm: gettext("Confirmation")
+        ],
         rate_presets: @rate_presets,
         rate_units: [
-          {"hours", "Heures", div(WidgetInstance.refresh_rate_range().last, 3600)},
-          {"minutes", "Minutes", 59},
-          {"seconds", "Secondes", 59}
+          {"hours", gettext("Heures"), div(WidgetInstance.refresh_rate_range().last, 3600)},
+          {"minutes", gettext("Minutes"), 59},
+          {"seconds", gettext("Secondes"), 59}
         ]
       )
 
     ~H"""
     <div id={@id} class="space-y-8">
       <div class="space-y-2 pr-8">
-        <h2 class="glass-title text-3xl">Add a widget</h2>
+        <h2 class="glass-title text-3xl">{gettext("Add a widget")}</h2>
         <p class="glass-muted capitalize">{@service}</p>
       </div>
 
       <.stepper steps={@steps} current={@step} />
 
       <div :if={@step == :type} class="space-y-4">
-        <p class="glass-muted">What kind of widget do you want to add ?</p>
+        <p class="glass-muted">{gettext("What kind of widget do you want to add ?")}</p>
         <div class="grid sm:grid-cols-2 gap-4">
           <button
             :for={widget_type <- @widget_types}
@@ -405,7 +416,10 @@ defmodule DashboardWeb.AddWidgetComponent do
               <.icon name={widget_icon(widget_type.name)} class="size-5 text-primary" />
               {widget_label(widget_type.name)}
             </span>
-            <span class="glass-muted text-sm font-normal">{widget_type.description}</span>
+            <span class="glass-muted text-sm font-normal">{Gettext.gettext(
+              DashboardWeb.Gettext,
+              widget_type.description
+            )}</span>
           </button>
         </div>
       </div>
@@ -420,7 +434,7 @@ defmodule DashboardWeb.AddWidgetComponent do
         class="space-y-6"
       >
         <p class="glass-muted">
-          Configure ton widget <span class="font-semibold">{widget_label(@widget_type.name)}</span>.
+          {gettext("Configure ton widget")} <span class="font-semibold">{widget_label(@widget_type.name)}</span>.
         </p>
 
         <div :for={param <- @widget_type.params} class="space-y-2">
@@ -435,7 +449,7 @@ defmodule DashboardWeb.AddWidgetComponent do
             class={["glass-input", @config_errors[param.name] && "ring-2 ring-error/60"]}
           >
             <option value="">
-              {options_status(param, @dynamic_options) || "Choose"}
+              {options_status(param, @dynamic_options) || gettext("Choose")}
             </option>
             <option
               :for={{label, value} <- options_for(param, @dynamic_options)}
@@ -464,7 +478,7 @@ defmodule DashboardWeb.AddWidgetComponent do
           </p>
         </div>
 
-        <.nav_buttons myself={@myself} submit_label="Next" />
+        <.nav_buttons myself={@myself} submit_label={gettext("Next")} />
       </.form>
 
       <.form
@@ -476,7 +490,7 @@ defmodule DashboardWeb.AddWidgetComponent do
         phx-target={@myself}
         class="space-y-6"
       >
-        <p class="glass-muted">How often should the widget update ?</p>
+        <p class="glass-muted">{gettext("How often should the widget update ?")}</p>
         <div class="flex flex-wrap gap-3">
           <button
             :for={rate <- @rate_presets}
@@ -492,7 +506,7 @@ defmodule DashboardWeb.AddWidgetComponent do
 
         <fieldset class="space-y-2">
           <legend class="block text-sm font-medium">
-            Ou une durée personnalisée (heures, minutes, secondes)
+            {gettext("Ou une durée personnalisée (heures, minutes, secondes)")}
           </legend>
           <div class="grid grid-cols-3 gap-3">
             <div :for={{key, label, max} <- @rate_units} class="space-y-1">
@@ -516,20 +530,23 @@ defmodule DashboardWeb.AddWidgetComponent do
           </p>
         </fieldset>
 
-        <.nav_buttons myself={@myself} submit_label="Next" />
+        <.nav_buttons myself={@myself} submit_label={gettext("Next")} />
       </.form>
 
       <div :if={@step == :confirm} class="space-y-6">
-        <p class="glass-muted">Check the information before adding the widget.</p>
+        <p class="glass-muted">{gettext("Check the information before adding the widget.")}</p>
         <dl class="glass-panel rounded-2xl divide-y divide-(color:--glass-border)">
-          <.summary_row label="Sport" value={@service} />
-          <.summary_row label="Widget" value={widget_label(@widget_type.name)} />
+          <.summary_row label={gettext("Sport")} value={@service} />
+          <.summary_row label={gettext("Widget")} value={widget_label(@widget_type.name)} />
           <.summary_row
             :for={param <- @widget_type.params}
             label={param_label(param.name)}
             value={display_value(param, @config, @dynamic_options)}
           />
-          <.summary_row label="Rafraîchissement" value={"Every #{format_rate(@refresh_rate)}"} />
+          <.summary_row
+            label={gettext("Rafraîchissement")}
+            value={"#{gettext("Every")} #{format_rate(@refresh_rate)}"}
+          />
         </dl>
         <p :if={@submit_error} class="text-sm text-error flex gap-1 items-center">
           <.icon name="hero-exclamation-circle" class="size-4" />
@@ -543,16 +560,16 @@ defmodule DashboardWeb.AddWidgetComponent do
             phx-target={@myself}
             class="glass-button cursor-pointer"
           >
-            <.icon name="hero-arrow-left" class="size-4 mr-2" /> Back
+            <.icon name="hero-arrow-left" class="size-4 mr-2" /> {gettext("Back")}
           </button>
           <button
             type="button"
             phx-click="confirm"
             phx-target={@myself}
-            phx-disable-with="Ajout…"
+            phx-disable-with={gettext("Ajout…")}
             class="glass-button cursor-pointer text-primary font-semibold"
           >
-            <.icon name="hero-check" class="size-4 mr-2" /> Add the widget
+            <.icon name="hero-check" class="size-4 mr-2" /> {gettext("Add the widget")}
           </button>
         </div>
       </div>
@@ -595,7 +612,7 @@ defmodule DashboardWeb.AddWidgetComponent do
     ~H"""
     <div class="flex justify-between gap-3">
       <button type="button" phx-click="back" phx-target={@myself} class="glass-button cursor-pointer">
-        <.icon name="hero-arrow-left" class="size-4 mr-2" /> Back
+        <.icon name="hero-arrow-left" class="size-4 mr-2" /> {gettext("Back")}
       </button>
       <button type="submit" class="glass-button cursor-pointer text-primary font-semibold">
         {@submit_label} <.icon name="hero-arrow-right" class="size-4 ml-2" />

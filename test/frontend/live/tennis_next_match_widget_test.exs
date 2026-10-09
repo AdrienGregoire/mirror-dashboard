@@ -93,7 +93,7 @@ defmodule DashboardWeb.TennisNextMatchWidgetTest do
 
     assert html =~ "Jannik Sinner"
     assert html =~ "Alexander Zverev"
-    assert html =~ "10/10/2026 · 12:30 UTC"
+    assert html =~ "10/10/2026   12:30 UTC"
     assert html =~ "Paris Masters Men Singles"
     assert html =~ "Final"
     assert html =~ "Centre Court"

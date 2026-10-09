@@ -16,6 +16,7 @@ defmodule DashboardWeb.Router do
     plug :put_root_layout, html: {DashboardWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug DashboardWeb.Plugs.SetLocale
     plug :fetch_current_user
   end
 
@@ -27,6 +28,7 @@ defmodule DashboardWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    post "/locale", LocaleController, :set_locale
     get "/users/confirm/:token", UserConfirmationController, :confirm
     delete "/logout", SessionController, :delete
     get "/privacy", PageController, :privacy

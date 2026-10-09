@@ -7,7 +7,6 @@
 
 defmodule DashboardWeb.DashboardLive do
   use DashboardWeb, :live_view
-
   alias Dashboard.Widgets
   alias Dashboard.Services.{Registry, Provider}
 
@@ -120,10 +119,10 @@ defmodule DashboardWeb.DashboardLive do
   defp match_time(%{start_time: start_time, time_confirmed: confirmed}) do
     case DateTime.from_iso8601(start_time || "") do
       {:ok, datetime, _offset} when confirmed ->
-        Calendar.strftime(datetime, "%d/%m/%Y · %H:%M UTC")
+        Calendar.strftime(datetime, "%d/%m/%Y   %H:%M UTC")
 
       {:ok, datetime, _offset} ->
-        Calendar.strftime(datetime, "%d/%m/%Y · time to be confirmed")
+        Calendar.strftime(datetime, "%d/%m/%Y   time to be confirmed")
 
       _ ->
         "Date to be confirmed"
@@ -137,15 +136,6 @@ defmodule DashboardWeb.DashboardLive do
       <div class="glass-blob top-20 -right-10 bg-(color:--glass-blob-2)"></div>
       <div class="glass-blob -bottom-10 left-1/3 bg-(color:--glass-blob-3)"></div>
 
-      <div class="absolute top-4 right-4 sm:top-8 sm:right-8 z-50">
-        <.link
-          href={~p"/account"}
-          class="glass-button p-2 text-primary hover:text-white transition-colors"
-          title="My account"
-        >
-          <.icon name="hero-user" class="size-6" />
-        </.link>
-      </div>
       <div class="relative z-10 flex-1 flex flex-col w-full max-w-6xl mx-auto p-4 sm:p-8">
         <div class="space-y-8">
           <div :if={@services == []} class="glass-card p-10 text-center space-y-4">
@@ -168,7 +158,6 @@ defmodule DashboardWeb.DashboardLive do
             >
               {service}
             </button>
-
             <button
               id="open-add-widget"
               type="button"
@@ -185,37 +174,6 @@ defmodule DashboardWeb.DashboardLive do
             phx-hook=".DragGrid"
             class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            <script :type={Phoenix.LiveView.ColocatedHook} name=".DragGrid">
-              export default {
-                mounted() {
-                  let dragged = null
-
-                  this.el.addEventListener("dragstart", e => {
-                    dragged = e.target.closest("[data-widget-id]")
-                    e.dataTransfer.effectAllowed = "move"
-                  })
-
-                  this.el.addEventListener("dragover", e => e.preventDefault())
-
-                  this.el.addEventListener("drop", e => {
-                    e.preventDefault()
-                    const target = e.target.closest("[data-widget-id]")
-                    if (!target || !dragged || target === dragged) return
-
-                    const cards = [...this.el.querySelectorAll("[data-widget-id]")]
-                    const newPosition = cards.indexOf(target)
-
-                    this.pushEvent("move_widget", {
-                      id: dragged.dataset.widgetId,
-                      new_position: String(newPosition)
-                    })
-
-                    dragged = null
-                  })
-                }
-              }
-            </script>
-
             <div
               :for={widget <- widgets_for(@widgets, @active_service)}
               id={"widget-#{widget.id}"}
@@ -254,7 +212,7 @@ defmodule DashboardWeb.DashboardLive do
       <.glass_modal
         :if={@adding_widget}
         id="add-widget-modal"
-        on_cancel={JS.push("close_add_widget")}
+        on_cancel={Phoenix.LiveView.JS.push("close_add_widget")}
       >
         <.live_component
           module={DashboardWeb.AddWidgetComponent}
@@ -464,7 +422,7 @@ defmodule DashboardWeb.DashboardLive do
         />
         <div class="min-w-0">
           <p class="font-semibold truncate">{@stats.team}</p>
-          <p class="glass-muted text-xs truncate">{@stats.league} · {@stats.season}</p>
+          <p class="glass-muted text-xs truncate">{@stats.league} {@stats.season}</p>
         </div>
       </div>
 
@@ -503,7 +461,7 @@ defmodule DashboardWeb.DashboardLive do
       </div>
       <p class="text-lg font-bold text-primary">{match_time(@match)}</p>
       <p :if={@match.competition} class="glass-muted text-xs truncate">
-        {@match.competition}<span :if={@match.round}> · {@match.round}</span>
+        {@match.competition}<span :if={@match.round}>{@match.round}</span>
       </p>
       <p :if={@match.venue} class="glass-muted text-xs truncate">
         {@match.venue}<span :if={@match.city}>, {@match.city}</span>
