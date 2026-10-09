@@ -12,6 +12,10 @@ config :dashboard,
   ecto_repos: [Dashboard.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+config :dashboard, DashboardWeb.Gettext,
+  default_locale: "en",
+  locales: ~w(en fr)
+
 # Ueberauth providers: this list is what makes OAuth "generic" here — the
 # AuthController (step 4) never hardcodes "github", it just reads
 # `params["provider"]` and Ueberauth dispatches to whichever strategy
