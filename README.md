@@ -2,6 +2,18 @@
 
 Dashboard is a third-year full-stack web project at Epitech. It's a customizable dashboard where users subscribe to external services and display their data through widgets.
 
+## Features
+
+* **Unified Authentication:** Standard account creation via email or quick sign-in via GitHub OAuth.
+* **Customizable dashboard:** Add, configure, and freely arrange widgets using a *drag-and-drop* interface.
+* **Automatic Update:** Customizable refresh rate for each widget individually.
+* **Integrated sports services:**
+  * *Football:* League Standings, Top Scorers.
+  * *Basketball:* Standings, detailed statistics by team.
+  * *Tennis:* ATP/WTA Rankings, Upcoming Matches, Ongoing Tournaments.
+* **Interface Customization:** Multilingual support (French/English) and a *Liquid Glass* design.
+* **Security:** Encryption of sensitive data and access tokens in the database.
+
 # Getting Started
 
 The project is launched using Docker Compose. You do not need to install Elixir, Erlang, or Postgres locally.
