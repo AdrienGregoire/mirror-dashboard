@@ -15,6 +15,7 @@ defmodule Dashboard.Application do
         Dashboard.Repo,
         {DNSCluster, query: Application.get_env(:dashboard, :dns_cluster_query) || :ignore},
         {Phoenix.PubSub, name: Dashboard.PubSub},
+        {Task.Supervisor, name: Dashboard.TaskSupervisor},
         Dashboard.Cache,
         Dashboard.Timer
       ] ++

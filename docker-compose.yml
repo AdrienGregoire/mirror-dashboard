@@ -33,6 +33,11 @@ services:
       TENNIS_API: ${TENNIS_API}
       BASKET_API: ${BASKET_API}
       BASKET_NEWS_API: ${BASKET_NEWS_API}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      MAIL_FROM: ${MAIL_FROM}
     volumes:
       - .:/app
     working_dir: /app
