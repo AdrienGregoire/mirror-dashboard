@@ -8,7 +8,6 @@
 defmodule DashboardWeb.DashboardLive do
   use DashboardWeb, :live_view
   alias Dashboard.Widgets
-  alias Dashboard.Services.{Registry, Provider}
 
   defp widget_label(name) do
     labels = %{
@@ -35,10 +34,17 @@ defmodule DashboardWeb.DashboardLive do
         services: user.preferred_services,
         active_service: List.first(user.preferred_services),
         adding_widget: false,
-        widget_data: %{}
+        editing_widget: nil,
+        widget_data: %{},
+        refreshing: MapSet.new()
       )
 
-    {:ok, if(connected?(socket), do: load_widgets(socket, widgets), else: socket)}
+    if connected?(socket) do
+      Phoenix.PubSub.subscribe(Dashboard.PubSub, "dashboard:user:#{user.id}")
+      {:ok, load_widgets(socket, widgets)}
+    else
+      {:ok, socket}
+    end
   end
 
   def handle_event("select_tab", %{"service" => service}, socket) do
@@ -53,15 +59,66 @@ defmodule DashboardWeb.DashboardLive do
     {:noreply, assign(socket, adding_widget: false)}
   end
 
+  def handle_event("edit_widget", %{"id" => id}, socket) do
+    case Widgets.get_widget(socket.assigns.current_user, id) do
+      nil -> {:noreply, socket}
+      widget -> {:noreply, assign(socket, editing_widget: widget)}
+    end
+  end
+
+  def handle_event("close_edit_widget", _params, socket) do
+    {:noreply, assign(socket, editing_widget: nil)}
+  end
+
+  def handle_event("delete_widget", %{"id" => id}, socket) do
+    user = socket.assigns.current_user
+
+    with widget when not is_nil(widget) <- Widgets.get_widget(user, id),
+         {:ok, deleted} <- Widgets.delete_widget(widget) do
+      {:noreply,
+       socket
+       |> cancel_async({:widget, deleted.id})
+       |> assign(
+         widgets: Widgets.list_widgets(user),
+         widget_data: Map.delete(socket.assigns.widget_data, deleted.id),
+         refreshing: MapSet.delete(socket.assigns.refreshing, deleted.id)
+       )
+       |> put_flash(:info, gettext("Widget deleted."))}
+    else
+      _ -> {:noreply, socket}
+    end
+  end
+
+  def handle_event("refresh_widget", %{"id" => id}, socket) do
+    case Widgets.get_widget(socket.assigns.current_user, id) do
+      nil -> {:noreply, socket}
+      widget -> {:noreply, load_widgets(socket, [widget], fresh: true)}
+    end
+  end
+
   def handle_event("move_widget", %{"id" => id, "new_position" => new_position}, socket) do
     user = socket.assigns.current_user
 
     with widget when not is_nil(widget) <- Widgets.get_widget(user, id),
-         {position, ""} <- Integer.parse(new_position),
+         {position, ""} <- Integer.parse(to_string(new_position)),
          {:ok, _updated} <- Widgets.move_widget(widget, position) do
       {:noreply, assign(socket, widgets: Widgets.list_widgets(user))}
     else
       _ -> {:noreply, socket}
+    end
+  end
+
+  # Replies with the size actually stored so the client can drop its live preview.
+  def handle_event("resize_widget", %{"id" => id} = params, socket) do
+    user = socket.assigns.current_user
+
+    with widget when not is_nil(widget) <- Widgets.get_widget(user, id),
+         {:ok, updated} <-
+           Widgets.resize_widget(widget, Map.take(params, ["col_span", "height"])) do
+      {:reply, size_reply(updated), assign(socket, widgets: Widgets.list_widgets(user))}
+    else
+      nil -> {:reply, %{}, socket}
+      {:error, _changeset} -> {:reply, size_reply(Widgets.get_widget(user, id)), socket}
     end
   end
 
@@ -72,34 +129,73 @@ defmodule DashboardWeb.DashboardLive do
      socket
      |> assign(widgets: widgets, adding_widget: false)
      |> load_widgets([widget])
-     |> put_flash(:info, "Widget added !")}
+     |> put_flash(:info, gettext("Widget added !"))}
+  end
+
+  def handle_info({DashboardWeb.AddWidgetComponent, {:updated, widget}}, socket) do
+    {:noreply,
+     socket
+     |> assign(
+       widgets: Widgets.list_widgets(socket.assigns.current_user),
+       editing_widget: nil,
+       widget_data: Map.delete(socket.assigns.widget_data, widget.id)
+     )
+     |> load_widgets([widget])
+     |> put_flash(:info, gettext("Widget updated."))}
+  end
+
+  # Sent by `Dashboard.Timer` when the refresh rate of a widget elapsed.
+  def handle_info({:refresh_widget, id}, socket) do
+    case Enum.find(socket.assigns.widgets, &(&1.id == id)) do
+      nil -> {:noreply, socket}
+      widget -> {:noreply, load_widgets(socket, [widget])}
+    end
   end
 
   def handle_async({:widget, id}, {:ok, result}, socket) do
-    {:noreply, update(socket, :widget_data, &Map.put(&1, id, result))}
+    {:noreply, store_widget_data(socket, id, result)}
   end
 
   def handle_async({:widget, id}, {:exit, reason}, socket) do
-    {:noreply, update(socket, :widget_data, &Map.put(&1, id, {:error, inspect(reason)}))}
+    {:noreply, store_widget_data(socket, id, {:error, inspect(reason)})}
   end
 
-  defp load_widgets(socket, widgets) do
+  # A result may land after its widget was deleted.
+  defp store_widget_data(socket, id, result) do
+    if Enum.any?(socket.assigns.widgets, &(&1.id == id)) do
+      assign(socket,
+        widget_data: Map.put(socket.assigns.widget_data, id, result),
+        refreshing: MapSet.delete(socket.assigns.refreshing, id)
+      )
+    else
+      socket
+    end
+  end
+
+  defp size_reply(widget), do: %{col_span: widget.col_span, height: widget.height}
+
+  defp load_widgets(socket, widgets, opts \\ []) do
     locale = Gettext.get_locale(DashboardWeb.Gettext)
 
     Enum.reduce(widgets, socket, fn widget, socket ->
-      start_async(socket, {:widget, widget.id}, fn ->
+      socket
+      |> assign(refreshing: MapSet.put(socket.assigns.refreshing, widget.id))
+      |> start_async({:widget, widget.id}, fn ->
         Gettext.put_locale(DashboardWeb.Gettext, locale)
-        safe_fetch(widget)
+        safe_fetch(widget, opts)
       end)
     end)
   end
 
-  defp safe_fetch(widget) do
-    service = Registry.get(widget.service)
-    Provider.fetch(service, widget.widget, widget.config, %{})
+  defp safe_fetch(widget, opts) do
+    Widgets.fetch_data(widget, opts)
   rescue
     e -> {:error, Exception.message(e)}
   end
+
+  defp span_class(2), do: "sm:col-span-2 lg:col-span-2"
+  defp span_class(3), do: "sm:col-span-2 lg:col-span-3"
+  defp span_class(_), do: nil
 
   defp widgets_for(widgets, service), do: Enum.filter(widgets, &(&1.service == service))
 
@@ -191,16 +287,84 @@ defmodule DashboardWeb.DashboardLive do
               :for={widget <- widgets_for(@widgets, @active_service)}
               id={"widget-#{widget.id}"}
               data-widget-id={widget.id}
-              draggable="true"
-              class="glass-card p-6 cursor-grab active:cursor-grabbing space-y-4"
+              data-position={widget.position}
+              data-col-span={widget.col_span}
+              style={widget.height && "height: #{widget.height}px"}
+              class={["glass-card relative flex flex-col", span_class(widget.col_span)]}
             >
-              <p class="glass-title text-lg capitalize font-semibold">
-                {widget_label(widget.widget)}
-              </p>
-              <.widget_content
-                widget={widget}
-                data={Map.get(@widget_data, widget.id)}
-              />
+              <div class="flex items-center gap-2 px-6 pt-5 pb-3">
+                <div
+                  data-drag-handle
+                  title={gettext("Drag to move")}
+                  class="flex flex-1 min-w-0 items-center gap-2 cursor-grab active:cursor-grabbing select-none"
+                >
+                  <.icon name="hero-bars-2" class="size-4 glass-muted shrink-0" />
+                  <p class="glass-title text-lg capitalize font-semibold truncate">
+                    {widget_label(widget.widget)}
+                  </p>
+                </div>
+                <button
+                  id={"refresh-widget-#{widget.id}"}
+                  type="button"
+                  phx-click="refresh_widget"
+                  phx-value-id={widget.id}
+                  aria-label={gettext("Refresh")}
+                  title={gettext("Refresh")}
+                  class="cursor-pointer glass-muted hover:text-primary transition-colors"
+                >
+                  <.icon
+                    name="hero-arrow-path"
+                    class={["size-4", MapSet.member?(@refreshing, widget.id) && "animate-spin"]}
+                  />
+                </button>
+                <button
+                  id={"edit-widget-#{widget.id}"}
+                  type="button"
+                  phx-click="edit_widget"
+                  phx-value-id={widget.id}
+                  aria-label={gettext("Edit")}
+                  title={gettext("Edit")}
+                  class="cursor-pointer glass-muted hover:text-primary transition-colors"
+                >
+                  <.icon name="hero-pencil-square" class="size-4" />
+                </button>
+                <button
+                  id={"delete-widget-#{widget.id}"}
+                  type="button"
+                  phx-click="delete_widget"
+                  phx-value-id={widget.id}
+                  data-confirm={gettext("Delete this widget ?")}
+                  aria-label={gettext("Delete")}
+                  title={gettext("Delete")}
+                  class="cursor-pointer glass-muted hover:text-error transition-colors"
+                >
+                  <.icon name="hero-trash" class="size-4" />
+                </button>
+              </div>
+
+              <div class="flex-1 min-h-0 overflow-auto px-6 pb-6">
+                <.widget_content
+                  widget={widget}
+                  data={Map.get(@widget_data, widget.id)}
+                />
+              </div>
+
+              <div
+                data-resize-handle
+                title={gettext("Drag to resize, double-click to reset")}
+                class="absolute bottom-1 right-1 size-5 cursor-nwse-resize touch-none glass-muted hover:text-primary"
+              >
+                <svg
+                  viewBox="0 0 20 20"
+                  class="size-5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                >
+                  <path d="M17 7 7 17M17 12l-5 5" />
+                </svg>
+              </div>
             </div>
 
             <button
@@ -234,6 +398,174 @@ defmodule DashboardWeb.DashboardLive do
           service={@active_service}
         />
       </.glass_modal>
+
+      <.glass_modal
+        :if={@editing_widget}
+        id="edit-widget-modal"
+        on_cancel={Phoenix.LiveView.JS.push("close_edit_widget")}
+      >
+        <.live_component
+          module={DashboardWeb.AddWidgetComponent}
+          id="edit-widget"
+          user={@current_user}
+          service={@editing_widget.service}
+          widget={@editing_widget}
+        />
+      </.glass_modal>
+
+      <script :type={Phoenix.LiveView.ColocatedHook} name=".DragGrid">
+        const MIN_HEIGHT = 120
+        const MAX_HEIGHT = 1200
+        const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
+
+        export default {
+          mounted() {
+            this.dragged = null
+            this.over = null
+
+            const cardOf = (node) => node && node.closest ? node.closest("[data-widget-id]") : null
+
+            this.onPointerDown = (event) => {
+              const resize = event.target.closest("[data-resize-handle]")
+              if (resize) return this.startResize(event, resize)
+
+              // a card is only draggable from its title: its content stays selectable
+              const handle = event.target.closest("[data-drag-handle]")
+              const card = handle && cardOf(handle)
+              if (card) card.draggable = true
+            }
+
+            this.onPointerUp = () => this.resetDraggable()
+
+            this.onDragStart = (event) => {
+              const card = cardOf(event.target)
+              if (!card || event.target !== card) return
+
+              this.dragged = card
+              event.dataTransfer.effectAllowed = "move"
+              event.dataTransfer.setData("text/plain", card.dataset.widgetId)
+              card.classList.add("opacity-50")
+            }
+
+            this.onDragOver = (event) => {
+              if (!this.dragged) return
+              event.preventDefault()
+              event.dataTransfer.dropEffect = "move"
+
+              const target = cardOf(event.target)
+              if (target === this.over) return
+              this.clearOver()
+              if (target && target !== this.dragged) {
+                this.over = target
+                target.classList.add("ring-2", "ring-primary")
+              }
+            }
+
+            this.onDrop = (event) => {
+              if (!this.dragged) return
+              event.preventDefault()
+
+              const target = cardOf(event.target)
+              if (target && target !== this.dragged) {
+                this.pushEvent("move_widget", {
+                  id: this.dragged.dataset.widgetId,
+                  new_position: target.dataset.position
+                })
+              }
+            }
+
+            this.onDragEnd = () => {
+              if (this.dragged) this.dragged.classList.remove("opacity-50")
+              this.dragged = null
+              this.clearOver()
+              this.resetDraggable()
+            }
+
+            this.onDoubleClick = (event) => {
+              const resize = event.target.closest("[data-resize-handle]")
+              const card = resize && cardOf(resize)
+              if (card) this.pushSize(card, 1, null)
+            }
+
+            this.el.addEventListener("pointerdown", this.onPointerDown)
+            this.el.addEventListener("dragstart", this.onDragStart)
+            this.el.addEventListener("dragover", this.onDragOver)
+            this.el.addEventListener("drop", this.onDrop)
+            this.el.addEventListener("dragend", this.onDragEnd)
+            this.el.addEventListener("dblclick", this.onDoubleClick)
+            window.addEventListener("pointerup", this.onPointerUp)
+          },
+
+          destroyed() {
+            window.removeEventListener("pointerup", this.onPointerUp)
+          },
+
+          clearOver() {
+            if (this.over) this.over.classList.remove("ring-2", "ring-primary")
+            this.over = null
+          },
+
+          resetDraggable() {
+            this.el.querySelectorAll("[data-widget-id][draggable=true]").forEach((card) => {
+              card.draggable = false
+            })
+          },
+
+          // Stretching: the pointer position gives the number of columns spanned
+          // (snapped to the grid) and the height in pixels.
+          startResize(event, handle) {
+            event.preventDefault()
+            event.stopPropagation()
+
+            const card = handle.closest("[data-widget-id]")
+            const rect = card.getBoundingClientRect()
+            const grid = getComputedStyle(this.el)
+            const columns = grid.gridTemplateColumns.split(" ").length
+            const gap = parseFloat(grid.columnGap) || 0
+            const columnWidth = (this.el.clientWidth - gap * (columns - 1)) / columns
+
+            let span = parseInt(card.dataset.colSpan, 10) || 1
+            let height = null
+
+            handle.setPointerCapture(event.pointerId)
+
+            const onMove = (move) => {
+              if (columns > 1) {
+                const wanted = Math.round((move.clientX - rect.left + gap) / (columnWidth + gap))
+                span = clamp(wanted, 1, columns)
+                card.style.gridColumn = `span ${span}`
+              }
+
+              height = clamp(Math.round(move.clientY - rect.top), MIN_HEIGHT, MAX_HEIGHT)
+              card.style.height = `${height}px`
+            }
+
+            const onUp = () => {
+              handle.removeEventListener("pointermove", onMove)
+              handle.removeEventListener("pointerup", onUp)
+              handle.removeEventListener("pointercancel", onUp)
+
+              if (height !== null) this.pushSize(card, span, height)
+            }
+
+            handle.addEventListener("pointermove", onMove)
+            handle.addEventListener("pointerup", onUp)
+            handle.addEventListener("pointercancel", onUp)
+          },
+
+          // The server answers with the size it stored: it replaces the live preview.
+          pushSize(card, span, height) {
+            this.pushEvent(
+              "resize_widget",
+              {id: card.dataset.widgetId, col_span: span, height: height},
+              (reply) => {
+                card.style.gridColumn = ""
+                card.style.height = reply.height ? `${reply.height}px` : ""
+              }
+            )
+          }
+        }
+      </script>
 
       <.flash kind={:info} flash={@flash} />
       <.flash kind={:error} flash={@flash} />

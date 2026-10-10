@@ -23,11 +23,9 @@ defmodule Dashboard.Services.Foot do
 
   @impl true
   def fetch("standings", %{"league" => league, "season" => season}, _credentials) do
-    api_key = System.get_env("FOOT_API") || raise "FOOT_API environment variable is not set"
     league_id = Map.get(@leagues, league, league)
-    url = "#{@base_url}/standings?league=#{league_id}&season=#{season}"
 
-    case Req.get(url, headers: [{"x-apisports-key", api_key}]) do
+    case get("/standings", league: league_id, season: season) do
       {:ok, %{status: 200, body: %{"response" => [response | _]}}} ->
         rows =
           response

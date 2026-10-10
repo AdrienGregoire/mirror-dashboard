@@ -10,6 +10,10 @@ defmodule DashboardWeb.AddWidgetComponent do
   Four steps flow adding a widget of `service` to the `user` dashboard.
   Notifies the parent LiveView with `{DashboardWeb.AddWidgetComponent, {:added, widget}}`
   once the widget is created.
+
+  When given a `widget` (an existing widget instance of the user) the same flow
+  reconfigures it instead: the type step is skipped and the parent is notified with
+  `{DashboardWeb.AddWidgetComponent, {:updated, widget}}` once it is saved.
   """
   use DashboardWeb, :live_component
 
@@ -32,6 +36,8 @@ defmodule DashboardWeb.AddWidgetComponent do
     {:ok,
      assign(socket,
        step: :type,
+       widget: nil,
+       editing: false,
        widget_type: nil,
        config: %{},
        config_errors: %{},
@@ -50,8 +56,31 @@ defmodule DashboardWeb.AddWidgetComponent do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(widget_types: if(service, do: service.widgets, else: []))}
+     |> assign(widget_types: if(service, do: service.widgets, else: []))
+     |> init_editing()}
   end
+
+  # Loads the widget to reconfigure once: the flow starts at the config step.
+  defp init_editing(%{assigns: %{widget: %WidgetInstance{} = widget, editing: false}} = socket) do
+    case Enum.find(socket.assigns.widget_types, &(&1.name == widget.widget)) do
+      nil ->
+        socket
+
+      widget_type ->
+        socket
+        |> assign(
+          editing: true,
+          widget_type: widget_type,
+          config: Map.new(widget.config, fn {name, value} -> {name, to_string(value)} end),
+          refresh_rate: widget.refresh_rate,
+          rate_parts: rate_parts(widget.refresh_rate),
+          step: :config
+        )
+        |> load_options()
+    end
+  end
+
+  defp init_editing(socket), do: socket
 
   @impl true
   def handle_event("select_type", %{"widget" => name}, socket) do
@@ -120,7 +149,24 @@ defmodule DashboardWeb.AddWidgetComponent do
   end
 
   def handle_event("back", _params, socket) do
-    {:noreply, assign(socket, step: previous_step(socket.assigns.step), submit_error: nil)}
+    step = previous_step(socket.assigns.step)
+    step = if socket.assigns.editing and step == :type, do: :config, else: step
+
+    {:noreply, assign(socket, step: step, submit_error: nil)}
+  end
+
+  def handle_event("confirm", _params, %{assigns: %{editing: true}} = socket) do
+    %{widget: widget, config: config, refresh_rate: refresh_rate} = socket.assigns
+
+    case Widgets.reconfigure_widget(widget, %{config: config, refresh_rate: refresh_rate}) do
+      {:ok, widget} ->
+        send(self(), {__MODULE__, {:updated, widget}})
+        {:noreply, socket}
+
+      {:error, _changeset} ->
+        {:noreply,
+         assign(socket, submit_error: gettext("Unable to update this widget. Please try again."))}
+    end
   end
 
   def handle_event("confirm", _params, socket) do
@@ -394,7 +440,9 @@ defmodule DashboardWeb.AddWidgetComponent do
     ~H"""
     <div id={@id} class="space-y-8">
       <div class="space-y-2 pr-8">
-        <h2 class="glass-title text-3xl">{gettext("Add a widget")}</h2>
+        <h2 class="glass-title text-3xl">
+          {if @editing, do: gettext("Edit the widget"), else: gettext("Add a widget")}
+        </h2>
         <p class="glass-muted capitalize">{@service}</p>
       </div>
 
@@ -480,7 +528,11 @@ defmodule DashboardWeb.AddWidgetComponent do
           </p>
         </div>
 
-        <.nav_buttons myself={@myself} submit_label={gettext("Next")} />
+        <.nav_buttons
+          myself={@myself}
+          submit_label={gettext("Next")}
+          show_back={not @editing}
+        />
       </.form>
 
       <.form
@@ -536,7 +588,11 @@ defmodule DashboardWeb.AddWidgetComponent do
       </.form>
 
       <div :if={@step == :confirm} class="space-y-6">
-        <p class="glass-muted">{gettext("Check the information before adding the widget.")}</p>
+        <p class="glass-muted">
+          {if @editing,
+            do: gettext("Check the information before saving the widget."),
+            else: gettext("Check the information before adding the widget.")}
+        </p>
         <dl class="glass-panel rounded-2xl divide-y divide-(color:--glass-border)">
           <.summary_row label={gettext("Sport")} value={@service} />
           <.summary_row label={gettext("Widget")} value={widget_label(@widget_type.name)} />
@@ -568,10 +624,11 @@ defmodule DashboardWeb.AddWidgetComponent do
             type="button"
             phx-click="confirm"
             phx-target={@myself}
-            phx-disable-with={gettext("Add...")}
+            phx-disable-with={if @editing, do: gettext("Saving..."), else: gettext("Add...")}
             class="glass-button cursor-pointer text-primary font-semibold"
           >
-            <.icon name="hero-check" class="size-4 mr-2" /> {gettext("Add the widget")}
+            <.icon name="hero-check" class="size-4 mr-2" />
+            {if @editing, do: gettext("Save the widget"), else: gettext("Add the widget")}
           </button>
         </div>
       </div>
@@ -609,13 +666,21 @@ defmodule DashboardWeb.AddWidgetComponent do
 
   attr :myself, :any, required: true
   attr :submit_label, :string, required: true
+  attr :show_back, :boolean, default: true
 
   defp nav_buttons(assigns) do
     ~H"""
     <div class="flex justify-between gap-3">
-      <button type="button" phx-click="back" phx-target={@myself} class="glass-button cursor-pointer">
+      <button
+        :if={@show_back}
+        type="button"
+        phx-click="back"
+        phx-target={@myself}
+        class="glass-button cursor-pointer"
+      >
         <.icon name="hero-arrow-left" class="size-4 mr-2" /> {gettext("Back")}
       </button>
+      <span :if={not @show_back}></span>
       <button type="submit" class="glass-button cursor-pointer text-primary font-semibold">
         {@submit_label} <.icon name="hero-arrow-right" class="size-4 ml-2" />
       </button>

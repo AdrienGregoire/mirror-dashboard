@@ -50,15 +50,18 @@ defmodule Dashboard.Widgets do
   @doc """
   Fetches the data to display in a widget through the provider of its service.
   Called on mount and on every `{:refresh_widget, id}` sent by the timer.
+
+  Pass `fresh: true` to skip the short lived cache (manual refresh).
   """
-  def fetch_data(%WidgetInstance{service: service_name} = widget_instance) do
+  def fetch_data(%WidgetInstance{service: service_name} = widget_instance, opts \\ []) do
     with %Services.Service{} = service <- Services.get_service(service_name),
          {:ok, credentials} <- credentials(service, widget_instance) do
       Services.Provider.fetch(
         service,
         widget_instance.widget,
         widget_instance.config,
-        credentials
+        credentials,
+        opts
       )
     else
       nil -> {:error, :unknown_service}
@@ -108,6 +111,16 @@ defmodule Dashboard.Widgets do
       error ->
         error
     end
+  end
+
+  @doc """
+  Stores the size a widget was stretched to: `col_span` (columns) and `height`
+  (pixels, `nil` to fit the content).
+  """
+  def resize_widget(%WidgetInstance{} = widget_instance, attrs) do
+    widget_instance
+    |> WidgetInstance.size_changeset(attrs)
+    |> Repo.update()
   end
 
   @doc """
