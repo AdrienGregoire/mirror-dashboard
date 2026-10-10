@@ -10,10 +10,12 @@ defmodule Dashboard.Accounts.UserNotifier do
   alias Dashboard.Mailer
 
   defp deliver(recipient, subject, body) do
+    from_email = System.get_env("MAIL_FROM") || "adrigreg831@gmail.com"
+
     email =
       new()
       |> to(recipient)
-      |> from({"Dashboard", "no-reply@dashboard.local"})
+      |> from(from_email)
       |> subject(subject)
       |> text_body(body)
 
@@ -27,7 +29,6 @@ defmodule Dashboard.Accounts.UserNotifier do
     Hi #{user.email},
 
     Click the link below to confirm your account:
-
     #{confirmation_url}
 
     If you didn't create an account, ignore this email.
