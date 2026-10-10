@@ -32,6 +32,7 @@ services:
       FOOT_API: ${FOOT_API}
       TENNIS_API: ${TENNIS_API}
       BASKET_API: ${BASKET_API}
+      BASKET_NEWS_API: ${BASKET_NEWS_API}
     volumes:
       - .:/app
     working_dir: /app
@@ -62,6 +63,7 @@ services:
       FOOT_API: ${FOOT_API}
       TENNIS_API: ${TENNIS_API}
       BASKET_API: ${BASKET_API}
+      BASKET_NEWS_API: ${BASKET_NEWS_API}
 
 volumes:
   db_data:

@@ -28,7 +28,7 @@ msgid "Actions"
 msgstr "Actions"
 
 #: lib/frontend/live/add_widget_component.ex:397
-#: lib/frontend/live/dashboard_live.ex:169
+#: lib/frontend/live/dashboard_live.ex:180
 #, elixir-autogen, elixir-format
 msgid "Add a widget"
 msgstr "Ajouter un widget"
@@ -91,7 +91,7 @@ msgstr "Vérifiez les informations avant d'ajouter le widget."
 msgid "Choose"
 msgstr "Choisir"
 
-#: lib/frontend/live/dashboard_live.ex:146
+#: lib/frontend/live/dashboard_live.ex:157
 #, elixir-autogen, elixir-format
 msgid "Choose my sports"
 msgstr "Choisir mes sports"
@@ -275,7 +275,7 @@ msgstr "Prochain match"
 msgid "No account yet?"
 msgstr "Pas encore de compte ?"
 
-#: lib/frontend/live/dashboard_live.ex:202
+#: lib/frontend/live/dashboard_live.ex:213
 #, elixir-autogen, elixir-format
 msgid "No widgets yet. Add your first one !"
 msgstr "Aucun widget pour le moment. Ajoutez votre premier !"
@@ -481,7 +481,7 @@ msgstr "Widget"
 msgid "You can change this at any time from your account."
 msgstr "Vous pouvez modifier cela à tout moment depuis votre compte."
 
-#: lib/frontend/live/dashboard_live.ex:144
+#: lib/frontend/live/dashboard_live.ex:155
 #, elixir-autogen, elixir-format
 msgid "You haven't chosen any sports to follow yet."
 msgstr "Vous n'avez pas encore choisi de sports à suivre."
@@ -550,6 +550,7 @@ msgid "Hours"
 msgstr "Heures"
 
 #: lib/frontend/live/add_widget_component.ex:231
+#: lib/frontend/live/dashboard_live.ex:555
 #, elixir-autogen, elixir-format
 msgid "Loading..."
 msgstr "Chargement..."
@@ -609,3 +610,43 @@ msgstr "Ou une durée personnalisée (heures, minutes, secondes)"
 #, elixir-autogen, elixir-format
 msgid "Refreshment"
 msgstr "Rafraîchissement"
+
+#: lib/backend/services/basket_news.ex:67
+#, elixir-autogen, elixir-format
+msgid "%{variable} environment variable is not set"
+msgstr "La variable d'environnement %{variable} n'est pas définie"
+
+#: lib/backend/services/basket_news.ex:90
+#, elixir-autogen, elixir-format
+msgid "Daily news API quota reached, try again tomorrow."
+msgstr "Le quota quotidien de l'API d'actualités est atteint, réessaie demain."
+
+#: lib/frontend/live/dashboard_live.ex:548
+#, elixir-autogen, elixir-format
+msgid "Error:"
+msgstr "Erreur :"
+
+#: lib/backend/services/basket_news.ex:87
+#, elixir-autogen, elixir-format
+msgid "Invalid news API key."
+msgstr "Clé de l'API d'actualités invalide."
+
+#: lib/backend/services/basket_news.ex:96
+#, elixir-autogen, elixir-format
+msgid "News API returned HTTP %{status}"
+msgstr "L'API d'actualités a répondu HTTP %{status}"
+
+#: lib/backend/services/basket_news.ex:82
+#, elixir-autogen, elixir-format
+msgid "No recent news found for this league."
+msgstr "Aucune actualité récente trouvée pour ce championnat."
+
+#: lib/backend/services/basket_news.ex:93
+#, elixir-autogen, elixir-format
+msgid "Too many news requests, try again in a moment."
+msgstr "Trop de requêtes d'actualités, réessaie dans un instant."
+
+#: lib/backend/services/basket_news.ex:59
+#, elixir-autogen, elixir-format
+msgid "Unknown league: %{league}"
+msgstr "Championnat inconnu : %{league}"
