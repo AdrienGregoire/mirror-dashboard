@@ -120,14 +120,30 @@ if config_env() == :prod do
       ip: {0, 0, 0, 0, 0, 0, 0, 0}
     ],
     secret_key_base: secret_key_base
+end
+
+# SMTP mailer. Always used in production; in dev it replaces the local mailbox
+# as soon as SMTP credentials are provided (otherwise emails stay in /dev/mailbox).
+if config_env() != :test and
+     (config_env() == :prod or System.get_env("SMTP_USERNAME") not in [nil, ""]) do
+  smtp_host = System.get_env("SMTP_HOST", "smtp.gmail.com")
 
   config :dashboard, Dashboard.Mailer,
     adapter: Swoosh.Adapters.SMTP,
-    relay: System.get_env("SMTP_HOST", "smtp.gmail.com"),
+    relay: smtp_host,
     port: String.to_integer(System.get_env("SMTP_PORT", "587")),
     username: System.get_env("SMTP_USERNAME"),
     password: System.get_env("SMTP_PASSWORD"),
     ssl: false,
     tls: :always,
-    auth: :always
+    auth: :always,
+    # Without explicit CA certificates the STARTTLS handshake fails (`:tls_failed`)
+    # on recent OTP versions, so no email can be sent.
+    tls_options: [
+      versions: [:"tlsv1.3", :"tlsv1.2"],
+      verify: :verify_peer,
+      cacerts: :public_key.cacerts_get(),
+      server_name_indication: String.to_charlist(smtp_host),
+      depth: 99
+    ]
 end

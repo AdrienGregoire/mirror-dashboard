@@ -6,6 +6,8 @@
 #
 
 defmodule Dashboard.Accounts do
+  require Logger
+
   alias Dashboard.Repo
   alias Dashboard.Accounts.User
   alias Dashboard.Accounts.UserIdentity
@@ -25,10 +27,7 @@ defmodule Dashboard.Accounts do
     |> Repo.insert()
     |> case do
       {:ok, user} ->
-        Dashboard.Accounts.UserNotifier.deliver_confirmation_instructions(
-          user,
-          confirmation_url_fun.(token)
-        )
+        deliver_confirmation_async(user, confirmation_url_fun.(token))
 
         {:ok, user}
 
@@ -119,10 +118,7 @@ defmodule Dashboard.Accounts do
 
       case Repo.update(changeset) do
         {:ok, updated_user} ->
-          Dashboard.Accounts.UserNotifier.deliver_confirmation_instructions(
-            updated_user,
-            confirmation_url_fun.(token)
-          )
+          deliver_confirmation_async(updated_user, confirmation_url_fun.(token))
 
           {:ok, updated_user}
 
@@ -143,6 +139,23 @@ defmodule Dashboard.Accounts do
       |> User.password_changeset(attrs)
       |> Repo.update()
     end
+  end
+
+  # Sends the confirmation email without blocking the request (an SMTP server can
+  # be slow), and logs the failure instead of silently dropping it.
+  defp deliver_confirmation_async(%User{} = user, confirmation_url) do
+    Task.Supervisor.start_child(Dashboard.TaskSupervisor, fn ->
+      case Dashboard.Accounts.UserNotifier.deliver_confirmation_instructions(
+             user,
+             confirmation_url
+           ) do
+        {:ok, _email} ->
+          :ok
+
+        {:error, reason} ->
+          Logger.error("Could not send the confirmation email: #{inspect(reason)}")
+      end
+    end)
   end
 
   defp get_user_identity(provider, uid) do
