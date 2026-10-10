@@ -13,6 +13,8 @@ defmodule Dashboard.Widgets.WidgetInstance do
     * `config` - values of the widget type params
     * `refresh_rate` - seconds between two data refreshes (used by the timer)
     * `position` - index of the widget on the dashboard, starting at 0
+    * `col_span` - number of grid columns the widget spans (set by stretching it)
+    * `height` - height in pixels (set by stretching it), `nil` to fit the content
   """
 
   use Ecto.Schema
@@ -23,6 +25,9 @@ defmodule Dashboard.Widgets.WidgetInstance do
 
   @min_refresh_rate 10
   @max_refresh_rate 86_400
+  @max_col_span 3
+  @min_height 120
+  @max_height 1_200
 
   schema "widget_instances" do
     field :service, :string
@@ -30,6 +35,8 @@ defmodule Dashboard.Widgets.WidgetInstance do
     field :config, :map, default: %{}
     field :refresh_rate, :integer
     field :position, :integer
+    field :col_span, :integer, default: 1
+    field :height, :integer
 
     belongs_to :user, Dashboard.Accounts.User
 
@@ -37,6 +44,8 @@ defmodule Dashboard.Widgets.WidgetInstance do
   end
 
   def refresh_rate_range, do: @min_refresh_rate..@max_refresh_rate
+  def col_span_range, do: 1..@max_col_span
+  def height_range, do: @min_height..@max_height
 
   @doc """
   Changeset used when a widget is added to the dashboard.
@@ -65,6 +74,23 @@ defmodule Dashboard.Widgets.WidgetInstance do
 
   def position_changeset(widget_instance, position) do
     change(widget_instance, position: position)
+  end
+
+  @doc """
+  Changeset used when a widget is stretched with the mouse.
+  """
+  def size_changeset(widget_instance, attrs) do
+    widget_instance
+    |> cast(attrs, [:col_span, :height])
+    |> validate_required([:col_span])
+    |> validate_number(:col_span,
+      greater_than_or_equal_to: 1,
+      less_than_or_equal_to: @max_col_span
+    )
+    |> validate_number(:height,
+      greater_than_or_equal_to: @min_height,
+      less_than_or_equal_to: @max_height
+    )
   end
 
   defp validate_widget_type(changeset) do

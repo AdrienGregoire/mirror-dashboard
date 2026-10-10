@@ -26,6 +26,11 @@ defmodule Dashboard.Cache do
     end
   end
 
+  def delete(key) do
+    if :ets.whereis(@table) != :undefined, do: :ets.delete(@table, key)
+    :ok
+  end
+
   def clear do
     if :ets.whereis(@table) != :undefined, do: :ets.delete_all_objects(@table)
     :ok

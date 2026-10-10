@@ -47,13 +47,17 @@ defmodule Dashboard.Services.Provider do
   Dispatches `fetch/3` to the provider of the service. Successful results are
   cached for a short time (see `Dashboard.Cache`).
   """
-  @spec fetch(Service.t(), widget(), config(), credentials()) :: {:ok, data()} | {:error, term()}
-  def fetch(%Service{provider: nil}, _widget, _config, _credentials),
+  @spec fetch(Service.t(), widget(), config(), credentials(), keyword()) ::
+          {:ok, data()} | {:error, term()}
+  def fetch(service, widget, config, credentials, opts \\ [])
+
+  def fetch(%Service{provider: nil}, _widget, _config, _credentials, _opts),
     do: {:error, :not_implemented}
 
-  def fetch(%Service{provider: provider} = service, widget, config, credentials) do
+  def fetch(%Service{provider: provider} = service, widget, config, credentials, opts) do
     if Service.get_widget(service, widget) do
       key = {service.name, widget, config, :erlang.phash2(credentials)}
+      if Keyword.get(opts, :fresh, false), do: Dashboard.Cache.delete(key)
 
       Dashboard.Cache.fetch(key, @cache_ttl, fn ->
         provider.fetch(widget, config, credentials)
