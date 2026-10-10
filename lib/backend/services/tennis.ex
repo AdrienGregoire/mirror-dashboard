@@ -8,7 +8,6 @@
 defmodule Dashboard.Services.Tennis do
   @moduledoc """
   Tennis provider backed by the Sportradar Tennis API (trial, v3).
-
   The API key is read from the `TENNIS_API` environment variable. Extra `Req`
   options (used by the tests to plug a stub) come from the `:tennis_req_options`
   application env.
@@ -47,6 +46,45 @@ defmodule Dashboard.Services.Tennis do
     case query_tokens(player) do
       [] -> {:error, "Nom de joueur invalide."}
       tokens -> find_next_match(tokens, player, Date.utc_today(), 0)
+    end
+  end
+
+  def fetch("current_events", %{"circuit" => circuit}, _credentials) do
+    day = Date.utc_today()
+
+    case day_summaries(day) do
+      {:ok, summaries} ->
+        events =
+          summaries
+          |> Enum.map(fn s ->
+            get_in(s, ["sport_event", "sport_event_context", "competition"])
+          end)
+          |> Enum.reject(&is_nil/1)
+          |> Enum.uniq_by(& &1["id"])
+          |> Enum.filter(fn comp ->
+            name = String.downcase(comp["name"] || "")
+
+            case circuit do
+              "atp" -> String.contains?(name, "atp") or String.contains?(name, "men")
+              "wta" -> String.contains?(name, "wta") or String.contains?(name, "women")
+              _ -> true
+            end
+          end)
+          |> Enum.map(fn comp ->
+            %{
+              name: comp["name"],
+              type: comp["type"]
+            }
+          end)
+
+        if events == [] do
+          {:error, "Aucun tournoi en cours trouvé pour ce circuit aujourd'hui."}
+        else
+          {:ok, %{circuit: circuit, events: events}}
+        end
+
+      {:error, response} ->
+        http_error(response)
     end
   end
 
@@ -208,7 +246,7 @@ defmodule Dashboard.Services.Tennis do
     do: {:error, "Endpoint Sportradar introuvable (404 Not Found)."}
 
   defp http_error({:ok, %{status: 429}}),
-    do: {:error, "Quota Sportradar dépassé, réessaie dans un instant (429)."}
+    do: {:error, "Quota Sportradar dépassé, essaie dans un instant (429)."}
 
   defp http_error({:ok, %{status: status}}), do: {:error, "API returned HTTP #{status}"}
   defp http_error({:error, reason}) when is_binary(reason), do: {:error, reason}

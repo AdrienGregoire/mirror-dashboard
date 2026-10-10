@@ -163,8 +163,8 @@ defmodule DashboardWeb.DashboardLiveTest do
         |> form("#add-widget-config", config: %{league: "", season: "abc"})
         |> render_submit()
 
-      assert html =~ "Ce champ est requis."
-      assert html =~ "Doit être un nombre entier."
+      assert html =~ "This field is required."
+      assert html =~ "Must be an integer."
       assert has_element?(view, "#add-widget-config")
     end
 
@@ -181,7 +181,7 @@ defmodule DashboardWeb.DashboardLiveTest do
         |> form("#add-widget-refresh", rate: %{hours: "0", minutes: "0", seconds: "5"})
         |> render_submit()
 
-      assert html =~ "Choisis une valeur entre 10 s et 24 h."
+      assert html =~ "Choose a value between 10 s and 24 h."
       assert has_element?(view, "#add-widget-refresh")
     end
 

@@ -120,7 +120,7 @@ defmodule Dashboard.Services.Registry do
             %{
               name: "circuit",
               type: "string",
-              options: [{"Tous", "all"}, {"ATP", "atp"}, {"WTA", "wta"}]
+              options: [{"All", "all"}, {"ATP", "atp"}, {"WTA", "wta"}]
             }
           ]
         }
