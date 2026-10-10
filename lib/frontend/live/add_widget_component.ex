@@ -140,7 +140,7 @@ defmodule DashboardWeb.AddWidgetComponent do
 
       {:error, _reason} ->
         {:noreply,
-         assign(socket, submit_error: gettext("Impossible d'ajouter ce widget, réessaie."))}
+         assign(socket, submit_error: gettext("Unable to add this widget. Please try again."))}
     end
   end
 
@@ -156,7 +156,7 @@ defmodule DashboardWeb.AddWidgetComponent do
            socket,
            name,
            key,
-           {:error, "#{gettext("Chargement impossible :")} #{inspect(reason)}"}
+           {:error, "#{gettext("Unable to load:")} #{inspect(reason)}"}
          )}
 
       _ ->
@@ -227,8 +227,8 @@ defmodule DashboardWeb.AddWidgetComponent do
 
   defp options_status(%{name: name, options_from: _}, dynamic) do
     case dynamic[name] do
-      nil -> gettext("Renseigne d'abord le championnat et la saison.")
-      %{state: :loading} -> gettext("Chargement…")
+      nil -> gettext("First, enter the league and the season.")
+      %{state: :loading} -> gettext("Loading...")
       %{state: {:error, message}} -> message
       %{state: {:ok, _options}} -> nil
     end
@@ -270,12 +270,12 @@ defmodule DashboardWeb.AddWidgetComponent do
   defp parse_unit(value) when is_binary(value) do
     case Integer.parse(String.trim(value)) do
       {unit, ""} when unit >= 0 -> {:ok, unit}
-      _ -> {:error, gettext("Indique des nombres entiers positifs (heures, minutes, secondes).")}
+      _ -> {:error, gettext("Specifies positive integers (hours, minutes, seconds).")}
     end
   end
 
   defp parse_unit(_value),
-    do: {:error, gettext("Indique des nombres entiers positifs (heures, minutes, secondes).")}
+    do: {:error, gettext("Specifies positive integers (hours, minutes, seconds).")}
 
   defp validate_rate(rate) do
     range = WidgetInstance.refresh_rate_range()
@@ -284,7 +284,7 @@ defmodule DashboardWeb.AddWidgetComponent do
       {:ok, rate}
     else
       {:error,
-       "#{gettext("Choisis une valeur entre")} #{format_rate(range.first)} #{gettext("et")} #{format_rate(range.last)}."}
+       "#{gettext("Choose a value between")} #{format_rate(range.first)} #{gettext("and")} #{format_rate(range.last)}."}
     end
   end
 
@@ -313,7 +313,8 @@ defmodule DashboardWeb.AddWidgetComponent do
       "stats" => gettext("Stats"),
       "next_match" => gettext("Next match"),
       "top_scorers" => gettext("Top scorers"),
-      "player_ranking" => gettext("Player ranking")
+      "player_ranking" => gettext("Player ranking"),
+      "current_events" => gettext("Current events")
     }
 
     Map.get(labels, name, name |> String.replace("_", " ") |> String.capitalize())
@@ -326,7 +327,8 @@ defmodule DashboardWeb.AddWidgetComponent do
       "stats" => "hero-chart-bar",
       "next_match" => "hero-calendar-days",
       "top_scorers" => "hero-star",
-      "player_ranking" => "hero-trophy"
+      "player_ranking" => "hero-trophy",
+      "current_events" => "hero-globe-alt"
     }
 
     Map.get(icons, name, "hero-squares-2x2")
@@ -358,9 +360,9 @@ defmodule DashboardWeb.AddWidgetComponent do
     Map.get(placeholders, name)
   end
 
-  defp error_message("can't be blank"), do: gettext("Ce champ est requis.")
-  defp error_message("must be an integer"), do: gettext("Doit être un nombre entier.")
-  defp error_message("is too long"), do: gettext("Valeur trop longue.")
+  defp error_message("can't be blank"), do: gettext("This field is required.")
+  defp error_message("must be an integer"), do: gettext("Must be an integer.")
+  defp error_message("is too long"), do: gettext("Value is too long.")
   defp error_message(message), do: Gettext.gettext(DashboardWeb.Gettext, message)
 
   def format_rate(seconds) when is_integer(seconds) and seconds > 0 do
@@ -383,9 +385,9 @@ defmodule DashboardWeb.AddWidgetComponent do
         ],
         rate_presets: @rate_presets,
         rate_units: [
-          {"hours", gettext("Heures"), div(WidgetInstance.refresh_rate_range().last, 3600)},
+          {"hours", gettext("Hours"), div(WidgetInstance.refresh_rate_range().last, 3600)},
           {"minutes", gettext("Minutes"), 59},
-          {"seconds", gettext("Secondes"), 59}
+          {"seconds", gettext("Seconds"), 59}
         ]
       )
 
@@ -434,7 +436,7 @@ defmodule DashboardWeb.AddWidgetComponent do
         class="space-y-6"
       >
         <p class="glass-muted">
-          {gettext("Configure ton widget")} <span class="font-semibold">{widget_label(@widget_type.name)}</span>.
+          {gettext("Config your widget")} <span class="font-semibold">{widget_label(@widget_type.name)}</span>.
         </p>
 
         <div :for={param <- @widget_type.params} class="space-y-2">
@@ -506,7 +508,7 @@ defmodule DashboardWeb.AddWidgetComponent do
 
         <fieldset class="space-y-2">
           <legend class="block text-sm font-medium">
-            {gettext("Ou une durée personnalisée (heures, minutes, secondes)")}
+            {gettext("Or a custom duration (hours, minutes, seconds)")}
           </legend>
           <div class="grid grid-cols-3 gap-3">
             <div :for={{key, label, max} <- @rate_units} class="space-y-1">
@@ -544,7 +546,7 @@ defmodule DashboardWeb.AddWidgetComponent do
             value={display_value(param, @config, @dynamic_options)}
           />
           <.summary_row
-            label={gettext("Rafraîchissement")}
+            label={gettext("Refreshment")}
             value={"#{gettext("Every")} #{format_rate(@refresh_rate)}"}
           />
         </dl>
@@ -566,7 +568,7 @@ defmodule DashboardWeb.AddWidgetComponent do
             type="button"
             phx-click="confirm"
             phx-target={@myself}
-            phx-disable-with={gettext("Ajout…")}
+            phx-disable-with={gettext("Add...")}
             class="glass-button cursor-pointer text-primary font-semibold"
           >
             <.icon name="hero-check" class="size-4 mr-2" /> {gettext("Add the widget")}

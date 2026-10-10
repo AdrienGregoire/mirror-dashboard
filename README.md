@@ -111,9 +111,9 @@ The reasoning behind these choices is detailed in [Technology choices](Technolog
 
 | Service | Widgets |
 |---------|---------|
-| Football | standings, top scorers |
-| Basketball | standings, team stat |
-| Tennis | player ranking, next match |
+| Football | standings, top scorers, nothing |
+| Basketball | standings, team stat, nothing |
+| Tennis | player ranking, next match, current events |
 
 ## Running the tests
 

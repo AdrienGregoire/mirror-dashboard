@@ -11,23 +11,13 @@
 msgid ""
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:105
-#, elixir-autogen, elixir-format
-msgid "% Wins"
-msgstr ""
-
-#: lib/frontend/live/dashboard_live.ex:286
-#, elixir-autogen, elixir-format
-msgid "%V"
-msgstr ""
-
-#: lib/frontend/controllers/account_html/show.html.heex:56
+#: lib/frontend/controllers/account_html/show.html.heex:65
 #: lib/frontend/controllers/user_registration_html/new.html.heex:31
 #, elixir-autogen, elixir-format
 msgid "8 characters minimum"
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:27
+#: lib/frontend/controllers/page_html/privacy.html.heex:33
 #, elixir-autogen, elixir-format
 msgid "Account data"
 msgstr ""
@@ -37,13 +27,13 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:389
-#: lib/frontend/live/dashboard_live.ex:203
+#: lib/frontend/live/add_widget_component.ex:397
+#: lib/frontend/live/dashboard_live.ex:169
 #, elixir-autogen, elixir-format
 msgid "Add a widget"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:560
+#: lib/frontend/live/add_widget_component.ex:574
 #, elixir-autogen, elixir-format
 msgid "Add the widget"
 msgstr ""
@@ -53,17 +43,12 @@ msgstr ""
 msgid "Admin - User Management"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:557
-#, elixir-autogen, elixir-format
-msgid "Ajout…"
-msgstr ""
-
 #: lib/frontend/controllers/user_registration_html/new.html.heex:47
 #, elixir-autogen, elixir-format
 msgid "Already have an account?"
 msgstr ""
 
-#: lib/frontend/controllers/account_html/show.html.heex:78
+#: lib/frontend/controllers/account_html/show.html.heex:92
 #, elixir-autogen, elixir-format
 msgid "Are you sure you want to permanently delete your account ? This action cannot be undone."
 msgstr ""
@@ -74,31 +59,16 @@ msgstr ""
 msgid "Attempting to reconnect"
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:109
-#, elixir-autogen, elixir-format
-msgid "Away"
-msgstr ""
-
-#: lib/frontend/live/add_widget_component.ex:551
-#: lib/frontend/live/add_widget_component.ex:603
+#: lib/frontend/live/add_widget_component.ex:565
+#: lib/frontend/live/add_widget_component.ex:617
 #, elixir-autogen, elixir-format
 msgid "Back"
 msgstr ""
 
 #: lib/frontend/controllers/account_html/show.html.heex:12
-#: lib/frontend/controllers/page_html/privacy.html.heex:81
+#: lib/frontend/controllers/page_html/privacy.html.heex:116
 #, elixir-autogen, elixir-format
 msgid "Back to Dashboard"
-msgstr ""
-
-#: lib/frontend/live/dashboard_live.ex:373
-#, elixir-autogen, elixir-format
-msgid "Buts"
-msgstr ""
-
-#: lib/frontend/live/add_widget_component.ex:355
-#, elixir-autogen, elixir-format
-msgid "Ce champ est requis."
 msgstr ""
 
 #: lib/frontend/controllers/account_html/show.html.heex:16
@@ -106,62 +76,42 @@ msgstr ""
 msgid "Change email address"
 msgstr ""
 
-#: lib/frontend/controllers/account_html/show.html.heex:33
+#: lib/frontend/controllers/account_html/show.html.heex:40
 #, elixir-autogen, elixir-format
 msgid "Change password"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:154
-#, elixir-autogen, elixir-format
-msgid "Chargement impossible :"
-msgstr ""
-
-#: lib/frontend/live/dashboard_live.ex:521
-#, elixir-autogen, elixir-format
-msgid "Chargement..."
-msgstr ""
-
-#: lib/frontend/live/add_widget_component.ex:225
-#, elixir-autogen, elixir-format
-msgid "Chargement…"
-msgstr ""
-
-#: lib/frontend/live/add_widget_component.ex:528
+#: lib/frontend/live/add_widget_component.ex:539
 #, elixir-autogen, elixir-format
 msgid "Check the information before adding the widget."
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:281
-#, elixir-autogen, elixir-format
-msgid "Choisis une valeur entre"
-msgstr ""
-
-#: lib/frontend/live/add_widget_component.ex:443
+#: lib/frontend/live/add_widget_component.ex:454
 #, elixir-autogen, elixir-format
 msgid "Choose"
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:179
+#: lib/frontend/live/dashboard_live.ex:146
 #, elixir-autogen, elixir-format
 msgid "Choose my sports"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:334
+#: lib/frontend/live/add_widget_component.ex:342
 #, elixir-autogen, elixir-format
 msgid "Circuit (ATP/WTA)"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:374
+#: lib/frontend/live/add_widget_component.ex:382
 #, elixir-autogen, elixir-format
 msgid "Configuration"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:428
+#: lib/frontend/live/add_widget_component.ex:439
 #, elixir-autogen, elixir-format
-msgid "Configure ton widget"
+msgid "Config your widget"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:376
+#: lib/frontend/live/add_widget_component.ex:384
 #, elixir-autogen, elixir-format
 msgid "Confirmation"
 msgstr ""
@@ -176,12 +126,12 @@ msgstr ""
 msgid "Continue with GitHub"
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:56
+#: lib/frontend/controllers/page_html/privacy.html.heex:79
 #, elixir-autogen, elixir-format
 msgid "Cookies and tracking technologies"
 msgstr ""
 
-#: lib/frontend/controllers/account_html/show.html.heex:34
+#: lib/frontend/controllers/account_html/show.html.heex:41
 #, elixir-autogen, elixir-format
 msgid "Create a password"
 msgstr ""
@@ -196,18 +146,12 @@ msgstr ""
 msgid "Create your account"
 msgstr ""
 
-#: lib/frontend/controllers/account_html/show.html.heex:43
+#: lib/frontend/controllers/account_html/show.html.heex:50
 #, elixir-autogen, elixir-format
 msgid "Current password"
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:285
-#: lib/frontend/live/dashboard_live.ex:332
-#, elixir-autogen, elixir-format
-msgid "D"
-msgstr ""
-
-#: lib/frontend/controllers/account_html/show.html.heex:72
+#: lib/frontend/controllers/account_html/show.html.heex:85
 #, elixir-autogen, elixir-format
 msgid "Danger zone"
 msgstr ""
@@ -219,7 +163,7 @@ msgstr ""
 msgid "Dashboard Sport"
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:36
+#: lib/frontend/controllers/page_html/privacy.html.heex:48
 #, elixir-autogen, elixir-format
 msgid "Dashboard configuration"
 msgstr ""
@@ -229,29 +173,14 @@ msgstr ""
 msgid "Dashboard is a school project developed by two third-year Epitech students, Adrien and Marc-Antoine. It is not a commercial product."
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:58
+#: lib/frontend/controllers/page_html/privacy.html.heex:82
 #, elixir-autogen, elixir-format
 msgid "Dashboard uses only the cookies required to work, such as the session cookie that keeps you signed in. We do not use advertising or analytics trackers."
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:130
-#, elixir-autogen, elixir-format
-msgid "Date to be confirmed"
-msgstr ""
-
-#: lib/frontend/controllers/account_html/show.html.heex:81
+#: lib/frontend/controllers/account_html/show.html.heex:98
 #, elixir-autogen, elixir-format
 msgid "Delete the account"
-msgstr ""
-
-#: lib/frontend/live/add_widget_component.ex:356
-#, elixir-autogen, elixir-format
-msgid "Doit être un nombre entier."
-msgstr ""
-
-#: lib/frontend/live/dashboard_live.ex:482
-#, elixir-autogen, elixir-format
-msgid "EN DIRECT"
 msgstr ""
 
 #: lib/frontend/controllers/session_html/new.html.heex:14
@@ -260,64 +189,27 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:514
-#, elixir-autogen, elixir-format
-msgid "Erreur :"
-msgstr ""
-
-#: lib/frontend/live/add_widget_component.ex:537
+#: lib/frontend/live/add_widget_component.ex:550
 #, elixir-autogen, elixir-format
 msgid "Every"
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:30
+#: lib/frontend/controllers/page_html/privacy.html.heex:38
 #, elixir-autogen, elixir-format
 msgid "GitHub sign-in data"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:380
-#, elixir-autogen, elixir-format
-msgid "Heures"
-msgstr ""
-
-#: lib/frontend/live/dashboard_live.ex:108
-#, elixir-autogen, elixir-format
-msgid "Home"
-msgstr ""
-
-#: lib/frontend/controllers/page_html/privacy.html.heex:63
+#: lib/frontend/controllers/page_html/privacy.html.heex:90
 #, elixir-autogen, elixir-format
 msgid "How long do we keep your personal data?"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:484
+#: lib/frontend/live/add_widget_component.ex:495
 #, elixir-autogen, elixir-format
 msgid "How often should the widget update ?"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:142
-#, elixir-autogen, elixir-format
-msgid "Impossible d'ajouter ce widget, réessaie."
-msgstr ""
-
-#: lib/frontend/live/dashboard_live.ex:119
-#, elixir-autogen, elixir-format
-msgid "In progress"
-msgstr ""
-
-#: lib/frontend/live/add_widget_component.ex:267
-#: lib/frontend/live/add_widget_component.ex:272
-#, elixir-autogen, elixir-format
-msgid "Indique des nombres entiers positifs (heures, minutes, secondes)."
-msgstr ""
-
-#: lib/frontend/live/dashboard_live.ex:369
-#: lib/frontend/live/dashboard_live.ex:414
-#, elixir-autogen, elixir-format
-msgid "Joueur"
-msgstr ""
-
-#: lib/frontend/live/add_widget_component.ex:331
+#: lib/frontend/live/add_widget_component.ex:339
 #, elixir-autogen, elixir-format
 msgid "League"
 msgstr ""
@@ -330,78 +222,50 @@ msgstr ""
 msgid "Log in"
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:104
-#, elixir-autogen, elixir-format
-msgid "Losses"
-msgstr ""
-
-#: lib/frontend/live/dashboard_live.ex:283
-#: lib/frontend/live/dashboard_live.ex:329
-#: lib/frontend/live/dashboard_live.ex:371
-#, elixir-autogen, elixir-format
-msgid "MJ"
-msgstr ""
-
-#: lib/frontend/controllers/account_html/show.html.heex:68
+#: lib/frontend/controllers/account_html/show.html.heex:79
 #, elixir-autogen, elixir-format
 msgid "Manage your current sports and subscriptions."
 msgstr ""
 
-#: lib/frontend/controllers/account_html/show.html.heex:69
+#: lib/frontend/controllers/account_html/show.html.heex:80
 #, elixir-autogen, elixir-format
 msgid "Manage your sports"
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:102
-#, elixir-autogen, elixir-format
-msgid "Matchs"
-msgstr ""
-
-#: lib/frontend/live/add_widget_component.ex:381
+#: lib/frontend/live/add_widget_component.ex:389
 #, elixir-autogen, elixir-format
 msgid "Minutes"
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:415
-#, elixir-autogen, elixir-format
-msgid "Mvt"
-msgstr ""
-
 #: lib/frontend/controllers/account_html/show.html.heex:11
-#: lib/frontend/live/dashboard_live.ex:168
 #, elixir-autogen, elixir-format
 msgid "My account"
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:331
-#, elixir-autogen, elixir-format
-msgid "N"
-msgstr ""
-
-#: lib/frontend/controllers/account_html/show.html.heex:23
+#: lib/frontend/controllers/account_html/show.html.heex:26
 #, elixir-autogen, elixir-format
 msgid "New email"
 msgstr ""
 
-#: lib/frontend/controllers/account_html/show.html.heex:55
+#: lib/frontend/controllers/account_html/show.html.heex:64
 #, elixir-autogen, elixir-format
 msgid "New password"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:306
-#: lib/frontend/live/dashboard_live.ex:90
+#: lib/frontend/live/add_widget_component.ex:312
+#: lib/frontend/live/dashboard_live.ex:16
 #, elixir-autogen, elixir-format
 msgid "News"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:472
-#: lib/frontend/live/add_widget_component.ex:524
+#: lib/frontend/live/add_widget_component.ex:483
+#: lib/frontend/live/add_widget_component.ex:535
 #, elixir-autogen, elixir-format
 msgid "Next"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:308
-#: lib/frontend/live/dashboard_live.ex:92
+#: lib/frontend/live/add_widget_component.ex:314
+#: lib/frontend/live/dashboard_live.ex:18
 #, elixir-autogen, elixir-format
 msgid "Next match"
 msgstr ""
@@ -411,24 +275,14 @@ msgstr ""
 msgid "No account yet?"
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:236
+#: lib/frontend/live/dashboard_live.ex:202
 #, elixir-autogen, elixir-format
 msgid "No widgets yet. Add your first one !"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:332
+#: lib/frontend/live/add_widget_component.ex:340
 #, elixir-autogen, elixir-format
 msgid "Number"
-msgstr ""
-
-#: lib/frontend/live/add_widget_component.ex:500
-#, elixir-autogen, elixir-format
-msgid "Ou une durée personnalisée (heures, minutes, secondes)"
-msgstr ""
-
-#: lib/frontend/live/dashboard_live.ex:372
-#, elixir-autogen, elixir-format
-msgid "Passes"
 msgstr ""
 
 #: lib/frontend/controllers/session_html/new.html.heex:23
@@ -437,69 +291,33 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:335
+#: lib/frontend/live/add_widget_component.ex:343
 #, elixir-autogen, elixir-format
 msgid "Player"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:310
-#: lib/frontend/live/dashboard_live.ex:94
+#: lib/frontend/live/add_widget_component.ex:316
+#: lib/frontend/live/dashboard_live.ex:20
 #, elixir-autogen, elixir-format
 msgid "Player ranking"
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:416
-#, elixir-autogen, elixir-format
-msgid "Points"
-msgstr ""
-
 #: lib/frontend/controllers/page_html/privacy.html.heex:4
-#: lib/frontend/live/dashboard_live.ex:243
 #, elixir-autogen, elixir-format
 msgid "Privacy Policy"
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:333
-#, elixir-autogen, elixir-format
-msgid "Pts"
-msgstr ""
-
-#: lib/frontend/live/dashboard_live.ex:107
-#, elixir-autogen, elixir-format
-msgid "Pts allowed"
-msgstr ""
-
-#: lib/frontend/live/dashboard_live.ex:106
-#, elixir-autogen, elixir-format
-msgid "Pts scored"
-msgstr ""
-
-#: lib/frontend/live/add_widget_component.ex:537
-#, elixir-autogen, elixir-format
-msgid "Rafraîchissement"
-msgstr ""
-
-#: lib/frontend/live/add_widget_component.ex:375
+#: lib/frontend/live/add_widget_component.ex:383
 #, elixir-autogen, elixir-format
 msgid "Refresh"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:224
-#, elixir-autogen, elixir-format
-msgid "Renseigne d'abord le championnat et la saison."
-msgstr ""
-
-#: lib/frontend/live/add_widget_component.ex:336
+#: lib/frontend/live/add_widget_component.ex:344
 #, elixir-autogen, elixir-format
 msgid "Season"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:382
-#, elixir-autogen, elixir-format
-msgid "Secondes"
-msgstr ""
-
-#: lib/frontend/controllers/account_html/show.html.heex:28
+#: lib/frontend/controllers/account_html/show.html.heex:35
 #, elixir-autogen, elixir-format
 msgid "Security"
 msgstr ""
@@ -509,12 +327,12 @@ msgstr ""
 msgid "Select at least one valid service."
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:33
+#: lib/frontend/controllers/page_html/privacy.html.heex:43
 #, elixir-autogen, elixir-format
 msgid "Service credentials and tokens"
 msgstr ""
 
-#: lib/frontend/controllers/account_html/show.html.heex:65
+#: lib/frontend/controllers/account_html/show.html.heex:76
 #, elixir-autogen, elixir-format
 msgid "Services"
 msgstr ""
@@ -524,7 +342,7 @@ msgstr ""
 msgid "Services registered !"
 msgstr ""
 
-#: lib/frontend/controllers/account_html/show.html.heex:60
+#: lib/frontend/controllers/account_html/show.html.heex:71
 #, elixir-autogen, elixir-format
 msgid "Set the password"
 msgstr ""
@@ -545,19 +363,19 @@ msgstr ""
 msgid "Something went wrong!"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:530
+#: lib/frontend/live/add_widget_component.ex:541
 #, elixir-autogen, elixir-format
 msgid "Sport"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:305
-#: lib/frontend/live/dashboard_live.ex:89
+#: lib/frontend/live/add_widget_component.ex:311
+#: lib/frontend/live/dashboard_live.ex:15
 #, elixir-autogen, elixir-format
 msgid "Standings"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:307
-#: lib/frontend/live/dashboard_live.ex:91
+#: lib/frontend/live/add_widget_component.ex:313
+#: lib/frontend/live/dashboard_live.ex:17
 #, elixir-autogen, elixir-format
 msgid "Stats"
 msgstr ""
@@ -567,51 +385,40 @@ msgstr ""
 msgid "Subscribe to your sports"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:333
+#: lib/frontend/live/add_widget_component.ex:341
 #, elixir-autogen, elixir-format
 msgid "Team"
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:19
+#: lib/frontend/controllers/page_html/privacy.html.heex:21
 #, elixir-autogen, elixir-format
 msgid "This statement explains what personal data Dashboard collects, why we use it, and what rights you have over it. It applies to everything you do on the application."
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:309
-#: lib/frontend/live/dashboard_live.ex:93
+#: lib/frontend/live/add_widget_component.ex:315
+#: lib/frontend/live/dashboard_live.ex:19
 #, elixir-autogen, elixir-format
 msgid "Top scorers"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:373
+#: lib/frontend/live/add_widget_component.ex:381
 #, elixir-autogen, elixir-format
 msgid "Type"
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:74
+#: lib/frontend/controllers/page_html/privacy.html.heex:104
 #, elixir-autogen, elixir-format
 msgid "Under the GDPR, you have the right to access, correct or delete your personal data, to object to its use, and to request a copy of it. To exercise these rights, contact us at"
 msgstr ""
 
-#: lib/frontend/controllers/account_html/show.html.heex:60
+#: lib/frontend/controllers/account_html/show.html.heex:70
 #, elixir-autogen, elixir-format
 msgid "Update"
 msgstr ""
 
-#: lib/frontend/controllers/account_html/show.html.heex:24
+#: lib/frontend/controllers/account_html/show.html.heex:29
 #, elixir-autogen, elixir-format
 msgid "Update email address"
-msgstr ""
-
-#: lib/frontend/live/dashboard_live.ex:284
-#: lib/frontend/live/dashboard_live.ex:330
-#, elixir-autogen, elixir-format
-msgid "V"
-msgstr ""
-
-#: lib/frontend/live/add_widget_component.ex:357
-#, elixir-autogen, elixir-format
-msgid "Valeur trop longue."
 msgstr ""
 
 #: lib/frontend/components/layouts.ex:33
@@ -619,12 +426,12 @@ msgstr ""
 msgid "We can't find the internet"
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:51
+#: lib/frontend/controllers/page_html/privacy.html.heex:71
 #, elixir-autogen, elixir-format
 msgid "We do not sell your data. It is shared only when needed for the features you use: GitHub when you sign in with it."
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:44
+#: lib/frontend/controllers/page_html/privacy.html.heex:60
 #, elixir-autogen, elixir-format
 msgid "We use your data only to run the application. We do not use your data for advertising or profiling."
 msgstr ""
@@ -634,17 +441,17 @@ msgstr ""
 msgid "Welcome to Dashboard"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:396
+#: lib/frontend/live/add_widget_component.ex:404
 #, elixir-autogen, elixir-format
 msgid "What kind of widget do you want to add ?"
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:24
+#: lib/frontend/controllers/page_html/privacy.html.heex:29
 #, elixir-autogen, elixir-format
 msgid "What personal data do we collect?"
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:49
+#: lib/frontend/controllers/page_html/privacy.html.heex:68
 #, elixir-autogen, elixir-format
 msgid "When do we share your personal data?"
 msgstr ""
@@ -654,29 +461,19 @@ msgstr ""
 msgid "Who are we?"
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:42
+#: lib/frontend/controllers/page_html/privacy.html.heex:57
 #, elixir-autogen, elixir-format
 msgid "Why and how do we use your personal data?"
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:16
+#: lib/frontend/controllers/page_html/privacy.html.heex:18
 #, elixir-autogen, elixir-format
 msgid "Why should you read this statement and what does it cover?"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:531
+#: lib/frontend/live/add_widget_component.ex:542
 #, elixir-autogen, elixir-format
 msgid "Widget"
-msgstr ""
-
-#: lib/frontend/live/dashboard_live.ex:61
-#, elixir-autogen, elixir-format
-msgid "Widget added !"
-msgstr ""
-
-#: lib/frontend/live/dashboard_live.ex:103
-#, elixir-autogen, elixir-format
-msgid "Wins"
 msgstr ""
 
 #: lib/frontend/live/onboarding_live.ex:53
@@ -684,17 +481,17 @@ msgstr ""
 msgid "You can change this at any time from your account."
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:177
+#: lib/frontend/live/dashboard_live.ex:144
 #, elixir-autogen, elixir-format
 msgid "You haven't chosen any sports to follow yet."
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:65
+#: lib/frontend/controllers/page_html/privacy.html.heex:93
 #, elixir-autogen, elixir-format
 msgid "Your data is kept as long as your account exists. When you delete your account from your profile page, your personal data and stored credentials are deleted as well."
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:71
+#: lib/frontend/controllers/page_html/privacy.html.heex:101
 #, elixir-autogen, elixir-format
 msgid "Your rights in relation to your personal data"
 msgstr ""
@@ -704,51 +501,111 @@ msgstr ""
 msgid "close"
 msgstr ""
 
-#: lib/frontend/live/add_widget_component.ex:281
-#, elixir-autogen, elixir-format
-msgid "et"
-msgstr ""
-
-#: lib/frontend/controllers/page_html/privacy.html.heex:30
+#: lib/frontend/controllers/page_html/privacy.html.heex:38
 #, elixir-autogen, elixir-format
 msgid "if you sign in with GitHub, the profile information GitHub shares with us."
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:76
+#: lib/frontend/controllers/page_html/privacy.html.heex:108
 #: lib/frontend/controllers/session_html/new.html.heex:36
 #: lib/frontend/controllers/user_registration_html/new.html.heex:43
 #, elixir-autogen, elixir-format
 msgid "or"
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:33
+#: lib/frontend/controllers/page_html/privacy.html.heex:43
 #, elixir-autogen, elixir-format
 msgid "the credentials or tokens needed to connect the external services you subscribe to. They are stored encrypted."
 msgstr ""
 
-#: lib/frontend/controllers/page_html/privacy.html.heex:36
+#: lib/frontend/controllers/page_html/privacy.html.heex:48
 #, elixir-autogen, elixir-format
 msgid "the services you subscribed to and the widgets you added and arranged."
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:127
-#, elixir-autogen, elixir-format
-msgid "time to be confirmed"
-msgstr ""
-
-#: lib/frontend/live/dashboard_live.ex:490
-#, elixir-autogen, elixir-format
-msgid "vs"
-msgstr ""
-
-#: lib/frontend/controllers/page_html/privacy.html.heex:27
+#: lib/frontend/controllers/page_html/privacy.html.heex:33
 #, elixir-autogen, elixir-format
 msgid "your email address, first name and last name."
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:282
-#: lib/frontend/live/dashboard_live.ex:328
-#: lib/frontend/live/dashboard_live.ex:370
+#: lib/frontend/live/add_widget_component.ex:317
+#: lib/frontend/live/dashboard_live.ex:21
 #, elixir-autogen, elixir-format
-msgid "Équipe"
+msgid "Current events"
+msgstr ""
+
+#: lib/frontend/live/add_widget_component.ex:287
+#, elixir-autogen, elixir-format
+msgid "Choose a value between"
+msgstr ""
+
+#: lib/frontend/live/add_widget_component.ex:230
+#, elixir-autogen, elixir-format
+msgid "First, enter the league and the season."
+msgstr ""
+
+#: lib/frontend/live/add_widget_component.ex:388
+#, elixir-autogen, elixir-format
+msgid "Hours"
+msgstr ""
+
+#: lib/frontend/live/add_widget_component.ex:231
+#, elixir-autogen, elixir-format
+msgid "Loading..."
+msgstr ""
+
+#: lib/frontend/live/add_widget_component.ex:364
+#, elixir-autogen, elixir-format
+msgid "Must be an integer."
+msgstr ""
+
+#: lib/frontend/live/add_widget_component.ex:390
+#, elixir-autogen, elixir-format
+msgid "Seconds"
+msgstr ""
+
+#: lib/frontend/live/add_widget_component.ex:273
+#: lib/frontend/live/add_widget_component.ex:278
+#, elixir-autogen, elixir-format
+msgid "Specifies positive integers (hours, minutes, seconds)."
+msgstr ""
+
+#: lib/frontend/live/add_widget_component.ex:363
+#, elixir-autogen, elixir-format
+msgid "This field is required."
+msgstr ""
+
+#: lib/frontend/live/add_widget_component.ex:143
+#, elixir-autogen, elixir-format
+msgid "Unable to add this widget. Please try again."
+msgstr ""
+
+#: lib/frontend/live/add_widget_component.ex:159
+#, elixir-autogen, elixir-format
+msgid "Unable to load:"
+msgstr ""
+
+#: lib/frontend/live/add_widget_component.ex:365
+#, elixir-autogen, elixir-format
+msgid "Value is too long."
+msgstr ""
+
+#: lib/frontend/live/add_widget_component.ex:287
+#, elixir-autogen, elixir-format
+msgid "and"
+msgstr ""
+
+#: lib/frontend/live/add_widget_component.ex:571
+#, elixir-autogen, elixir-format
+msgid "Add..."
+msgstr ""
+
+#: lib/frontend/live/add_widget_component.ex:511
+#, elixir-autogen, elixir-format
+msgid "Or a custom duration (hours, minutes, seconds)"
+msgstr ""
+
+#: lib/frontend/live/add_widget_component.ex:549
+#, elixir-autogen, elixir-format
+msgid "Refreshment"
 msgstr ""
