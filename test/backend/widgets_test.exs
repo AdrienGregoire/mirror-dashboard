@@ -175,6 +175,58 @@ defmodule Dashboard.WidgetsTest do
     end
   end
 
+  describe "resize_widget/2" do
+    test "a new widget fits one column and its content", %{user: user} do
+      widget = add_standings!(user, 1)
+
+      assert widget.col_span == 1
+      assert widget.height == nil
+    end
+
+    test "stores the column span and the height", %{user: user} do
+      widget = add_standings!(user, 1)
+
+      assert {:ok, resized} = Widgets.resize_widget(widget, %{col_span: 2, height: 320})
+      assert resized.col_span == 2
+      assert resized.height == 320
+
+      assert %{col_span: 2, height: 320} = Widgets.get_widget(user, widget.id)
+    end
+
+    test "a nil height goes back to the content height", %{user: user} do
+      widget = add_standings!(user, 1)
+      {:ok, widget} = Widgets.resize_widget(widget, %{col_span: 3, height: 500})
+
+      assert {:ok, %{col_span: 1, height: nil}} =
+               Widgets.resize_widget(widget, %{col_span: 1, height: nil})
+    end
+
+    test "rejects sizes out of range and keeps the previous one", %{user: user} do
+      widget = add_standings!(user, 1)
+
+      for attrs <- [
+            %{col_span: 0, height: 200},
+            %{col_span: 4, height: 200},
+            %{col_span: 1, height: 10},
+            %{col_span: 1, height: 5_000}
+          ] do
+        assert {:error, %Ecto.Changeset{}} = Widgets.resize_widget(widget, attrs)
+      end
+
+      assert %{col_span: 1, height: nil} = Widgets.get_widget(user, widget.id)
+    end
+
+    test "does not touch the position nor the config", %{user: user} do
+      widget = add_standings!(user, 1)
+
+      assert {:ok, resized} =
+               Widgets.resize_widget(widget, %{col_span: 2, position: 9, config: %{}})
+
+      assert resized.position == 0
+      assert resized.config == widget.config
+    end
+  end
+
   describe "move_widget/2" do
     setup %{user: user} do
       %{widgets: Enum.map(1..4, &add_standings!(user, &1))}
