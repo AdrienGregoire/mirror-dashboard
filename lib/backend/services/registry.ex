@@ -88,6 +88,11 @@ defmodule Dashboard.Services.Registry do
               depends_on: ["league", "season"]
             }
           ]
+        },
+        %WidgetType{
+          name: "news",
+          description: "Latest news about a basketball league",
+          params: [%{name: "league", type: "string", options: @basket_leagues}]
         }
       ]
     },

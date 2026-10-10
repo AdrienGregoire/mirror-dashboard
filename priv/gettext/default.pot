@@ -28,7 +28,7 @@ msgid "Actions"
 msgstr ""
 
 #: lib/frontend/live/add_widget_component.ex:397
-#: lib/frontend/live/dashboard_live.ex:169
+#: lib/frontend/live/dashboard_live.ex:180
 #, elixir-autogen, elixir-format
 msgid "Add a widget"
 msgstr ""
@@ -91,7 +91,7 @@ msgstr ""
 msgid "Choose"
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:146
+#: lib/frontend/live/dashboard_live.ex:157
 #, elixir-autogen, elixir-format
 msgid "Choose my sports"
 msgstr ""
@@ -275,7 +275,7 @@ msgstr ""
 msgid "No account yet?"
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:202
+#: lib/frontend/live/dashboard_live.ex:213
 #, elixir-autogen, elixir-format
 msgid "No widgets yet. Add your first one !"
 msgstr ""
@@ -481,7 +481,7 @@ msgstr ""
 msgid "You can change this at any time from your account."
 msgstr ""
 
-#: lib/frontend/live/dashboard_live.ex:144
+#: lib/frontend/live/dashboard_live.ex:155
 #, elixir-autogen, elixir-format
 msgid "You haven't chosen any sports to follow yet."
 msgstr ""
@@ -550,6 +550,7 @@ msgid "Hours"
 msgstr ""
 
 #: lib/frontend/live/add_widget_component.ex:231
+#: lib/frontend/live/dashboard_live.ex:555
 #, elixir-autogen, elixir-format
 msgid "Loading..."
 msgstr ""
@@ -608,4 +609,44 @@ msgstr ""
 #: lib/frontend/live/add_widget_component.ex:549
 #, elixir-autogen, elixir-format
 msgid "Refreshment"
+msgstr ""
+
+#: lib/backend/services/basket_news.ex:67
+#, elixir-autogen, elixir-format
+msgid "%{variable} environment variable is not set"
+msgstr ""
+
+#: lib/backend/services/basket_news.ex:90
+#, elixir-autogen, elixir-format
+msgid "Daily news API quota reached, try again tomorrow."
+msgstr ""
+
+#: lib/frontend/live/dashboard_live.ex:548
+#, elixir-autogen, elixir-format
+msgid "Error:"
+msgstr ""
+
+#: lib/backend/services/basket_news.ex:87
+#, elixir-autogen, elixir-format
+msgid "Invalid news API key."
+msgstr ""
+
+#: lib/backend/services/basket_news.ex:96
+#, elixir-autogen, elixir-format
+msgid "News API returned HTTP %{status}"
+msgstr ""
+
+#: lib/backend/services/basket_news.ex:82
+#, elixir-autogen, elixir-format
+msgid "No recent news found for this league."
+msgstr ""
+
+#: lib/backend/services/basket_news.ex:93
+#, elixir-autogen, elixir-format
+msgid "Too many news requests, try again in a moment."
+msgstr ""
+
+#: lib/backend/services/basket_news.ex:59
+#, elixir-autogen, elixir-format
+msgid "Unknown league: %{league}"
 msgstr ""

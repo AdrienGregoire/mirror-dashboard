@@ -60,6 +60,9 @@ defmodule Dashboard.Services.Basket do
     end
   end
 
+  def fetch("news", %{"league" => league}, _credentials),
+    do: Dashboard.Services.BasketNews.fetch(league)
+
   def fetch(_widget, _config, _credentials), do: {:error, :unknown_widget}
 
   @doc """

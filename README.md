@@ -72,6 +72,7 @@ Then copy the Client ID and a generated Client secret into your `.env`.
 | `FOOT_API` | [API-Football](https://www.api-football.com/) |
 | `TENNIS_API` | [Sportradar](https://developer.sportradar.com/) (tennis) |
 | `BASKET_API` | [API-Basketball](https://api-sports.io/documentation/basketball/v1) |
+| `BASKET_NEWS_API` | [GNews](https://gnews.io/) (basketball news) |
 
 
 ## 2. Build
@@ -130,7 +131,7 @@ The reasoning behind these choices is detailed in [Technology choices](Technolog
 | Service | Widgets |
 |---------|---------|
 | Football | standings, top scorers, nothing |
-| Basketball | standings, team stat, nothing |
+| Basketball | standings, team stat, league news |
 | Tennis | player ranking, next match, current events |
 
 ## Running the tests

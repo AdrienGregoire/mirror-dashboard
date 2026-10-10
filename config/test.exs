@@ -35,6 +35,10 @@ config :dashboard, :basket_req_options,
   plug: {Req.Test, Dashboard.Services.Basket},
   retry: false
 
+config :dashboard, :basket_news_req_options,
+  plug: {Req.Test, Dashboard.Services.BasketNews},
+  retry: false
+
 config :dashboard, Dashboard.Cache, enabled: false
 
 config :dashboard, :tennis_req_options,
