@@ -9,7 +9,17 @@
   <div class="glass-card p-10 sm:p-12 space-y-10">
     <div class="flex items-center justify-between">
       <h1 class="glass-title text-3xl">{gettext("My account")}</h1>
-      <.link href={~p"/dashboard"} class="glass-button text-sm px-4">{gettext("Back to Dashboard")}</.link>
+      <div class="flex items-center gap-3">
+        <.link
+          href={~p"/logout"}
+          method="delete"
+          class="glass-button text-error text-sm px-4 flex items-center gap-1.5"
+        >
+          <.icon name="hero-arrow-right-on-rectangle" class="size-4" />
+          {gettext("Log out")}
+        </.link>
+        <.link href={~p"/dashboard"} class="glass-button text-sm px-4">{gettext("Back to Dashboard")}</.link>
+      </div>
     </div>
 
     <div class="space-y-6">

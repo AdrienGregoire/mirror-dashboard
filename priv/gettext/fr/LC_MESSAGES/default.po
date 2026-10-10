@@ -650,3 +650,6 @@ msgstr "Trop de requêtes d'actualités, réessaie dans un instant."
 #, elixir-autogen, elixir-format
 msgid "Unknown league: %{league}"
 msgstr "Championnat inconnu : %{league}"
+
+msgid "Log out"
+msgstr "Se déconnecter"

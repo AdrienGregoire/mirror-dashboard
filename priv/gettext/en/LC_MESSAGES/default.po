@@ -650,3 +650,6 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgid "Unknown league: %{league}"
 msgstr ""
+
+msgid "Log out"
+msgstr ""
