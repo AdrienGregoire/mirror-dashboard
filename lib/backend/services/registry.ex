@@ -112,6 +112,17 @@ defmodule Dashboard.Services.Registry do
           name: "next_match",
           description: "A player's next match",
           params: [%{name: "player", type: "string"}]
+        },
+        %WidgetType{
+          name: "current_events",
+          description: "Ongoing tournaments this week",
+          params: [
+            %{
+              name: "circuit",
+              type: "string",
+              options: [{"Tous", "all"}, {"ATP", "atp"}, {"WTA", "wta"}]
+            }
+          ]
         }
       ]
     }
