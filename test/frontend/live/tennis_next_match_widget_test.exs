@@ -77,7 +77,7 @@ defmodule DashboardWeb.TennisNextMatchWidgetTest do
     end)
 
     {:ok, view, html} = conn |> init_test_session(user_id: user.id) |> live(~p"/dashboard")
-    assert html =~ "Chargement"
+    assert html =~ "Loading"
     refute html =~ "Jannik Sinner"
 
     assert_receive {:blocked, plug_pid}, 1_000
