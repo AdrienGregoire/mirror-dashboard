@@ -10,14 +10,19 @@ defmodule DashboardWeb.DashboardLive do
   alias Dashboard.Widgets
   alias Dashboard.Services.{Registry, Provider}
 
-  @widget_labels %{
-    "standings" => "Standings",
-    "news" => "News",
-    "stats" => "Stats",
-    "next_match" => "Next match",
-    "top_scorers" => "Top scorers",
-    "player_ranking" => "Player ranking"
-  }
+  defp widget_label(name) do
+    labels = %{
+      "standings" => gettext("Standings"),
+      "news" => gettext("News"),
+      "stats" => gettext("Stats"),
+      "next_match" => gettext("Next match"),
+      "top_scorers" => gettext("Top scorers"),
+      "player_ranking" => gettext("Player ranking"),
+      "current_events" => gettext("Current events")
+    }
+
+    Map.get(labels, name, name |> String.replace("_", " ") |> String.capitalize())
+  end
 
   @spec mount(any(), any(), any()) :: {:ok, any()}
   def mount(_params, _session, socket) do
@@ -93,8 +98,6 @@ defmodule DashboardWeb.DashboardLive do
 
   defp widgets_for(widgets, service), do: Enum.filter(widgets, &(&1.service == service))
 
-  defp widget_label(name), do: Map.get(@widget_labels, name, name)
-
   defp stat_tiles(stats) do
     [
       {"Matchs", stats.played},
@@ -139,9 +142,9 @@ defmodule DashboardWeb.DashboardLive do
       <div class="relative z-10 flex-1 flex flex-col w-full max-w-6xl mx-auto p-4 sm:p-8">
         <div class="space-y-8">
           <div :if={@services == []} class="glass-card p-10 text-center space-y-4">
-            <p class="glass-muted">You haven't chosen any sports to follow yet.</p>
+            <p class="glass-muted">{gettext("You haven't chosen any sports to follow yet.")}</p>
             <.link href={~p"/onboarding"} class="glass-button text-primary">
-              Choose my sports
+              {gettext("Choose my sports")}
             </.link>
           </div>
 
@@ -164,7 +167,7 @@ defmodule DashboardWeb.DashboardLive do
               phx-click="open_add_widget"
               class="glass-button cursor-pointer text-primary font-semibold ml-auto"
             >
-              <.icon name="hero-plus" class="size-4 mr-2" /> Add a widget
+              <.icon name="hero-plus" class="size-4 mr-2" /> {gettext("Add a widget")}
             </button>
           </div>
 
@@ -197,7 +200,7 @@ defmodule DashboardWeb.DashboardLive do
               class="glass-card cursor-pointer p-6 min-h-32 flex flex-col items-center justify-center gap-2 glass-muted border-dashed! hover:-translate-y-0.5 transition-all duration-300"
             >
               <.icon name="hero-plus-circle" class="size-8" />
-              <span>No widgets yet. Add your first one !</span>
+              <span>{gettext("No widgets yet. Add your first one !")}</span>
             </button>
           </div>
         </div>
@@ -466,6 +469,31 @@ defmodule DashboardWeb.DashboardLive do
       <p :if={@match.venue} class="glass-muted text-xs truncate">
         {@match.venue}<span :if={@match.city}>, {@match.city}</span>
       </p>
+    </div>
+    """
+  end
+
+  defp widget_content(
+         %{data: {:ok, %{events: events}}, widget: %{widget: "current_events"}} = assigns
+       ) do
+    assigns = assign(assigns, :events, events)
+
+    ~H"""
+    <div class="space-y-3">
+      <div
+        :for={event <- @events}
+        class="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-(color:--glass-border)"
+      >
+        <div class="min-w-0 pr-2">
+          <p class="font-medium text-sm truncate">{event.name}</p>
+        </div>
+        <span
+          :if={event.type}
+          class="glass-muted text-xs capitalize shrink-0 px-2 py-0.5 rounded-md bg-white/5"
+        >
+          {event.type}
+        </span>
+      </div>
     </div>
     """
   end

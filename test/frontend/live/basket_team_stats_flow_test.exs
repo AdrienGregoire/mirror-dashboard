@@ -68,7 +68,7 @@ defmodule DashboardWeb.BasketTeamStatsFlowTest do
   test "asks for the league and the season before listing the teams", %{html: html} do
     assert html =~ "League"
     assert html =~ "Season"
-    assert html =~ "Renseigne d&#39;abord le championnat et la saison."
+    assert html =~ "First, enter the league and the season."
     refute_received {:request, "/teams", _}
   end
 
@@ -107,7 +107,7 @@ defmodule DashboardWeb.BasketTeamStatsFlowTest do
     refute html =~ ~s(value="145" selected)
 
     html = view |> form("#add-widget-config") |> render_submit()
-    assert html =~ "Ce champ est requis."
+    assert html =~ "This field is required."
 
     view |> form("#add-widget-config", config: %{team: "7"}) |> render_submit()
     assert has_element?(view, "#add-widget-refresh")
@@ -124,7 +124,7 @@ defmodule DashboardWeb.BasketTeamStatsFlowTest do
 
     html = view |> form("#add-widget-config", config: %{team: ""}) |> render_submit()
 
-    assert html =~ "Ce champ est requis."
+    assert html =~ "This field is required."
     assert has_element?(view, "#add-widget-config")
   end
 
