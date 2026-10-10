@@ -84,8 +84,13 @@ defmodule DashboardWeb.DashboardLive do
   end
 
   defp load_widgets(socket, widgets) do
+    locale = Gettext.get_locale(DashboardWeb.Gettext)
+
     Enum.reduce(widgets, socket, fn widget, socket ->
-      start_async(socket, {:widget, widget.id}, fn -> safe_fetch(widget) end)
+      start_async(socket, {:widget, widget.id}, fn ->
+        Gettext.put_locale(DashboardWeb.Gettext, locale)
+        safe_fetch(widget)
+      end)
     end)
   end
 
@@ -116,6 +121,11 @@ defmodule DashboardWeb.DashboardLive do
 
   defp format_pct(pct),
     do: pct |> :erlang.float_to_binary(decimals: 3) |> String.trim_leading("0")
+
+  defp article_meta(article) do
+    date = if article.published_at, do: Calendar.strftime(article.published_at, "%d/%m/%Y")
+    [article.source, date] |> Enum.reject(&is_nil/1) |> Enum.join(" - ")
+  end
 
   defp match_time(%{live: true}), do: "In progress"
 
@@ -498,19 +508,51 @@ defmodule DashboardWeb.DashboardLive do
     """
   end
 
+  defp widget_content(%{data: {:ok, %{articles: articles}}, widget: %{widget: "news"}} = assigns) do
+    assigns = assign(assigns, :articles, articles)
+
+    ~H"""
+    <ul class="space-y-3">
+      <li
+        :for={article <- @articles}
+        class="flex gap-3 p-2.5 rounded-xl bg-white/5 border border-(color:--glass-border)"
+      >
+        <img
+          :if={article.image}
+          src={article.image}
+          alt={article.title}
+          loading="lazy"
+          class="size-14 rounded-lg object-cover shrink-0"
+        />
+        <div class="min-w-0">
+          <a
+            href={article.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="font-medium text-sm line-clamp-2 hover:text-primary transition-colors"
+          >
+            {article.title}
+          </a>
+          <p class="glass-muted text-xs truncate">{article_meta(article)}</p>
+        </div>
+      </li>
+    </ul>
+    """
+  end
+
   defp widget_content(%{data: {:error, reason}} = assigns) do
-    assigns = assign(assigns, :reason, inspect(reason))
+    assigns = assign(assigns, :reason, if(is_binary(reason), do: reason, else: inspect(reason)))
 
     ~H"""
     <p class="text-sm text-error flex gap-2 items-center">
-      <.icon name="hero-exclamation-circle" class="size-4 shrink-0" /> Erreur : {@reason}
+      <.icon name="hero-exclamation-circle" class="size-4 shrink-0" /> {gettext("Error:")} {@reason}
     </p>
     """
   end
 
   defp widget_content(assigns) do
     ~H"""
-    <p class="glass-muted text-sm animate-pulse">Chargement...</p>
+    <p class="glass-muted text-sm animate-pulse">{gettext("Loading...")}</p>
     """
   end
 end
