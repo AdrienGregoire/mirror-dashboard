@@ -14,6 +14,12 @@ Dashboard is a third-year full-stack web project at Epitech. It's a customizable
 * **Interface Customization:** Multilingual support (French/English) and a *Liquid Glass* design.
 * **Security:** Encryption of sensitive data and access tokens in the database.
 
+## Use Cases
+
+* **The sports fan:** A user wants to follow NBA news, check the Ligue 1 standings, and find out what time his favorite tennis player is playing. Instead of opening three different apps, he consolidates these three widgets on his Dashboard.
+* **The Bettor:** A basketball fan needs to analyze a team's current form. He uses the stats widget to keep track of the win-loss record and the averages for points scored and points allowed.
+* **The Tennis Tour Follower:** A fan wants to know which tournaments are being played this week on the ATP or WTA tours, while keeping track of changes in their favorite player's world ranking points.
+
 # Getting Started
 
 The project is launched using Docker Compose. You do not need to install Elixir, Erlang, or Postgres locally.
