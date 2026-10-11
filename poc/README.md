@@ -14,6 +14,13 @@ The reasoning behind the stack is detailed in [Technology choices](../Technology
 | Registration | `GET /register`, `POST /register` | Creates an account (email + password) and stores the user in the session |
 | Dashboard | `GET /dashboard` | Shows the logged-in email and the widget grid. Redirects to `/register` if no user is in the session |
 
+Behind it:
+ 
+- **Phoenix** with controllers and HEEx templates (`lib/frontend/`)
+- An in-memory user store based on **ETS** (`lib/backend/user_store.ex`), started with the application
+- **Req** is included as the HTTP client for calling external APIs
+- Same `backend/` / `frontend/` split as the main project
+
 ## Stack
 
 | Layer | Choice |
@@ -60,6 +67,15 @@ poc/
 cd poc
 mix test
 ```
+
+## Limitations
+
+The POC is intentionally minimal:
+
+- Users are stored in **ETS**: everything is lost when the server stops.
+- Passwords are hashed with a plain SHA-256, **without salt**.
+- No email confirmation, no GitHub OAuth, no database.
+- Widgets on the dashboard are static placeholders ("coming soon"): no data is fetched yet.
 
 # License
 Epitech.
