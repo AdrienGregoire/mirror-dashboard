@@ -20,6 +20,11 @@ Dashboard is a third-year full-stack web project at Epitech. It's a customizable
 * **The Bettor:** A basketball fan needs to analyze a team's current form. He uses the stats widget to keep track of the win-loss record and the averages for points scored and points allowed.
 * **The Tennis Tour Follower:** A fan wants to know which tournaments are being played this week on the ATP or WTA tours, while keeping track of changes in their favorite player's world ranking points.
 
+## Live demo
+
+The application is deployed on Render and available at
+[https://dashboard-mad-epitech.onrender.com](https://dashboard-mad-epitech.onrender.com).
+
 # Getting Started
 
 The project is launched using Docker Compose. You do not need to install Elixir, Erlang, or Postgres locally.
