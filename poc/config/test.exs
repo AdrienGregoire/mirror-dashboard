@@ -14,6 +14,8 @@ config :poc, PocWeb.Endpoint,
   secret_key_base: "/rgvZUOWSu5DKmHhwLOYMzsmCeABa/S86M0SQnZsdCMmk5hmrbrvADpToslF2fdT",
   server: false
 
+config :poc, :foot_req_options, plug: {Req.Test, Poc.Foot}
+
 # In test we don't send emails
 config :poc, Poc.Mailer, adapter: Swoosh.Adapters.Test
 
