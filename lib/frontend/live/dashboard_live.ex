@@ -17,7 +17,8 @@ defmodule DashboardWeb.DashboardLive do
       "next_match" => gettext("Next match"),
       "top_scorers" => gettext("Top scorers"),
       "player_ranking" => gettext("Player ranking"),
-      "current_events" => gettext("Current events")
+      "current_events" => gettext("Current events"),
+      "next_match_odds" => gettext("Match Odds")
     }
 
     Map.get(labels, name, name |> String.replace("_", " ") |> String.capitalize())
@@ -871,6 +872,31 @@ defmodule DashboardWeb.DashboardLive do
     </ul>
     """
   end
+
+  defp widget_content(%{data: {:ok, %{match: match}}, widget: %{widget: "next_match_odds"}} = assigns) do
+    assigns = assign(assigns, :match, match)
+    ~H"""
+    <div class="space-y-3 text-center">
+      <p class="font-semibold text-lg">{@match.home_team} vs {@match.away_team}</p>
+      <p class="glass-muted text-xs">{@match.commence_time}</p>
+      <div class="grid grid-cols-3 gap-2 pt-2">
+        <div class="glass-panel p-2 rounded-xl">
+          <span class="block text-xs glass-muted">{gettext("1 (Home)")}</span>
+          <span class="font-bold text-primary">{@match.odds.home}</span>
+        </div>
+        <div :if={@match.odds.draw} class="glass-panel p-2 rounded-xl">
+          <span class="block text-xs glass-muted">{gettext("X (Draw)")}</span>
+          <span class="font-bold text-primary">{@match.odds.draw}</span>
+        </div>
+        <div class="glass-panel p-2 rounded-xl">
+          <span class="block text-xs glass-muted">{gettext("2 (Away)")}</span>
+          <span class="font-bold text-primary">{@match.odds.away}</span>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
 
   defp widget_content(%{data: {:error, reason}} = assigns) do
     assigns = assign(assigns, :reason, if(is_binary(reason), do: reason, else: inspect(reason)))

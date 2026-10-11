@@ -11,6 +11,7 @@ Dashboard is a third-year full-stack web project at Epitech. It's a customizable
   * *Football:* League Standings, Top Scorers.
   * *Basketball:* Standings, detailed statistics by team.
   * *Tennis:* ATP/WTA Rankings, Upcoming Matches, Ongoing Tournaments.
+  * *EpiBet:* Next match & real-time betting odds.
 * **Interface Customization:** Multilingual support (French/English) and a *Liquid Glass* design.
 * **Security:** Encryption of sensitive data and access tokens in the database.
 
@@ -70,6 +71,18 @@ Create an OAuth App in GitHub (*Settings → Developer settings → OAuth Apps �
 
 Then copy the Client ID and a generated Client secret into your `.env`.
 
+### Email (SMTP)
+
+Used to send emails from the application.
+
+| Variable | Description |
+|----------|-------------|
+| `SMTP_HOST` | SMTP server host (`smtp.gmail.com` for Gmail) |
+| `SMTP_PORT` | SMTP server port (`587` for Gmail, with STARTTLS) |
+| `SMTP_USERNAME` | Account used to authenticate (your Gmail address) |
+| `SMTP_PASSWORD` | Password of that account. With Gmail, use an [app password](https://myaccount.google.com/apppasswords), not your normal password |
+| `MAIL_FROM` | Sender address shown in the emails |
+
 ### External APIs
 
 | Variable | Service |
@@ -78,6 +91,7 @@ Then copy the Client ID and a generated Client secret into your `.env`.
 | `TENNIS_API` | [Sportradar](https://developer.sportradar.com/) (tennis) |
 | `BASKET_API` | [API-Basketball](https://api-sports.io/documentation/basketball/v1) |
 | `BASKET_NEWS_API` | [GNews](https://gnews.io/) (basketball news) |
+| `ODDS_API_KEY` | [The Odds API](https://the-odds-api.com/) (EpiBet odds) |
 
 
 ## 2. Build
@@ -138,6 +152,7 @@ The reasoning behind these choices is detailed in [Technology choices](Technolog
 | Football | standings, top scorers, nothing |
 | Basketball | standings, team stat, league news |
 | Tennis | player ranking, next match, current events |
+| EpiBet | match odds |
 
 ## Running the tests
 
