@@ -38,15 +38,16 @@ Behind it:
 
 ## Run
 
+Set your API-Football key in the `.env` file at the root, then run:
+
 ```bash
 cd poc
 mix setup
+set -a; source ../.env; set +a
 mix phx.server
 ```
 
 The app is available at [http://localhost:4000](http://localhost:4000).
-
-No `.env` file is needed: the POC uses no secret and no external service.
 
 ## Project structure
 
