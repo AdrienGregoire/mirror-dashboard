@@ -130,6 +130,37 @@ defmodule Dashboard.Services.Registry do
           ]
         }
       ]
+    },
+    %Service{
+      name: "epibet",
+      description: "Real-time odds provided by Betclic via The Odds API",
+      auth: :none,
+      provider: Dashboard.Services.EpiBet,
+      widgets: [
+        %WidgetType{
+          name: "next_match_odds",
+          description: "Next match and betting odds for a team",
+          params: [
+            %{
+              name: "sport",
+              type: "string",
+              options: [
+                {"Ligue 1", "soccer_france_ligue_one"},
+                {"La Liga", "soccer_spain_la_liga"},
+                {"UEFA Champions League", "soccer_uefa_champs_league"},
+                {"NBA", "basketball_nba"},
+                {"Tennis - ATP Wimbledon", "tennis_atp_wimbledon"}
+              ]
+            },
+            %{
+              name: "team",
+              type: "string",
+              options_from: {Dashboard.Services.EpiBet, :team_options},
+              depends_on: ["sport"]
+            }
+          ]
+        }
+      ]
     }
   ]
 

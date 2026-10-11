@@ -360,7 +360,8 @@ defmodule DashboardWeb.AddWidgetComponent do
       "next_match" => gettext("Next match"),
       "top_scorers" => gettext("Top scorers"),
       "player_ranking" => gettext("Player ranking"),
-      "current_events" => gettext("Current events")
+      "current_events" => gettext("Current events"),
+      "next_match_odds" => gettext("Match Odds")
     }
 
     Map.get(labels, name, name |> String.replace("_", " ") |> String.capitalize())
@@ -374,7 +375,8 @@ defmodule DashboardWeb.AddWidgetComponent do
       "next_match" => "hero-calendar-days",
       "top_scorers" => "hero-star",
       "player_ranking" => "hero-trophy",
-      "current_events" => "hero-globe-alt"
+      "current_events" => "hero-globe-alt",
+      "next_match_odds" => "hero-ticket"
     }
 
     Map.get(icons, name, "hero-squares-2x2")
