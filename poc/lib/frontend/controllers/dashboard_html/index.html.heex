@@ -10,11 +10,21 @@
     <h1>Dashboard</h1>
     <p class="muted">Logged in as <strong><%= @email %></strong></p>
     <div class="widgets-grid">
-      <div class="widget">- Football (coming soon)</div>
+      <div class="widget">
+        <h3>Football</h3>
+        <%= case @foot_result do %>
+          <% {:ok, team} -> %>
+            <div class="team-info">
+              <img src={team.logo} alt={team.name} class="team-logo" />
+              <span><%= team.name %></span>
+            </div>
+          <% {:error, _reason} -> %>
+            <p class="error-text">Impossible de charger les données football.</p>
+        <% end %>
+      </div>
       <div class="widget">- Basketball (coming soon)</div>
       <div class="widget">- Tennis (coming soon)</div>
     </div>
-    <h2> </h2>
     <a href="/" class="btn" style="margin-top: 1.5rem;">Back to home page</a>
   </div>
 </div>
