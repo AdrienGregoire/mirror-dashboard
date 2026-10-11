@@ -14,7 +14,8 @@ defmodule PocWeb.DashboardController do
         redirect(conn, to: ~p"/register")
 
       email ->
-        render(conn, :index, email: email)
+        foot_result = Poc.Foot.fetch_team(85)
+        render(conn, :index, email: email, foot_result: foot_result)
     end
   end
 end
