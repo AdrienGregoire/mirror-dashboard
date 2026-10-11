@@ -13,6 +13,7 @@ defmodule Poc.UserStore do
         hash = :crypto.hash(:sha256, password) |> Base.encode16()
         :ets.insert(@table, {email, hash})
         {:ok, email}
+
       _ ->
         {:error, :already_exists}
     end
@@ -27,6 +28,7 @@ defmodule Poc.UserStore do
 
   def authenticate(email, password) do
     hash = :crypto.hash(:sha256, password) |> Base.encode16()
+
     case find_by_email(email) do
       %{hash: ^hash} -> {:ok, email}
       _ -> {:error, :invalid}

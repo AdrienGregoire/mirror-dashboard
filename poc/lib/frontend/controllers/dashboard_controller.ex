@@ -12,6 +12,7 @@ defmodule PocWeb.DashboardController do
     case get_session(conn, :current_user) do
       nil ->
         redirect(conn, to: ~p"/register")
+
       email ->
         render(conn, :index, email: email)
     end
