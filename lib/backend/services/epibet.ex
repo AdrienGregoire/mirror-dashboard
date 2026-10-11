@@ -16,8 +16,11 @@ defmodule Dashboard.Services.EpiBet do
     with {:ok, api_key} <- api_key(),
          {:ok, events} <- get_odds(sport, api_key) do
       case parse_next_match(events, team) do
-        {:ok, match} -> {:ok, %{match: match}}
-        {:error, :not_found} -> {:error, gettext("No upcoming match found for %{team}.", team: team)}
+        {:ok, match} ->
+          {:ok, %{match: match}}
+
+        {:error, :not_found} ->
+          {:error, gettext("No upcoming match found for %{team}.", team: team)}
       end
     end
   end
@@ -47,13 +50,17 @@ defmodule Dashboard.Services.EpiBet do
 
   defp api_key do
     case System.get_env("ODDS_API_KEY") do
-      key when key in [nil, ""] -> {:error, gettext("ODDS_API_KEY environment variable is not set.")}
-      key -> {:ok, key}
+      key when key in [nil, ""] ->
+        {:error, gettext("ODDS_API_KEY environment variable is not set.")}
+
+      key ->
+        {:ok, key}
     end
   end
 
   defp get_odds(sport, api_key) do
     url = "#{@base_url}/#{sport}/odds"
+
     params = [
       apiKey: api_key,
       regions: "eu",
@@ -79,6 +86,7 @@ defmodule Dashboard.Services.EpiBet do
 
       e ->
         bookmakers = e["bookmakers"] || []
+
         bookmaker =
           Enum.find(bookmakers, &(&1["key"] == "betclic")) ||
             Enum.find(bookmakers, &(&1["key"] == "unibet_eu")) ||
