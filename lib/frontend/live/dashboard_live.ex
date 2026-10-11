@@ -873,8 +873,11 @@ defmodule DashboardWeb.DashboardLive do
     """
   end
 
-  defp widget_content(%{data: {:ok, %{match: match}}, widget: %{widget: "next_match_odds"}} = assigns) do
+  defp widget_content(
+         %{data: {:ok, %{match: match}}, widget: %{widget: "next_match_odds"}} = assigns
+       ) do
     assigns = assign(assigns, :match, match)
+
     ~H"""
     <div class="space-y-3 text-center">
       <p class="font-semibold text-lg">{@match.home_team} vs {@match.away_team}</p>
@@ -896,7 +899,6 @@ defmodule DashboardWeb.DashboardLive do
     </div>
     """
   end
-
 
   defp widget_content(%{data: {:error, reason}} = assigns) do
     assigns = assign(assigns, :reason, if(is_binary(reason), do: reason, else: inspect(reason)))
