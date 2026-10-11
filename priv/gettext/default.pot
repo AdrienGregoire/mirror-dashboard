@@ -653,3 +653,33 @@ msgstr ""
 
 msgid "Log out"
 msgstr ""
+
+msgid "Match Odds"
+msgstr ""
+
+msgid "epibet"
+msgstr "EpiBet"
+
+msgid "Next match and betting odds for a team"
+msgstr ""
+
+msgid "No upcoming match found for %{team}."
+msgstr ""
+
+msgid "No teams found for this sport."
+msgstr ""
+
+msgid "Please select a sport first."
+msgstr ""
+
+msgid "ODDS_API_KEY environment variable is not set."
+msgstr ""
+
+msgid "1 (Home)"
+msgstr ""
+
+msgid "X (Draw)"
+msgstr ""
+
+msgid "2 (Away)"
+msgstr ""

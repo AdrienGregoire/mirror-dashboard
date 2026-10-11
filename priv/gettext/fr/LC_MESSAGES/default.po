@@ -653,3 +653,33 @@ msgstr "Championnat inconnu : %{league}"
 
 msgid "Log out"
 msgstr "Se déconnecter"
+
+msgid "Match Odds"
+msgstr "Cotes du match"
+
+msgid "epibet"
+msgstr "EpiBet"
+
+msgid "Next match and betting odds for a team"
+msgstr "Prochain match et cotes de paris pour une équipe"
+
+msgid "No upcoming match found for %{team}."
+msgstr "Aucun prochain match trouvé pour %{team}."
+
+msgid "No teams found for this sport."
+msgstr "Aucune équipe trouvée pour ce sport."
+
+msgid "Please select a sport first."
+msgstr "Veuillez d'abord sélectionner un sport."
+
+msgid "ODDS_API_KEY environment variable is not set."
+msgstr "La variable d'environnement ODDS_API_KEY n'est pas définie."
+
+msgid "1 (Home)"
+msgstr "1 (Domicile)"
+
+msgid "X (Draw)"
+msgstr "N (Nul)"
+
+msgid "2 (Away)"
+msgstr "2 (Extérieur)"
